@@ -1,0 +1,21 @@
+name = "webbridge-revolut"
+main = "src/worker.ts"
+compatibility_date = "2026-10-01"
+
+# Naponta 3x szinkronizál (UTC)
+[triggers]
+crons = ["15 5,11,17 * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "webbridge-finance"
+database_id = "TODO_D1_ID"   # npx wrangler d1 create webbridge-finance
+
+[vars]
+REVOLUT_CLIENT_ID = "TODO_CLIENT_ID"
+REVOLUT_ISS = "webbridge.hu"
+
+# Titkok (npx wrangler secret put ...):
+#   REVOLUT_PRIVATE_KEY   – a private_pkcs8.pem teljes tartalma
+#   REVOLUT_REFRESH_TOKEN – az exchange-code.sh kimenetéből
+#   ADMIN_TOKEN           – hosszú véletlen szöveg a belső pénzügyi végponthoz

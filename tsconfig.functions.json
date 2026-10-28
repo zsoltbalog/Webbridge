@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "target": "es2022", "module": "es2022", "moduleResolution": "bundler", "strict": true, "noEmit": true,
+    "lib": ["es2022"], "types": ["@cloudflare/workers-types/2023-07-01"], "typeRoots": ["./api/revolut/node_modules"],
+    "skipLibCheck": true
+  },
+  "include": ["functions/**/*.ts", "lib/**/*.ts"]
+}

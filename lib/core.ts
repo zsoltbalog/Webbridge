@@ -1,0 +1,139 @@
+// Webbridge háttérrendszer: közös segédfüggvények (Cloudflare Pages Functions).
+
+export interface Env {
+  DB: D1Database;
+  SITE_URL: string;                 // pl. https://webbridge.hu
+  MAIL_FROM: string;                // hello@webbridge.hu
+  MAIL_FROM_NAME: string;           // Webbridge
+  NOTIFY_TO: string;                // belső értesítés címe (hello@webbridge.hu)
+  ADMIN_PASSWORD?: string;          // titok: a /admin CRM jelszava
+  BREVO_API_KEY?: string;           // titok
+  STRIPE_SECRET_KEY?: string;       // titok (restricted key)
+  STRIPE_WEBHOOK_SECRET?: string;   // titok (whsec_…)
+  ANTHROPIC_API_KEY?: string;       // titok (Pult AI, később)
+}
+
+export type Ctx = EventContext<Env, string, Record<string, unknown>>;
+
+export const nowIso = () => new Date().toISOString();
+
+export function json(data: unknown, status = 200, headers: Record<string, string> = {}) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", ...headers },
+  });
+}
+
+export const bad = (msg: string, status = 400) => json({ ok: false, error: msg }, status);
+
+export function rid(prefix: string, n = 10) {
+  const a = "abcdefghijkmnopqrstuvwxyz23456789";
+  const b = crypto.getRandomValues(new Uint8Array(n));
+  return prefix + Array.from(b, (x) => a[x % a.length]).join("");
+}
+
+/** Rendelésszám: WB-YYMMDD-XXXX */
+export function orderNo() {
+  const d = new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const b = crypto.getRandomValues(new Uint8Array(4));
+  return `WB-${d}-${Array.from(b, (x) => a[x % a.length]).join("")}`;
+}
+
+export const clean = (v: unknown, max = 2000) =>
+  typeof v === "string" ? v.replace(/\u0000/g, "").trim().slice(0, max) : "";
+
+export const isEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s);
+
+export function esc(s: unknown) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
+// ---------- Árlista (a Stripe-katalógussal azonos, nettó) ----------
+export interface Item { id: string; huf: number; eur: number; monthly?: boolean; hu: string; en: string }
+export const CATALOG: Item[] = [
+  { id: "landing", huf: 99900, eur: 259, hu: "Egyoldalas weboldal", en: "One-page website" },
+  { id: "site", huf: 199900, eur: 519, hu: "Céges weboldal", en: "Business website" },
+  { id: "shop", huf: 359900, eur: 919, hu: "Webshop indulócsomag", en: "Webshop starter" },
+  { id: "logo", huf: 59900, eur: 159, hu: "Logótervezés", en: "Logo design" },
+  { id: "brand", huf: 119900, eur: 299, hu: "Brandbook", en: "Brandbook" },
+  { id: "strategy", huf: 139900, eur: 359, hu: "Marketingstratégia", en: "Marketing strategy" },
+  { id: "plan", huf: 99900, eur: 259, hu: "90 napos marketingterv", en: "90-day marketing plan" },
+  { id: "setup", huf: 79900, eur: 199, hu: "Technikai beállítás", en: "Technical setup" },
+  { id: "move", huf: 29900, eur: 75, hu: "Költöztetés", en: "Migration" },
+  { id: "lang", huf: 39900, eur: 99, hu: "+1 nyelv", en: "+1 language" },
+  { id: "newpage", huf: 29900, eur: 75, hu: "Új aloldal", en: "New page" },
+  { id: "care", huf: 9900, eur: 25, monthly: true, hu: "Gondtalan üzemeltetés", en: "Carefree hosting" },
+  { id: "mkt1", huf: 39900, eur: 99, monthly: true, hu: "Marketing · Minimális", en: "Marketing · Minimal" },
+  { id: "mkt2", huf: 79900, eur: 199, monthly: true, hu: "Marketing · Közepes", en: "Marketing · Medium" },
+  { id: "mkt3", huf: 149900, eur: 379, monthly: true, hu: "Marketing · Maximális", en: "Marketing · Maximum" },
+  { id: "shopcare", huf: 29900, eur: 79, monthly: true, hu: "Webshop-üzemeltetés", en: "Webshop care" },
+  { id: "email", huf: 2900, eur: 8, monthly: true, hu: "Céges e-mail", en: "Business email" },
+  { id: "chat", huf: 14900, eur: 39, monthly: true, hu: "Virtuális asszisztens a weboldalon", en: "Website assistant" },
+  { id: "phone", huf: 29900, eur: 79, monthly: true, hu: "Virtuális recepciós", en: "Virtual receptionist" },
+  { id: "extra", huf: 9900, eur: 25, monthly: true, hu: "Extra marketingcsatorna", en: "Extra marketing channel" },
+];
+export const itemById = (id: string) => CATALOG.find((x) => x.id === id);
+
+export function priceOf(ids: string[], cur: "HUF" | "EUR") {
+  let once = 0, monthly = 0;
+  for (const id of ids) {
+    const it = itemById(id);
+    if (!it) continue;
+    const v = cur === "EUR" ? it.eur : it.huf;
+    if (it.monthly) monthly += v; else once += v;
+  }
+  return { once, monthly };
+}
+
+/** Vázlatdíj: 200 000 Ft (≈ €519) alatt a kicsi, felette a nagy. */
+export function sketchFor(onceHuf: number) { return onceHuf >= 200000 ? "sketch_l" : "sketch_s"; }
+
+export function money(v: number, cur: string, lang = "hu") {
+  return cur === "EUR"
+    ? new Intl.NumberFormat(lang === "hu" ? "hu-HU" : "en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(v)
+    : new Intl.NumberFormat("hu-HU").format(v) + " Ft";
+}
+
+// ---------- Stage-ek ----------
+export const STAGES = ["lead", "brief_sent", "brief_ok", "sketch_paid", "sketches", "deposit_paid", "building", "review", "live", "care", "lost"] as const;
+export const STAGE_HU: Record<string, string> = {
+  lead: "Új érdeklődő", brief_sent: "Brief elküldve", brief_ok: "Brief jóváhagyva", sketch_paid: "Vázlatdíj fizetve",
+  sketches: "Vázlatok kint", deposit_paid: "Előleg fizetve", building: "Készül", review: "Ügyfél nézi",
+  live: "Élesítve", care: "Üzemeltetés", lost: "Elveszett",
+};
+
+// ---------- DB segédek ----------
+export async function logEvent(env: Env, e: { customer_id?: string | null; project_id?: string | null; kind: string; title: string; body?: string; meta?: unknown; actor?: string }) {
+  await env.DB.prepare("INSERT INTO events (at,customer_id,project_id,kind,title,body,meta,actor) VALUES (?1,?2,?3,?4,?5,?6,?7,?8)")
+    .bind(nowIso(), e.customer_id ?? null, e.project_id ?? null, e.kind, e.title, e.body ?? null, JSON.stringify(e.meta ?? {}), e.actor ?? "system")
+    .run();
+}
+
+export async function touch(env: Env, customerId?: string | null, projectId?: string | null) {
+  const t = nowIso();
+  const s: D1PreparedStatement[] = [];
+  if (customerId) s.push(env.DB.prepare("UPDATE customers SET updated_at=?1 WHERE id=?2").bind(t, customerId));
+  if (projectId) s.push(env.DB.prepare("UPDATE projects SET updated_at=?1 WHERE id=?2").bind(t, projectId));
+  if (s.length) await env.DB.batch(s);
+}
+
+/** Ügyfél keresése e-mail alapján, vagy új létrehozása. */
+export async function upsertCustomer(env: Env, c: Record<string, string>) {
+  const t = nowIso();
+  const email = (c.email || "").toLowerCase();
+  if (email) {
+    const ex = await env.DB.prepare("SELECT id FROM customers WHERE email=?1").bind(email).first<{ id: string }>();
+    if (ex) {
+      await env.DB.prepare(
+        "UPDATE customers SET updated_at=?1, name=COALESCE(NULLIF(?2,''),name), business=COALESCE(NULLIF(?3,''),business), phone=COALESCE(NULLIF(?4,''),phone), lang=COALESCE(NULLIF(?5,''),lang), buyer_type=COALESCE(NULLIF(?6,''),buyer_type), company=COALESCE(NULLIF(?7,''),company), vat_id=COALESCE(NULLIF(?8,''),vat_id), billing_addr=COALESCE(NULLIF(?9,''),billing_addr), currency=COALESCE(NULLIF(?10,''),currency) WHERE id=?11"
+      ).bind(t, c.name || "", c.business || "", c.phone || "", c.lang || "", c.buyer_type || "", c.company || "", c.vat_id || "", c.billing_addr || "", c.currency || "", ex.id).run();
+      return { id: ex.id, isNew: false };
+    }
+  }
+  const id = rid("cus_");
+  await env.DB.prepare(
+    "INSERT INTO customers (id,created_at,updated_at,name,business,email,phone,lang,buyer_type,company,vat_id,billing_addr,currency,source) VALUES (?1,?2,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)"
+  ).bind(id, t, c.name || null, c.business || null, email || null, c.phone || null, c.lang || "hu", c.buyer_type || null, c.company || null, c.vat_id || null, c.billing_addr || null, c.currency || "HUF", c.source || "form").run();
+  return { id, isNew: true };
+}

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Webbridge CRM</title>
+<style>
+:root{--bg:#edeff2;--card:#fff;--ink:#10141b;--mut:#6b7280;--line:#e3e6ea;--acc:#ff6b2c;--ok:#16a34a;--warn:#d97706;--bad:#dc2626;--chip:#f3f4f6}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1016;--card:#161b23;--ink:#e8eaee;--mut:#9aa3af;--line:#262d38;--chip:#1f2630}}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,Segoe UI,Arial,sans-serif}
+a{color:inherit}button,input,select,textarea{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;padding:10px 18px}
+.logo{font-weight:800;font-size:17px;letter-spacing:-.02em;text-decoration:none}.logo i{color:var(--acc);font-style:normal}
+nav a{text-decoration:none;padding:6px 10px;border-radius:8px;color:var(--mut)}nav a.on{background:var(--chip);color:var(--ink);font-weight:600}
+.grow{flex:1}.cfg{display:flex;gap:6px;flex-wrap:wrap}.dot{font-size:12px;padding:3px 8px;border-radius:99px;background:var(--chip);color:var(--mut)}.dot.on{color:var(--ok)}.dot.off{color:var(--warn)}
+main{max-width:1240px;margin:0 auto;padding:18px}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}.g2{grid-template-columns:1.4fr 1fr}@media(max-width:860px){.g2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+h2{font-size:15px;margin:0 0 10px}h1{font-size:20px;margin:0 0 4px}
+.kpi b{display:block;font-size:24px;letter-spacing:-.02em}.kpi small{color:var(--mut)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:12px;color:var(--mut);font-weight:600}
+tr.click{cursor:pointer}tr.click:hover td{background:var(--chip)}
+.stage{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--chip);white-space:nowrap}
+.s-lead{color:#2563eb}.s-brief_sent,.s-brief_ok{color:#7c3aed}.s-sketch_paid,.s-deposit_paid{color:var(--ok)}.s-sketches,.s-building,.s-review{color:var(--warn)}.s-live,.s-care{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}.s-lost{color:var(--mut)}
+.mut{color:var(--mut)}.sm{font-size:12px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input,select,textarea{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:8px 10px;width:100%}textarea{min-height:90px;resize:vertical}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:7px 12px;cursor:pointer;font-weight:600;white-space:nowrap}.btn:hover{border-color:var(--ink)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}.btn:disabled{opacity:.5;cursor:default}
+.tl{list-style:none;margin:0;padding:0}.tl li{display:grid;grid-template-columns:84px 1fr;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.tl time{color:var(--mut);font-size:12px}.tl b{font-weight:600}.tl p{margin:3px 0 0;white-space:pre-wrap;color:var(--mut)}
+.k-payment b{color:var(--ok)}.k-lead b{color:#2563eb}.k-note b{color:#7c3aed}.k-email_out b{color:var(--ink)}
+.toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.toolbar input{max-width:320px}.toolbar select{max-width:220px}
+.dl{display:grid;grid-template-columns:130px 1fr;gap:6px 10px}.dl dt{color:var(--mut)}.dl dd{margin:0;overflow-wrap:anywhere}
+.proj{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;display:none;z-index:9}
+.empty{padding:28px;text-align:center;color:var(--mut)}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);max-width:560px;width:calc(100% - 32px)}dialog::backdrop{background:#0006}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips label{display:flex;gap:5px;align-items:center;background:var(--chip);border-radius:8px;padding:4px 8px;font-size:12px}.chips input{width:auto}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="#">Webbridge<i>.</i> <span class="mut sm" style="font-weight:500">CRM</span></a>
+  <nav><a href="#" data-nav="home">Áttekintés</a><a href="#ugyfelek" data-nav="list">Ügyfelek</a></nav>
+  <span class="grow"></span>
+  <div class="cfg" id="cfg"></div>
+  <button class="btn" id="add">+ Új ügyfél</button>
+</header>
+<main id="app"><div class="empty">Betöltés…</div></main>
+<div class="toast" id="toast"></div>
+
+<dialog id="dlg"><form method="dialog" id="dlgf" class="grid" style="gap:10px"></form></dialog>
+
+<script>
+const STAGES={lead:"Új érdeklődő",brief_sent:"Brief elküldve",brief_ok:"Brief jóváhagyva",sketch_paid:"Vázlatdíj fizetve",sketches:"Vázlatok kint",deposit_paid:"Előleg fizetve",building:"Készül",review:"Ügyfél nézi",live:"Élesítve",care:"Üzemeltetés",lost:"Elveszett"};
+const ITEMS={landing:"Egyoldalas weboldal",site:"Céges weboldal",shop:"Webshop",logo:"Logó",brand:"Brandbook",strategy:"Marketingstratégia",plan:"90 napos terv",setup:"Technikai beállítás",move:"Költöztetés",lang:"+1 nyelv",newpage:"Új aloldal",care:"Gondtalan üzemeltetés",mkt1:"Marketing Min.",mkt2:"Marketing Köz.",mkt3:"Marketing Max.",shopcare:"Webshop-üzemeltetés",email:"Céges e-mail",chat:"Weboldal-asszisztens",phone:"Virtuális recepciós",extra:"Extra csatorna"};
+const $=s=>document.querySelector(s),app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dt=s=>s?new Date(s).toLocaleString("hu-HU",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
+const ago=s=>{if(!s)return"";const m=Math.round((Date.now()-new Date(s))/6e4);return m<1?"most":m<60?m+" perce":m<1440?Math.round(m/60)+" órája":Math.round(m/1440)+" napja"};
+const money=(v,c)=>c==="EUR"?"€"+Number(v||0).toLocaleString("en-GB"):Number(v||0).toLocaleString("hu-HU")+" Ft";
+const stage=s=>`<span class="stage s-${s}">${esc(STAGES[s]||s||"–")}</span>`;
+function toast(t){const e=$("#toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",2600)}
+async function api(path,body){const r=await fetch("/api/admin/"+path,body?{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{});const j=await r.json().catch(()=>({error:"Hiba ("+r.status+")"}));if(!r.ok||j.ok===false)throw new Error(j.error||("Hiba "+r.status));return j}
+
+async function route(){
+  const h=location.hash.slice(1);document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",(a.dataset.nav==="list"&&h.startsWith("ugyfelek"))||(a.dataset.nav==="home"&&!h)));
+  try{if(h.startsWith("c/"))await detail(h.slice(2));else if(h.startsWith("ugyfelek"))await list(new URLSearchParams(h.split("?")[1]||""));else await home()}
+  catch(e){app.innerHTML=`<div class="card empty">${esc(e.message)}</div>`}
+}
+window.addEventListener("hashchange",route);
+
+async function home(){
+  const d=await api("overview");
+  $("#cfg").innerHTML=[["brevo","E-mail"],["stripe","Stripe"],["stripe_webhook","Webhook"],["anthropic","AI"]].map(([k,l])=>`<span class="dot ${d.config[k]?"on":"off"}" title="${d.config[k]?"Beállítva":"Hiányzik a kulcs"}">● ${l}</span>`).join("");
+  const by=Object.fromEntries(d.stages.map(s=>[s.stage,s.n]));
+  const open=Object.entries(by).filter(([k])=>!["live","care","lost"].includes(k)).reduce((a,[,n])=>a+n,0);
+  const rev=d.revenue30.map(r=>money(r.total,r.currency)).join(" + ")||"0 Ft";
+  app.innerHTML=`<div class="grid g4" style="margin-bottom:14px">
+    <div class="card kpi"><small>Nyitott projektek</small><b>${open}</b></div>
+    <div class="card kpi"><small>Új érdeklődő</small><b>${by.lead||0}</b></div>
+    <div class="card kpi"><small>Készül / ügyfél nézi</small><b>${(by.building||0)+(by.review||0)+(by.sketches||0)}</b></div>
+    <div class="card kpi"><small>Bevétel (30 nap)</small><b>${rev}</b></div></div>
+  <div class="grid g2"><div class="card"><h2>Teendők</h2>${d.todo.length?`<table><tr><th>Projekt</th><th>Státusz</th><th>Következő lépés</th></tr>${d.todo.map(p=>`<tr class="click" data-c="${p.customer_id}"><td><b>${esc(p.title||p.email)}</b><div class="mut sm">${p.id}</div></td><td>${stage(p.stage)}</td><td>${esc(p.next_action||"–")}<div class="mut sm">${p.next_action_at?dt(p.next_action_at):""}</div></td></tr>`).join("")}</table>`:`<div class="empty">Nincs nyitott teendő.</div>`}</div>
+  <div class="card"><h2>Legutóbb történt</h2><ul class="tl">${d.events.map(e=>`<li class="k-${e.kind}"><time>${ago(e.at)}</time><div><b>${esc(e.title)}</b><div class="sm mut">${e.customer_id?`<a href="#c/${e.customer_id}">${esc(e.business||e.name||e.email||e.customer_id)}</a>`:""}</div></div></li>`).join("")||`<div class="empty">Még nincs esemény.</div>`}</ul></div></div>`;
+  app.querySelectorAll("tr[data-c]").forEach(r=>r.onclick=()=>location.hash="c/"+r.dataset.c);
+}
+
+async function list(qs){
+  const q=qs.get("q")||"",st=qs.get("stage")||"";
+  const d=await api(`customers?q=${encodeURIComponent(q)}&stage=${st}`);
+  app.innerHTML=`<div class="toolbar"><input id="q" placeholder="Keresés: név, cég, e-mail, telefon, rendelésszám" value="${esc(q)}"><select id="st"><option value="">Minden státusz</option>${Object.entries(STAGES).map(([k,v])=>`<option value="${k}" ${k===st?"selected":""}>${v}</option>`).join("")}</select><span class="mut" style="align-self:center">${d.customers.length} ügyfél</span></div>
+  <div class="card" style="padding:4px 10px">${d.customers.length?`<table><tr><th>Ügyfél</th><th>Státusz</th><th>Érték</th><th>Fizetve</th><th>Következő lépés</th><th>Frissült</th></tr>${d.customers.map(c=>`<tr class="click" data-c="${c.id}"><td><b>${esc(c.business||c.name||c.email||c.phone)}</b><div class="mut sm">${esc([c.name,c.email,c.phone].filter(Boolean).join(" · "))}</div></td><td>${stage(c.stage||"lead")}</td><td>${c.amount?money(c.amount,c.currency):"–"}</td><td>${c.paid?money(c.paid,c.currency):"–"}</td><td class="sm">${esc(c.next_action||"")}</td><td class="mut sm">${ago(c.updated_at)}</td></tr>`).join("")}</table>`:`<div class="empty">Nincs találat.</div>`}</div>`;
+  const go=()=>location.hash=`ugyfelek?q=${encodeURIComponent($("#q").value)}&stage=${$("#st").value}`;
+  $("#q").onkeydown=e=>{if(e.key==="Enter")go()};$("#st").onchange=go;
+  app.querySelectorAll("tr[data-c]").forEach(r=>r.onclick=()=>location.hash="c/"+r.dataset.c);
+}
+
+async function detail(id){
+  const d=await api("customers/"+id),c=d.customer;
+  app.innerHTML=`<div class="row" style="margin-bottom:12px"><a href="#ugyfelek" class="mut">← Ügyfelek</a></div>
+  <div class="grid g2">
+   <div class="grid" style="align-content:start">
+    <div class="card"><div class="row" style="justify-content:space-between"><div><h1>${esc(c.business||c.name||c.email||c.phone)}</h1><div class="mut">${esc([c.name,c.email,c.phone].filter(Boolean).join(" · "))}</div></div><button class="btn" id="edit">Szerkesztés</button></div>
+     <dl class="dl" style="margin-top:12px"><dt>Forrás</dt><dd>${esc(c.source||"")}</dd><dt>Nyelv</dt><dd>${c.lang==="en"?"Angol":"Magyar"}</dd><dt>Vevő</dt><dd>${c.buyer_type==="b2c"?"Magánszemély":"Cég"} ${esc(c.company||"")}</dd><dt>Adószám</dt><dd>${esc(c.vat_id||"–")}</dd><dt>Számlázási cím</dt><dd>${esc(c.billing_addr||"–")}</dd><dt>Ügyfél óta</dt><dd>${dt(c.created_at)}</dd><dt>Címkék</dt><dd>${esc(c.tags||"–")}</dd></dl></div>
+    ${d.projects.map(p=>proj(p)).join("")||`<div class="card empty">Nincs projekt.</div>`}
+    <div class="card"><h2>Jegyzet</h2><textarea id="note" placeholder="Pl. telefonon egyeztettünk: a logó maradjon, csak frissítsük."></textarea><div class="row" style="margin-top:8px"><button class="btn pri" id="addnote">Mentés az idővonalra</button></div></div>
+   </div>
+   <div class="grid" style="align-content:start">
+    <div class="card"><h2>Fizetések</h2>${d.payments.length?`<table>${d.payments.map(p=>`<tr><td>${dt(p.at)}</td><td>${esc(p.kind)}</td><td><b>${money(p.amount,p.currency)}</b></td><td class="sm ${p.status==="paid"?"":"mut"}">${p.status==="paid"?"fizetve":esc(p.status)}</td></tr>`).join("")}</table>`:`<div class="mut">Még nincs fizetés.</div>`}</div>
+    <div class="card"><h2>Idővonal</h2><ul class="tl">${d.events.map(e=>`<li class="k-${e.kind}"><time title="${esc(e.at)}">${dt(e.at)}</time><div><b>${esc(e.title)}</b>${e.body?`<p>${esc(e.body)}</p>`:""}${e.kind==="email_out"&&e.meta&&JSON.parse(e.meta).status!=="sent"?`<div class="sm" style="color:var(--warn)">nem ment ki: ${esc(JSON.parse(e.meta).error||JSON.parse(e.meta).status)}</div>`:""}</div></li>`).join("")}</ul></div>
+   </div></div>`;
+  $("#edit").onclick=()=>editCustomer(c);
+  $("#addnote").onclick=async()=>{const v=$("#note").value.trim();if(!v)return;await api("customers/"+id,{note:v});toast("Mentve");route()};
+  app.querySelectorAll("[data-stage]").forEach(s=>s.onchange=async()=>{await api("projects/"+s.dataset.stage,{stage:s.value});toast("Státusz frissítve");route()});
+  app.querySelectorAll("[data-next]").forEach(b=>b.onclick=async()=>{const pid=b.dataset.next;await api("projects/"+pid,{next_action:$("#na-"+pid).value,next_action_at:$("#nat-"+pid).value?new Date($("#nat-"+pid).value).toISOString():""});toast("Mentve");route()});
+  app.querySelectorAll("[data-pay]").forEach(b=>b.onclick=async()=>{const [pid,kind]=b.dataset.pay.split(":");if(!confirm("Fizetési link küldése e-mailben az ügyfélnek?"))return;b.disabled=true;try{const r=await api(`projects/${pid}/paylink`,{kind});toast("Elküldve: "+money(r.amount,r.currency));route()}catch(e){toast(e.message);b.disabled=false}});
+  app.querySelectorAll("[data-mail]").forEach(b=>b.onclick=()=>mailDlg(b.dataset.mail));
+  app.querySelectorAll("[data-items]").forEach(b=>b.onclick=()=>itemsDlg(b.dataset.items,JSON.parse(b.dataset.cur||"[]")));
+}
+
+function proj(p){
+  const items=JSON.parse(p.items||"[]"),brief=JSON.parse(p.brief||"{}");
+  return `<div class="card proj"><div class="row" style="justify-content:space-between"><div><b>${esc(p.title||p.id)}</b> <span class="mut sm">${p.id}</span></div><select data-stage="${p.id}" style="width:auto">${Object.entries(STAGES).map(([k,v])=>`<option value="${k}" ${k===p.stage?"selected":""}>${v}</option>`).join("")}</select></div>
+  <div class="chips" style="margin:10px 0">${items.map(i=>`<span class="dot">${esc(ITEMS[i]||i)}</span>`).join("")}<button class="btn sm" data-items="${p.id}" data-cur='${JSON.stringify(items)}' style="padding:2px 8px">Tételek</button></div>
+  <dl class="dl sm"><dt>Érték (nettó)</dt><dd><b>${money(p.amount,p.currency)}</b></dd>${p.due_at?`<dt>Határidő</dt><dd>${dt(p.due_at)}</dd>`:""}<dt>Domain</dt><dd>${esc([p.domain_mode,p.domain_name].filter(Boolean).join(" · ")||"–")}</dd>${brief.what?`<dt>Mivel foglalkozik</dt><dd>${esc(brief.what)}</dd>`:""}${brief.who?`<dt>Vevők</dt><dd>${esc(brief.who)}</dd>`:""}${brief.tone?`<dt>Hangnem</dt><dd>${esc(brief.tone)}</dd>`:""}${brief.extra?`<dt>Egyéb</dt><dd>${esc(brief.extra)}</dd>`:""}</dl>
+  <div class="row" style="margin-top:10px"><input id="na-${p.id}" placeholder="Következő lépés" value="${esc(p.next_action||"")}" style="flex:2;min-width:180px"><input id="nat-${p.id}" type="datetime-local" value="${p.next_action_at?new Date(new Date(p.next_action_at)-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16):""}" style="flex:1;min-width:150px"><button class="btn" data-next="${p.id}">Mentés</button></div>
+  <div class="row" style="margin-top:10px"><button class="btn" data-pay="${p.id}:sketch">Vázlatdíj-link</button><button class="btn" data-pay="${p.id}:deposit">Előleg-link (50%)</button><button class="btn" data-pay="${p.id}:final">Végösszeg-link</button><button class="btn pri" data-mail="${p.id}">E-mail írása</button></div></div>`;
+}
+
+function dlg(html,onsubmit){const f=$("#dlgf");f.innerHTML=html+`<div class="row" style="justify-content:flex-end"><button class="btn" value="cancel" formnovalidate>Mégse</button><button class="btn pri" value="ok">Mentés</button></div>`;const d=$("#dlg");d.showModal();d.onclose=async()=>{if(d.returnValue==="ok"){try{await onsubmit(new FormData(f));route()}catch(e){toast(e.message)}}}}
+function editCustomer(c){dlg(`<h2>Ügyféladatok</h2>${[["name","Név"],["business","Vállalkozás"],["email","E-mail"],["phone","Telefon"],["company","Cégnév"],["vat_id","Adószám"],["billing_addr","Számlázási cím"],["tags","Címkék"]].map(([k,l])=>`<label class="sm mut">${l}<input name="${k}" value="${esc(c[k]||"")}"></label>`).join("")}<label class="sm mut">Nyelv<select name="lang"><option value="hu" ${c.lang!=="en"?"selected":""}>Magyar</option><option value="en" ${c.lang==="en"?"selected":""}>Angol</option></select></label>`,async fd=>{await api("customers/"+c.id,Object.fromEntries(fd));toast("Mentve")})}
+function mailDlg(pid){dlg(`<h2>E-mail az ügyfélnek</h2><p class="sm mut">A hello@webbridge.hu címről megy, Webbridge-sablonnal, és az idővonalra kerül.</p><input name="subject" placeholder="Tárgy" required><textarea name="message" placeholder="Üzenet (üres sor = új bekezdés)" required style="min-height:160px"></textarea><div class="row"><input name="cta_label" placeholder="Gomb felirata (nem kötelező)" style="flex:1"><input name="cta_url" placeholder="Gomb linkje" style="flex:2"></div>`,async fd=>{const r=await api(`projects/${pid}/email`,Object.fromEntries(fd));toast(r.ok?"Elküldve":"Nem ment ki: "+(r.error||""))})}
+function itemsDlg(pid,cur){dlg(`<h2>Tételek</h2><div class="chips">${Object.entries(ITEMS).map(([k,v])=>`<label><input type="checkbox" name="i" value="${k}" ${cur.includes(k)?"checked":""}>${v}</label>`).join("")}</div>`,async fd=>{await api("projects/"+pid,{items:fd.getAll("i")});toast("Mentve")})}
+$("#add").onclick=()=>dlg(`<h2>Új ügyfél</h2><input name="name" placeholder="Név"><input name="business" placeholder="Vállalkozás"><input name="email" placeholder="E-mail"><input name="phone" placeholder="Telefon"><textarea name="note" placeholder="Honnan jött, mit kér?"></textarea>`,async fd=>{const r=await api("customers",Object.fromEntries(fd));location.hash="c/"+r.id});
+route();
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Cloudflare Pages: statikus oldal (site/) + Pages Functions (functions/) + D1 CRM
+name = "webbridge"
+pages_build_output_dir = "site"
+compatibility_date = "2026-10-01"
+
+[vars]
+SITE_URL = "https://webbridge-1zo.pages.dev"
+MAIL_FROM = "hello@webbridge.hu"
+MAIL_FROM_NAME = "Webbridge"
+NOTIFY_TO = "hello@webbridge.hu"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "webbridge-crm"
+database_id = "5f8fbcc0-ba37-40de-a7c3-ce935d577582"
+
+# Titkok (Cloudflare dashboard → Pages → webbridge → Settings → Variables and Secrets, típus: Secret):
+#   ADMIN_PASSWORD, BREVO_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ANTHROPIC_API_KEY

@@ -1431,10 +1431,20 @@ fi.addEventListener("change",()=>handleFiles(fi.files));
 $("#f-name").addEventListener("input",()=>{$("#biz").value=$("#f-name").value;renderSite()});
 function showStep(){["p1","p2","p3"].forEach((id,i)=>{$("#"+id).hidden=i+1!==step});document.querySelectorAll("#prog i").forEach((el,i)=>el.classList.toggle("on",i<step));$("#back").style.visibility=step>1?"visible":"hidden";$("#next").textContent=step===3?T[lang].submit:T[lang].next}
 $("#back").onclick=()=>{if(step>1){step--;showStep()}};
-$("#form").addEventListener("submit",e=>{e.preventDefault();if(step<3){step++;showStep();return}
+const LIVE=/(^|\.)webbridge\.(hu|studio)$|\.pages\.dev$/.test(location.hostname);
+async function postIntake(data){const r=await fetch("/api/intake",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...data,lang,website:""})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||(lang==="hu"?"Nem sikerült elküldeni. Próbáld újra, vagy írj a hello@webbridge.hu címre.":"Could not send. Please try again or email hello@webbridge.hu."));return j}
+$("#form").addEventListener("submit",async e=>{e.preventDefault();if(step<3){step++;showStep();return}
   if(!$("#f-terms").checked){$("#f-err").hidden=false;return}$("#f-err").hidden=true;
+  let code="WB-"+new Date().toISOString().slice(2,10).replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
+  if(LIVE){const em=$("#f-email").value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){$("#f-err").hidden=false;$("#f-err").textContent=lang==="hu"?"Adj meg egy érvényes e-mail-címet.":"Please enter a valid email address.";$("#f-email").focus();return}
+    const btn=$("#next");btn.disabled=true;
+    try{const r=await postIntake({kind:"order",business:$("#f-name").value,what:$("#f-what").value,who:$("#f-who").value,tone:$("#f-tone").selectedOptions[0]?.textContent||"",industry:ind.id,email:em,
+      domain_mode:$("#f-dom").value,domain_name:$("#f-domname").value,buyer_type:$("#fb-b2c").getAttribute("aria-pressed")==="true"?"b2c":"b2b",company:$("#f-co").value,vat_id:$("#f-vat").value,
+      billing_addr:$("#f-addr").value,invoice_lang:$("#f-ilang").value,currency:$("#f-cur").value,extra:$("#f-extra").value,terms:true,start_now:$("#f-start").checked,
+      items:[...sel],files:[...(fi.files||[])].map(f=>f.name)});code=r.order}
+    catch(err){btn.disabled=false;$("#f-err").hidden=false;$("#f-err").textContent=err.message;return}btn.disabled=false}
   ["p1","p2","p3","fnav"].forEach(id=>$("#"+id).hidden=true);$("#fnav").style.display="none";
-  $("#code").textContent="WB-"+new Date().toISOString().slice(2,10).replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
+  $("#code").textContent=code;$("[data-t='d-proto']").hidden=LIVE;
   $("#pdone").hidden=false;renderEta();run();confetti($("#pdone"))});
 
 
@@ -1527,7 +1537,10 @@ function renderChannels(){$("#callsteps").innerHTML=T[lang].phSteps.map((x,i)=>`
 const CH={"ch-form":"form","ch-mail":"mailpanel","ch-call":"callpanel"};
 $("#chan").addEventListener("click",e=>{const b=e.target.closest("[role=tab]");if(!b)return;Object.keys(CH).forEach(id=>{const on=id===b.id;$("#"+id).setAttribute("aria-selected",on);$("#"+CH[id]).hidden=!on})});
 $("#copy").onclick=async()=>{const a=$("#addr").textContent;try{await navigator.clipboard.writeText(a);$("#copy").textContent=T[lang].copied}catch(e){const r=document.createRange();r.selectNodeContents($("#addr"));const s=getSelection();s.removeAllRanges();s.addRange(r)}};
-$("#callpanel").addEventListener("submit",e=>{e.preventDefault();if(!$("#cb-consent").checked){$("#cb-err").hidden=false;return}$("#cb-err").hidden=true;const d=$("#cb-done");d.hidden=false;d.textContent=T[lang].cbDone.replace("{s}",$("#cb-slot").value)});
+$("#callpanel").addEventListener("submit",async e=>{e.preventDefault();if(!$("#cb-consent").checked){$("#cb-err").hidden=false;return}$("#cb-err").hidden=true;const d=$("#cb-done");
+  if(LIVE){try{await postIntake({kind:"callback",name:$("#cb-name").value,phone:$("#cb-phone").value,slot:$("#cb-slot").value,consent:true})}catch(err){$("#cb-err").hidden=false;$("#cb-err").textContent=err.message;return}
+    d.hidden=false;d.textContent=(lang==="hu"?"Rögzítettük: {s}. Hamarosan hívunk.":"Booked: {s}. We'll call you soon.").replace("{s}",$("#cb-slot").value);return}
+  d.hidden=false;d.textContent=T[lang].cbDone.replace("{s}",$("#cb-slot").value)});
 
 
 /* ---------- little tricks ---------- */

@@ -1,31 +1,137 @@
 {
   "_note": "Stripe termékkatalógus. Sandbox: acct_1TvnCBKCGCj5y19i (2026-10-28 létrehozva). Az éles fiókba ugyanezekkel az id-kkel kell átvinni. Összegek a legkisebb egységben (HUF ×100, EUR cent), ÁFA nélkül (tax_behavior=exclusive, korlátozott ÁFA-alany).",
   "once": {
-    "wb_landing":  {"huf": 99900,  "eur": 259, "name": "Egyoldalas weboldal / One-page website"},
-    "wb_site":     {"huf": 199900, "eur": 519, "name": "Céges weboldal / Business website"},
-    "wb_shop":     {"huf": 359900, "eur": 919, "name": "Webshop indulócsomag / Webshop starter"},
-    "wb_logo":     {"huf": 59900,  "eur": 159, "name": "Logótervezés / Logo design"},
-    "wb_brand":    {"huf": 119900, "eur": 299, "name": "Brandbook"},
-    "wb_strategy": {"huf": 139900, "eur": 359, "name": "Marketingstratégia / Marketing strategy"},
-    "wb_plan":     {"huf": 99900,  "eur": 259, "name": "90 napos marketingterv / 90-day marketing plan"},
-    "wb_setup":    {"huf": 79900,  "eur": 199, "name": "Technikai beállítás / Technical setup"},
-    "wb_move":     {"huf": 29900,  "eur": 75,  "name": "Költöztetés / Migration"},
-    "wb_lang":     {"huf": 39900,  "eur": 99,  "name": "+1 nyelv / +1 language"},
-    "wb_sketch_s": {"huf": 9900,   "eur": 25,  "name": "Vázlatdíj (200 000 Ft alatt)"},
-    "wb_sketch_l": {"huf": 29900,  "eur": 79,  "name": "Vázlatdíj (200 000 Ft felett)"},
-    "wb_newpage":  {"huf": 29900,  "eur": 75,  "name": "Új aloldal / New page", "todo": "ár véglegesítendő"}
+    "wb_landing": {
+      "huf": 99900,
+      "eur": 259,
+      "name": "Egyoldalas weboldal / One-page website"
+    },
+    "wb_site": {
+      "huf": 199900,
+      "eur": 519,
+      "name": "Céges weboldal / Business website"
+    },
+    "wb_shop": {
+      "huf": 359900,
+      "eur": 919,
+      "name": "Webshop indulócsomag / Webshop starter"
+    },
+    "wb_logo": {
+      "huf": 59900,
+      "eur": 159,
+      "name": "Logótervezés / Logo design"
+    },
+    "wb_brand": {
+      "huf": 119900,
+      "eur": 299,
+      "name": "Brandbook"
+    },
+    "wb_strategy": {
+      "huf": 139900,
+      "eur": 359,
+      "name": "Marketingstratégia / Marketing strategy"
+    },
+    "wb_plan": {
+      "huf": 99900,
+      "eur": 259,
+      "name": "90 napos marketingterv / 90-day marketing plan"
+    },
+    "wb_setup": {
+      "huf": 79900,
+      "eur": 199,
+      "name": "Technikai beállítás / Technical setup"
+    },
+    "wb_move": {
+      "huf": 29900,
+      "eur": 75,
+      "name": "Költöztetés / Migration"
+    },
+    "wb_lang": {
+      "huf": 39900,
+      "eur": 99,
+      "name": "+1 nyelv / +1 language"
+    },
+    "wb_sketch_s": {
+      "huf": 9900,
+      "eur": 25,
+      "name": "Vázlatdíj (200 000 Ft alatt)"
+    },
+    "wb_sketch_l": {
+      "huf": 29900,
+      "eur": 79,
+      "name": "Vázlatdíj (200 000 Ft felett)"
+    },
+    "wb_newpage": {
+      "huf": 29900,
+      "eur": 75,
+      "name": "Új aloldal / New page",
+      "todo": "ár véglegesítendő"
+    }
   },
   "monthly": {
-    "wb_care":     {"huf": 9900,   "eur": 25,  "name": "Gondtalan üzemeltetés / Carefree hosting"},
-    "wb_mkt1":     {"huf": 39900,  "eur": 99,  "name": "Marketing · Minimális"},
-    "wb_mkt2":     {"huf": 79900,  "eur": 199, "name": "Marketing · Közepes"},
-    "wb_mkt3":     {"huf": 149900, "eur": 379, "name": "Marketing · Maximális"},
-    "wb_shopcare": {"huf": 29900,  "eur": 79,  "name": "Webshop-üzemeltetés"},
-    "wb_email":    {"huf": 2900,   "eur": 8,   "name": "Céges e-mail (Google Workspace)", "unit": "mailbox"},
-    "wb_chat":     {"huf": 14900,  "eur": 39,  "name": "Virtuális asszisztens a weboldalon"},
-    "wb_phone":    {"huf": 29900,  "eur": 79,  "name": "Virtuális recepciós"},
-    "wb_extra":    {"huf": 9900,   "eur": 25,  "name": "Extra marketingcsatorna"}
+    "wb_care": {
+      "huf": 9900,
+      "eur": 25,
+      "name": "Gondtalan üzemeltetés / Carefree hosting"
+    },
+    "wb_mkt1": {
+      "huf": 39900,
+      "eur": 99,
+      "name": "Marketing · Minimális"
+    },
+    "wb_mkt2": {
+      "huf": 79900,
+      "eur": 199,
+      "name": "Marketing · Közepes"
+    },
+    "wb_mkt3": {
+      "huf": 149900,
+      "eur": 379,
+      "name": "Marketing · Maximális"
+    },
+    "wb_shopcare": {
+      "huf": 29900,
+      "eur": 79,
+      "name": "Webshop-üzemeltetés"
+    },
+    "wb_email": {
+      "huf": 2900,
+      "eur": 8,
+      "name": "Céges e-mail (Google Workspace)",
+      "unit": "mailbox"
+    },
+    "wb_chat": {
+      "huf": 14900,
+      "eur": 39,
+      "name": "Virtuális asszisztens a weboldalon"
+    },
+    "wb_phone": {
+      "huf": 29900,
+      "eur": 79,
+      "name": "Virtuális recepciós"
+    },
+    "wb_extra": {
+      "huf": 9900,
+      "eur": 25,
+      "name": "Extra marketingcsatorna"
+    }
   },
-  "branding": {"primary": "#FF6B2C", "secondary": "#10141B", "checkout_bg": "#EDEFF2", "font": "Inter"},
-  "customer_portal": {"sandbox_config": "bpc_1UVRe2KCGCj5y19iQocFw7n6", "return_url": "https://webbridge.hu/pult", "cancel": "at_period_end"}
+  "branding": {
+    "primary": "#FF6B2C",
+    "secondary": "#10141B",
+    "checkout_bg": "#EDEFF2",
+    "font": "Inter"
+  },
+  "customer_portal": {
+    "sandbox_config": "bpc_1UVRe2KCGCj5y19iQocFw7n6",
+    "return_url": "https://webbridge.hu/pult",
+    "cancel": "at_period_end"
+  },
+  "live": {
+    "account": "acct_1UVGYcK2X4Us0unD",
+    "created": "2026-10-28",
+    "product_ids": "azonos a sandboxszal (wb_*)",
+    "customer_portal": "bpc_1UVV17K2X4Us0unD3wHlanwh",
+    "archived_duplicate": "prod_VWY5OC6MG8Ziw8"
+  }
 }

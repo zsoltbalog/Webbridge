@@ -684,6 +684,148 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
 .chip.sm{padding:5px 10px;font-size:13px}
 .site-cards div.hl{background:color-mix(in srgb,var(--c) 18%,transparent);outline:1.5px solid var(--c)}
 
+
+/* ===== Layout engine v2: 8 szerkezet + iparági modulok + látható építés (csak a hero #site) ===== */
+#site{overflow:hidden;min-height:470px}
+#site .site-x{padding:0 18px 18px}
+#site .sx-h{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin:4px 0 8px}
+/* modulok */
+#site .sx-menu{display:grid;gap:6px;font-size:12px}
+#site .sx-menu div{display:flex;align-items:baseline;gap:6px}
+#site .sx-menu i{flex:1;border-bottom:1.5px dotted color-mix(in srgb,var(--cink) 35%,transparent);transform:translateY(-3px)}
+#site .sx-menu b{font-weight:700}#site .sx-menu em{font-style:normal;font-weight:700;color:var(--c)}
+#site .sx-book{display:grid;gap:8px}
+#site .sx-days,#site .sx-slots{display:flex;gap:6px;flex-wrap:wrap}
+#site .sx-days span{font-size:10.5px;padding:6px 8px;border-radius:var(--srad);background:color-mix(in srgb,var(--cink) 6%,transparent);text-align:center;line-height:1.15}
+#site .sx-days span.on{background:var(--c);color:#fff}
+#site .sx-slots span{font-size:11px;font-weight:600;padding:6px 10px;border-radius:99px;border:1.5px solid color-mix(in srgb,var(--c) 55%,transparent);color:var(--c)}
+#site .sx-slots span.off{opacity:.35;text-decoration:line-through}
+#site .sx-ba{position:relative;height:110px;border-radius:var(--srad);overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
+#site .sx-ba div{position:relative;display:flex;align-items:flex-end;padding:8px;font-family:var(--mono);font-size:9.5px;color:#fff;letter-spacing:.1em;text-transform:uppercase}
+#site .sx-ba .bf{background:repeating-linear-gradient(45deg,#8a8f98 0 8px,#7c818a 8px 16px);filter:saturate(.3)}
+#site .sx-ba .af{background:linear-gradient(135deg,var(--c),var(--c2))}
+#site .sx-ba::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+#site .sx-ba::before{content:"⟷";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:26px;height:26px;border-radius:50%;background:#fff;color:#222;display:grid;place-items:center;font-size:13px;box-shadow:0 4px 10px rgba(0,0,0,.25)}
+#site .sx-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+#site .sx-stats div{font-size:10px;opacity:.85;line-height:1.25}#site .sx-stats b{display:block;font-size:18px;font-family:var(--sitefont);color:var(--c);opacity:1}
+#site .sx-shop{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+#site .sx-shop div{border-radius:var(--srad);overflow:hidden;background:color-mix(in srgb,var(--cink) 5%,transparent);font-size:11px}
+#site .sx-shop i{display:block;height:58px;background:linear-gradient(160deg,var(--c),var(--c2))}
+#site .sx-shop div:nth-child(2) i{background:linear-gradient(160deg,var(--c2),var(--c))}
+#site .sx-shop div:nth-child(3) i{background:radial-gradient(circle at 30% 30%,#fff6,transparent 40%),var(--c)}
+#site .sx-shop p{margin:0;padding:6px 7px 7px;display:flex;justify-content:space-between;gap:4px}#site .sx-shop p b{font-weight:600}#site .sx-shop p em{font-style:normal;font-weight:700;color:var(--c)}
+#site .sx-quote{border-left:3px solid var(--c);padding:4px 0 4px 12px;font-family:var(--sitefont);font-size:15px;line-height:1.3}
+#site .sx-quote small{display:block;font-family:var(--body);font-size:10.5px;opacity:.65;margin-top:6px}
+#site .sx-logos{display:flex;gap:14px;margin-top:10px;opacity:.55;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+#site .sx-feat{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:11px}
+#site .sx-feat div{display:flex;gap:8px;align-items:flex-start}#site .sx-feat div::before{content:"";flex:none;width:18px;height:18px;border-radius:6px;background:var(--c)}
+
+/* ---- szerkezetek ---- */
+#site[data-layout]{display:block}
+/* 1. full: képes, teljes szélességű hero, fehér szöveg */
+#site[data-layout="full"]{position:relative}
+#site[data-layout="full"] .site-nav{position:relative;z-index:2;border-bottom:0;color:#fff}
+#site[data-layout="full"] .site-band{position:absolute!important;left:0;right:0;top:0;height:300px;margin:0!important;border-radius:0!important;z-index:0}
+#site[data-layout="full"] .site-band::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(0,0,0,.45),rgba(0,0,0,.15) 55%,rgba(0,0,0,.55))}
+#site[data-layout="full"] .site-hero{position:relative;z-index:2;color:#fff;min-height:226px;align-content:end;padding-bottom:26px}
+#site[data-layout="full"] .site-hero .tag{color:#fff;opacity:.85}
+#site[data-layout="full"] .site-hero h4{font-size:clamp(26px,3.1vw,36px);text-shadow:0 2px 18px rgba(0,0,0,.3)}
+#site[data-layout="full"] .site-cta span+span{color:#fff;border-color:rgba(255,255,255,.6)}
+#site[data-layout="full"] .site-cards{margin-top:6px}
+/* 2. editorial: magazin, nagy serif cím, vékony vonalak, számozott lista */
+#site[data-layout="editorial"] .site-nav{flex-direction:column;gap:4px;padding:16px 18px 10px;border-bottom:1px solid var(--cink)}
+#site[data-layout="editorial"] .site-name{font-family:var(--sitefont);font-size:22px;letter-spacing:.02em}
+#site[data-layout="editorial"] .site-logo{display:none}
+#site[data-layout="editorial"] .site-links{margin:0;text-transform:uppercase;letter-spacing:.14em;font-size:9.5px}
+#site[data-layout="editorial"] .site-hero{grid-template-columns:1.25fr 1fr;align-items:end;gap:6px 18px;padding-top:20px;border-bottom:1px solid color-mix(in srgb,var(--cink) 25%,transparent)}
+#site[data-layout="editorial"] .site-hero .tag{grid-column:1/-1}
+#site[data-layout="editorial"] .site-hero h4{font-size:clamp(28px,3.4vw,40px);font-weight:600;line-height:1}
+#site[data-layout="editorial"] .site-hero p{font-size:12.5px;font-style:italic}
+#site[data-layout="editorial"] .site-cta{grid-column:2}
+#site[data-layout="editorial"] .site-band{height:46px;margin:12px 18px 0}
+#site[data-layout="editorial"] .site-cards{grid-template-columns:1fr;gap:0;counter-reset:ed}
+#site[data-layout="editorial"] .site-cards div{background:none;border-radius:0!important;border-bottom:1px solid color-mix(in srgb,var(--cink) 18%,transparent);display:grid;grid-template-columns:28px 120px 1fr;padding:7px 0;counter-increment:ed}
+#site[data-layout="editorial"] .site-cards div::before{content:"0" counter(ed);font-family:var(--mono);font-size:10px;color:var(--c)}
+#site[data-layout="editorial"] .site-cards b{margin:0;font-family:var(--sitefont)}
+/* 3. bento: aszimmetrikus csempék */
+#site[data-layout="bento"]{display:grid;grid-template-columns:1.3fr 1fr;grid-template-areas:"nav nav" "hero band" "cards cards" "x x";gap:8px;padding-bottom:8px}
+#site[data-layout="bento"] .site-nav{grid-area:nav}
+#site[data-layout="bento"] .site-hero{grid-area:hero;margin-left:12px;background:color-mix(in srgb,var(--c) 12%,var(--cbg));border-radius:calc(var(--srad) + 6px);padding:18px}
+#site[data-layout="bento"] .site-band{grid-area:band;margin:0 12px 0 0!important;height:auto;min-height:170px;border-radius:calc(var(--srad) + 6px)!important}
+#site[data-layout="bento"] .site-cards{grid-area:cards;padding:0 12px}
+#site[data-layout="bento"] .site-cards div{background:var(--cink);color:var(--cbg);padding:12px}
+#site[data-layout="bento"] .site-cards div:first-child{background:var(--c);color:#fff}
+#site[data-layout="bento"] .site-x{grid-area:x;padding:0 12px}
+#site[data-layout="bento"] .site-hero h4{font-size:clamp(24px,2.8vw,32px);text-transform:uppercase;letter-spacing:-.02em}
+#site[data-layout="bento"] .swatches{grid-column:1/-1}
+/* 4. split: szöveg balra, kép jobbra */
+#site[data-layout="split"] .site-hero{padding-right:47%;position:relative;z-index:1;min-height:210px}
+#site[data-layout="split"] .site-band{position:absolute!important;right:18px;top:64px;width:42%;height:196px;margin:0!important}
+/* 5. center: középre zárt, kerek */
+#site[data-layout="center"] .site-nav{justify-content:center}#site[data-layout="center"] .site-links{margin-left:14px}
+#site[data-layout="center"] .site-hero{text-align:center;justify-items:center;padding-top:30px}
+#site[data-layout="center"] .site-hero p{margin-inline:auto}
+#site[data-layout="center"] .site-band{height:96px;margin:6px 36px 0;border-radius:999px!important}
+#site[data-layout="center"] .site-cards div{text-align:center}
+/* 6. sidebar: függőleges navigáció balra */
+#site[data-layout="sidebar"]{display:grid;grid-template-columns:118px 1fr;grid-template-areas:"nav hero" "nav band" "nav cards" "nav x"}
+#site[data-layout="sidebar"] .site-nav{grid-area:nav;flex-direction:column;align-items:flex-start;border-bottom:0;border-right:1px solid color-mix(in srgb,var(--cink) 12%,transparent);background:color-mix(in srgb,var(--c) 8%,var(--cbg))}
+#site[data-layout="sidebar"] .site-links{margin:14px 0 0;flex-direction:column;gap:9px;font-size:11.5px}
+#site[data-layout="sidebar"] .site-hero{grid-area:hero}#site[data-layout="sidebar"] .site-band{grid-area:band;height:84px}
+#site[data-layout="sidebar"] .site-cards{grid-area:cards;grid-template-columns:repeat(3,1fr)}#site[data-layout="sidebar"] .site-x{grid-area:x}
+#site[data-layout="sidebar"] .swatches{display:none}
+/* 7. poster: óriás tipográfia, merész */
+#site[data-layout="poster"] .site-hero{padding-top:18px}
+#site[data-layout="poster"] .site-hero h4{font-size:clamp(34px,4.6vw,52px);line-height:.92;text-transform:uppercase;letter-spacing:-.03em;font-weight:900}
+#site[data-layout="poster"] .site-hero p{font-size:12px}
+#site[data-layout="poster"] .site-band{height:30px;margin:4px 0 0;border-radius:0!important}
+#site[data-layout="poster"] .site-cards div{border:2px solid var(--cink);background:none}
+/* 8. stack: klasszikus, bő levegő */
+#site[data-layout="stack"] .site-band{height:110px}
+@media (max-width:620px){
+ #site[data-layout="split"] .site-hero{padding-right:18px}#site[data-layout="split"] .site-band{position:relative!important;right:auto;top:auto;width:auto;height:90px;margin:6px 18px 0!important}
+ #site[data-layout="bento"]{grid-template-columns:1fr;grid-template-areas:"nav" "hero" "band" "cards" "x"}#site[data-layout="bento"] .site-hero{margin:0 12px}#site[data-layout="bento"] .site-band{margin:0 12px!important;min-height:90px}
+ #site[data-layout="sidebar"]{grid-template-columns:1fr;grid-template-areas:"nav" "hero" "band" "cards" "x"}#site[data-layout="sidebar"] .site-nav{flex-direction:row;border-right:0}#site[data-layout="sidebar"] .site-links{display:none}
+ #site[data-layout="editorial"] .site-hero{grid-template-columns:1fr}#site[data-layout="editorial"] .site-cta{grid-column:1}
+ #site .sx-shop{grid-template-columns:1fr 1fr}#site .sx-shop div:nth-child(3){display:none}}
+#site.dark .sx-ba .bf{filter:saturate(.2) brightness(.7)}
+
+/* ---- látható építés ---- */
+#site .wire-grid{position:absolute;inset:0;pointer-events:none;z-index:6;opacity:0;transition:opacity .4s;
+ background-image:linear-gradient(color-mix(in srgb,var(--c) 22%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--c) 22%,transparent) 1px,transparent 1px);background-size:24px 24px}
+#site.building .wire-grid{opacity:.55}
+#site.building[data-stage="4"] .wire-grid,#site.building[data-stage="5"] .wire-grid{opacity:0}
+/* még meg nem épített elem: skeleton + címke (a régi elmosás helyett) */
+#site.building [data-s]{filter:none!important;transform:none!important;opacity:1!important}
+#site.building [data-s].sk{position:relative;color:transparent!important;background-image:none}
+#site.building [data-s].sk *{color:transparent!important;border-color:transparent!important;background:color-mix(in srgb,var(--cink) 9%,transparent)!important;box-shadow:none!important;text-shadow:none!important}
+#site.building [data-s].sk{outline:1.5px dashed color-mix(in srgb,var(--c) 70%,transparent);outline-offset:-3px;border-radius:6px}
+#site.building [data-s].sk::after{content:attr(data-tag);position:absolute;top:3px;right:5px;font:600 9px/1 var(--mono);color:var(--c);letter-spacing:.06em;background:var(--cbg);padding:2px 4px;border-radius:3px;z-index:3}
+#site.building .site-band.sk canvas{filter:grayscale(1) blur(6px) contrast(.6);opacity:.5}
+#site .site-band canvas{transition:filter 1s ease,opacity 1s}
+#site.building .sk.site-band::after{display:none}
+.hero .post{left:auto;right:14px;top:58px;bottom:auto;width:138px;z-index:9;opacity:0;transform:rotate(4deg) translateY(10px);transition:opacity .4s,transform .4s;pointer-events:none}
+.hero .post.show{opacity:1;transform:rotate(4deg)}
+
+#site .pop{animation:skpop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes skpop{0%{transform:scale(.96);opacity:.4}100%{transform:none;opacity:1}}
+#site .caret::after{content:"";display:inline-block;width:2px;height:.9em;background:var(--c);margin-left:2px;vertical-align:-.08em;animation:blink .7s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+/* kurzor + akció-címke */
+#site .cur{position:absolute;z-index:8;left:0;top:0;width:18px;height:18px;pointer-events:none;transition:transform .7s cubic-bezier(.5,0,.2,1),opacity .3s;opacity:0}
+#site.building .cur{opacity:1}
+#site .cur svg{width:18px;height:18px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+#site .cur em{position:absolute;left:16px;top:16px;white-space:nowrap;font:600 10px/1 var(--mono);background:var(--ink,#10141b);color:#fff;padding:5px 7px;border-radius:5px;letter-spacing:.02em}
+#site .cur.click::before{content:"";position:absolute;left:-8px;top:-8px;width:20px;height:20px;border-radius:50%;border:2px solid var(--c);animation:ring .6s ease-out}
+@keyframes ring{from{transform:scale(.3);opacity:1}to{transform:scale(1.8);opacity:0}}
+/* festés: szín-söprés */
+#site .paint{position:absolute;inset:0;z-index:7;pointer-events:none;background:linear-gradient(100deg,transparent 0%,color-mix(in srgb,var(--c) 55%,transparent) 45%,transparent 60%);transform:translateX(-110%)}
+#site .paint.go{animation:sweep .9s ease-in-out}
+@keyframes sweep{to{transform:translateX(110%)}}
+/* élesítés jelvény */
+#site .live-badge{position:absolute;z-index:8;left:12px;bottom:12px;font:700 11px/1 var(--mono);background:#16a34a;color:#fff;padding:7px 10px;border-radius:99px;opacity:0;transform:translateY(8px);transition:.4s}
+#site .live-badge.on{opacity:1;transform:none}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
 
@@ -2360,6 +2502,96 @@ applyDNA=function(){_applyDNA();const d=dna();const site=$("#site");site.classLi
  const G=goal==="auto"?null:VG[lang];
  if(G){$("#scta1").textContent=G.cta[goal][0];$("#scta2").textContent=G.cta[goal][1];const c=$("#scards").firstElementChild;if(c)c.innerHTML=`<b>${G.card[goal][0]}</b>${G.card[goal][1]}`;$("#scards").firstElementChild.classList.add("hl")}
  $("#sname").style.fontFamily=d.font};
+
+
+/* ---------- Layout engine v2: szerkezet × iparág × hangulat, modulok, látható építés ---------- */
+const LAYOUTS={premium:["editorial","full","sidebar"],bold:["poster","bento","split"],natural:["center","stack","editorial"],friendly:["split","center","bento"],
+ food:["full","bento","editorial","poster"],beauty:["editorial","center","split","full"],trade:["split","poster","sidebar","bento"],pro:["sidebar","editorial","stack","split"],shop:["bento","full","center","poster"],custom:["stack","split","full","bento","sidebar","center"]};
+const SX={
+ hu:{
+  menu:{h:"A mai menü",rows:[["Vajas csirke, rizs","2 890 Ft"],["Dal makhani","2 390 Ft"],["Mango lassi","990 Ft"]]},
+  book:{h:"Foglalj időpontot",days:[["H","3"],["K","4"],["Sze","5"],["Cs","6"],["P","7"]],slots:["9:30","11:00","13:30","15:00","17:30"]},
+  ba:{h:"Előtte – utána",b:"Előtte",a:"Utána",stats:[["320+","átadott munka"],["4,9★","Google-értékelés"],["2 év","garancia"]]},
+  quote:{h:"Ügyfeleink mondták",q:"„Három hónap alatt kétszer annyi megkeresés jött.”",who:"Kovács Péter, ügyvezető",logos:["Alfa Kft.","Nordic","Városi"]},
+  shop:{h:"Kiemelt termékek",items:[["Kézzel öntött gyertya","6 900 Ft"],["Lenvászon táska","8 490 Ft"],["Ajándékcsomag","12 900 Ft"]]},
+  feat:{h:"Amiért minket választanak",items:["Gyors válasz, 24 órán belül","Átlátható, fix árak","Helyi csapat","Elégedettségi garancia"]},
+  tags:{nav:"fejléc",hero:"főcím",cta:"gomb",band:"kép",cards:"előnyök",x:"modul",sw:"paletta"},
+  act:["Paletta és logó","Főcím írása","Kép generálása","Modul beépítése","Élesítés"],live:"● Élesítve"},
+ en:{
+  menu:{h:"Today's menu",rows:[["Butter chicken, rice","€8.50"],["Dal makhani","€7.00"],["Mango lassi","€3.00"]]},
+  book:{h:"Book a slot",days:[["Mon","3"],["Tue","4"],["Wed","5"],["Thu","6"],["Fri","7"]],slots:["9:30","11:00","13:30","15:00","17:30"]},
+  ba:{h:"Before – after",b:"Before",a:"After",stats:[["320+","projects delivered"],["4.9★","Google rating"],["2 yrs","guarantee"]]},
+  quote:{h:"What clients say",q:"“Twice as many enquiries in three months.”",who:"Peter Kovacs, managing director",logos:["Alpha Ltd","Nordic","Civic"]},
+  shop:{h:"Featured products",items:[["Hand-poured candle","€18"],["Linen tote","€22"],["Gift box","€34"]]},
+  feat:{h:"Why people choose us",items:["Fast reply, within 24 hours","Clear, fixed prices","Local team","Satisfaction guarantee"]},
+  tags:{nav:"header",hero:"headline",cta:"button",band:"image",cards:"features",x:"module",sw:"palette"},
+  act:["Palette & logo","Writing headline","Generating image","Adding module","Going live"],live:"● Live"}};
+const IND_MOD={food:"menu",beauty:"book",trade:"ba",pro:"quote",shop:"shop",custom:"feat"};
+function pickLayout(){const name=(($("#biz").value||"").trim()||"x").toLowerCase();const key=vibe!=="auto"?vibe:(LAYOUTS[ind.id]?ind.id:"custom");
+ const L=LAYOUTS[key];return L[hsh(name+"|"+ind.id+"|"+vibe)%L.length]}
+function pickModule(){if(goal==="book")return"book";if(goal==="buy")return"shop";if(goal==="call")return ind.id==="trade"?"ba":"quote";return IND_MOD[ind.id]||"feat"}
+function sxHTML(m){const S=SX[lang][m];switch(m){
+ case"menu":return`<div class="sx-h">${S.h}</div><div class="sx-menu">${S.rows.map(r=>`<div><b>${r[0]}</b><i></i><em>${r[1]}</em></div>`).join("")}</div>`;
+ case"book":return`<div class="sx-h">${S.h}</div><div class="sx-book"><div class="sx-days">${S.days.map((d,i)=>`<span class="${i===1?"on":""}">${d[0]}<br><b>${d[1]}</b></span>`).join("")}</div><div class="sx-slots">${S.slots.map((s,i)=>`<span class="${i===1?"off":""}">${s}</span>`).join("")}</div></div>`;
+ case"ba":return`<div class="sx-h">${S.h}</div><div class="sx-ba"><div class="bf">${S.b}</div><div class="af">${S.a}</div></div><div class="sx-stats">${S.stats.map(s=>`<div><b>${s[0]}</b>${s[1]}</div>`).join("")}</div>`;
+ case"quote":return`<div class="sx-h">${S.h}</div><div class="sx-quote">${S.q}<small>${S.who}</small></div><div class="sx-logos">${S.logos.map(l=>`<span>${l}</span>`).join("")}</div>`;
+ case"shop":return`<div class="sx-h">${S.h}</div><div class="sx-shop">${S.items.map(it=>`<div><i></i><p><b>${it[0]}</b><em>${it[1]}</em></p></div>`).join("")}</div>`;
+ default:return`<div class="sx-h">${S.h}</div><div class="sx-feat">${S.items.map(t=>`<div>${t}</div>`).join("")}</div>`}}
+function ensureBuildBits(site){
+ if(!site.querySelector("#sx")){const x=document.createElement("div");x.className="site-x";x.id="sx";x.dataset.s="4";site.insertBefore(x,site.querySelector(".swatches"))}
+ for(const [cls,html] of [["wire-grid",""],["paint",""],["live-badge",""],["cur",'<svg viewBox="0 0 24 24"><path d="M3 2l7 19 2.6-7.4L20 11z" fill="#10141b" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg><em></em>']])
+  if(!site.querySelector("."+cls)){const d=document.createElement("div");d.className=cls;d.setAttribute("aria-hidden","true");d.innerHTML=html;site.appendChild(d)}
+ const T_=SX[lang].tags,tag=(sel,t)=>{const e=site.querySelector(sel);if(e)e.dataset.tag=t};
+ tag(".site-nav","<"+T_.nav+">");tag("#stag","<"+T_.hero+">");tag("#sh","<h1>");tag("#sp","<p>");tag(".site-cta","<"+T_.cta+">");tag(".site-band","<"+T_.band+">");tag(".site-cards","<"+T_.cards+">");tag("#sx","<"+T_.x+">");tag(".swatches","<"+T_.sw+">")}
+function applyLayout(){const site=$("#site");if(!site)return;ensureBuildBits(site);
+ const lay=pickLayout(),mod=pickModule();
+ if(site.dataset.layout!==lay){site.dataset.layout=lay;site.classList.remove("lay-0","lay-1","lay-2")}
+ else site.classList.remove("lay-0","lay-1","lay-2");
+ site.dataset.mod=mod;$("#sx").innerHTML=sxHTML(mod);
+ site.querySelector(".live-badge").textContent=SX[lang].live;
+ // a sávban lévő kép újrarajzolása az új méretre
+ const cv=site.querySelector(".site-band canvas");if(cv){try{drawArt(cv,dna(),palette())}catch(e){}}}
+const _renderSite3=renderSite;renderSite=function(){_renderSite3();applyLayout()};
+
+/* látható építés: drótváz → logó+paletta → begépelt főcím → előhívott kép → modul → kattintás és élesítés */
+run=function(){
+ if(running)return;running=true;renderSite();
+ const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;const dur=reduce?60:1150;
+ const site=$("#site"),line=$("#line");const cur=site.querySelector(".cur"),badge=site.querySelector(".live-badge"),paint=site.querySelector(".paint");
+ const n=($("#biz").value||"").trim()||"—";const p=palette();const A=SX[lang].act;
+ const msgs=lang==="hu"?[
+  `<b>ST-01</b> Brief: ${esc(n)} · ${(ind.hu||customLabel||"").toLowerCase()} · ${TONES.hu[$("#f-tone").selectedIndex||0].toLowerCase()} hangnem`,
+  `<b>ST-02</b> Paletta: ${p.slice(0,2).join(" / ")} · betűpár és logó kész`,
+  `<b>ST-03</b> Főcím megírva: „${esc($("#sh").textContent)}”`,
+  `<b>ST-04</b> Szerkezet: ${site.dataset.layout} · modul: ${site.dataset.mod} · élesítve: ${slug(n)}.hu · SSL rendben`,
+  `<b>ST-05</b> 12 social poszt és 90 napos naptár ütemezve ✓`]:[
+  `<b>ST-01</b> Brief: ${esc(n)} · ${(ind.en||customLabel||"").toLowerCase()} · ${TONES.en[$("#f-tone").selectedIndex||0].toLowerCase()} tone`,
+  `<b>ST-02</b> Palette: ${p.slice(0,2).join(" / ")} · type pair and logo ready`,
+  `<b>ST-03</b> Headline written: “${esc($("#sh").textContent)}”`,
+  `<b>ST-04</b> Layout: ${site.dataset.layout} · module: ${site.dataset.mod} · deployed: ${slug(n)}.com · SSL OK`,
+  `<b>ST-05</b> 12 social posts and 90-day calendar scheduled ✓`];
+ const all=[...site.querySelectorAll("[data-s]")];
+ badge.classList.remove("on");site.classList.add("building");site.dataset.stage="0";line.classList.add("running");all.forEach(e=>e.classList.add("sk"));
+ const head=$("#sh"),full=head.textContent;
+ const point=(el,label,click)=>{if(!el||!cur)return;const r=el.getBoundingClientRect(),s=site.getBoundingClientRect();const x=Math.min(r.left-s.left+r.width*.55,s.width-40),y=r.top-s.top+r.height*.5;
+  cur.style.transform=`translate(${x}px,${y}px)`;cur.querySelector("em").textContent=label;if(click){cur.classList.remove("click");void cur.offsetWidth;cur.classList.add("click")}};
+ const reveal=k=>all.filter(e=>Number(e.dataset.s)===k).forEach(e=>{e.classList.remove("sk");if(!reduce){e.classList.remove("pop");void e.offsetWidth;e.classList.add("pop")}});
+ const type=()=>{if(reduce){head.textContent=full;return}head.textContent="";head.classList.add("caret");let i=0;const step=Math.max(14,Math.floor((dur*.8)/Math.max(1,full.length)));
+  (function t(){head.textContent=full.slice(0,++i);if(i<full.length)setTimeout(t,step);else setTimeout(()=>head.classList.remove("caret"),300)})()};
+ const state=["wait","wait","wait","wait","wait"];renderStations(state);
+ point(site.querySelector(".site-nav"),A[0]);
+ let i=0;
+ (function next(){
+  if(i>0){state[i-1]="done";log(msgs[i-1]);site.dataset.stage=String(i);reveal(i);
+   if(i===1){paint.classList.remove("go");void paint.offsetWidth;paint.classList.add("go");point(head,A[1])}
+   if(i===2){type();point(site.querySelector(".site-band"),A[2])}
+   if(i===3){point($("#sx"),A[3])}
+   if(i===4){point($("#scta1"),A[4],true)}}
+  if(i>=5){renderStations(state);line.classList.remove("running");all.forEach(e=>e.classList.remove("sk"));head.textContent=full;
+   const post=document.querySelector(".hero .post");setTimeout(()=>{site.classList.remove("building");site.dataset.stage="5";badge.classList.add("on");if(post&&!reduce)post.classList.add("show");running=false;setTimeout(()=>{badge.classList.remove("on");post&&post.classList.remove("show")},reduce?0:4200)},reduce?0:450);return}
+  state[i]="active";renderStations(state);document.querySelectorAll(".station").forEach(s=>s.style.setProperty("--dur",dur+"ms"));
+  i++;setTimeout(next,dur)})();
+};
 
 applyStatic();showStep();
 setInterval(renderEta,30000);

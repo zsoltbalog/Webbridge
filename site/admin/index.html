@@ -37,6 +37,7 @@ input,select,textarea{background:var(--card);border:1px solid var(--line);border
 .empty{padding:28px;text-align:center;color:var(--mut)}
 dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);max-width:560px;width:calc(100% - 32px)}dialog::backdrop{background:#0006}
 .chips{display:flex;flex-wrap:wrap;gap:6px}.chips label{display:flex;gap:5px;align-items:center;background:var(--chip);border-radius:8px;padding:4px 8px;font-size:12px}.chips input{width:auto}
+.late{color:var(--warn);font-weight:700;font-size:12px}.lrow td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
 </style>
 </head>
 <body>
@@ -54,13 +55,15 @@ dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);co
 
 <script>
 const STAGES={lead:"Új érdeklődő",brief_sent:"Brief elküldve",brief_ok:"Brief jóváhagyva",sketch_paid:"Vázlatdíj fizetve",sketches:"Vázlatok kint",deposit_paid:"Előleg fizetve",building:"Készül",review:"Ügyfél nézi",live:"Élesítve",care:"Üzemeltetés",lost:"Elveszett"};
-const ITEMS={landing:"Egyoldalas weboldal",site:"Céges weboldal",shop:"Webshop",logo:"Logó",brand:"Brandbook",strategy:"Marketingstratégia",plan:"90 napos terv",setup:"Technikai beállítás",move:"Költöztetés",lang:"+1 nyelv",newpage:"Új aloldal",care:"Gondtalan üzemeltetés",mkt1:"Marketing Min.",mkt2:"Marketing Köz.",mkt3:"Marketing Max.",shopcare:"Webshop-üzemeltetés",email:"Céges e-mail",chat:"Weboldal-asszisztens",phone:"Virtuális recepciós",extra:"Extra csatorna"};
+const ITEMS={landing:"Egyoldalas weboldal",site:"Céges weboldal",shop:"Webshop",logo:"Logó",brand:"Brandbook",strategy:"Marketingstratégia",plan:"90 napos terv",setup:"Pro technikai csomag",move:"Költöztetés",lang:"+1 nyelv",newpage:"Új aloldal",care:"Gondtalan üzemeltetés",mkt1:"Marketing Min.",mkt2:"Marketing Köz.",mkt3:"Marketing Max.",shopcare:"Webshop-üzemeltetés",email:"Céges e-mail",chat:"Weboldal-asszisztens",phone:"Virtuális recepciós",extra:"Extra csatorna"};
 const $=s=>document.querySelector(s),app=$("#app");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const dt=s=>s?new Date(s).toLocaleString("hu-HU",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
 const ago=s=>{if(!s)return"";const m=Math.round((Date.now()-new Date(s))/6e4);return m<1?"most":m<60?m+" perce":m<1440?Math.round(m/60)+" órája":Math.round(m/1440)+" napja"};
 const money=(v,c)=>c==="EUR"?"€"+Number(v||0).toLocaleString("en-GB"):Number(v||0).toLocaleString("hu-HU")+" Ft";
 const stage=s=>`<span class="stage s-${s}">${esc(STAGES[s]||s||"–")}</span>`;
+const sla=x=>!x?"":x.stuck?`<span class="late" title="Határ: ${x.limit} óra">⏰ ${x.hours} órája</span>`:`<span class="mut sm">${x.hours} órája</span>`;
+const attrTxt=a=>{try{a=typeof a==="string"?JSON.parse(a||"{}"):a||{}}catch{a={}}return [a.source,a.utm_campaign,a.ref?("ajánló: "+a.ref):"",a.referrer&&!/^(https?:\/\/)?(www\.)?webbridge/.test(a.referrer)?a.referrer:"",a.landing].filter(Boolean).join(" · ")};
 function toast(t){const e=$("#toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",2600)}
 async function api(path,body){const r=await fetch("/api/admin/"+path,body?{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{});const j=await r.json().catch(()=>({error:"Hiba ("+r.status+")"}));if(!r.ok||j.ok===false)throw new Error(j.error||("Hiba "+r.status));return j}
 
@@ -73,17 +76,19 @@ window.addEventListener("hashchange",route);
 
 async function home(){
   const d=await api("overview");
-  $("#cfg").innerHTML=[["brevo","E-mail"],["stripe","Stripe"],["stripe_webhook","Webhook"],["anthropic","AI"]].map(([k,l])=>`<span class="dot ${d.config[k]?"on":"off"}" title="${d.config[k]?"Beállítva":"Hiányzik a kulcs"}">● ${l}</span>`).join("");
+  $("#cfg").innerHTML=[["brevo","E-mail"],["stripe","Stripe"],["stripe_webhook","Webhook"],["cron","Időzítő"],["review","Értékelés-link"],["anthropic","AI"]].map(([k,l])=>`<span class="dot ${d.config[k]?"on":"off"}" title="${d.config[k]?"Beállítva":"Hiányzik a kulcs"}">● ${l}</span>`).join("");
   const by=Object.fromEntries(d.stages.map(s=>[s.stage,s.n]));
   const open=Object.entries(by).filter(([k])=>!["live","care","lost"].includes(k)).reduce((a,[,n])=>a+n,0);
   const rev=d.revenue30.map(r=>money(r.total,r.currency)).join(" + ")||"0 Ft";
+  const late=d.todo.filter(p=>p.sla&&p.sla.stuck).length;
   app.innerHTML=`<div class="grid g4" style="margin-bottom:14px">
     <div class="card kpi"><small>Nyitott projektek</small><b>${open}</b></div>
-    <div class="card kpi"><small>Új érdeklődő</small><b>${by.lead||0}</b></div>
+    <div class="card kpi"><small>Elakadt</small><b style="${late?"color:var(--warn)":""}">${late}</b></div>
     <div class="card kpi"><small>Készül / ügyfél nézi</small><b>${(by.building||0)+(by.review||0)+(by.sketches||0)}</b></div>
     <div class="card kpi"><small>Bevétel (30 nap)</small><b>${rev}</b></div></div>
-  <div class="grid g2"><div class="card"><h2>Teendők</h2>${d.todo.length?`<table><tr><th>Projekt</th><th>Státusz</th><th>Következő lépés</th></tr>${d.todo.map(p=>`<tr class="click" data-c="${p.customer_id}"><td><b>${esc(p.title||p.email)}</b><div class="mut sm">${p.id}</div></td><td>${stage(p.stage)}</td><td>${esc(p.next_action||"–")}<div class="mut sm">${p.next_action_at?dt(p.next_action_at):""}</div></td></tr>`).join("")}</table>`:`<div class="empty">Nincs nyitott teendő.</div>`}</div>
-  <div class="card"><h2>Legutóbb történt</h2><ul class="tl">${d.events.map(e=>`<li class="k-${e.kind}"><time>${ago(e.at)}</time><div><b>${esc(e.title)}</b><div class="sm mut">${e.customer_id?`<a href="#c/${e.customer_id}">${esc(e.business||e.name||e.email||e.customer_id)}</a>`:""}</div></div></li>`).join("")||`<div class="empty">Még nincs esemény.</div>`}</ul></div></div>`;
+  <div class="grid g2"><div class="card"><h2>Teendők</h2>${d.todo.length?`<table><tr><th>Projekt</th><th>Státusz</th><th>Következő lépés</th></tr>${d.todo.map(p=>`<tr class="click${p.sla&&p.sla.stuck?" lrow":""}" data-c="${p.customer_id}"><td><b>${esc(p.title||p.email)}</b><div class="mut sm">${p.id}</div></td><td>${stage(p.stage)}<div>${sla(p.sla)}</div></td><td>${esc(p.next_action||"–")}<div class="mut sm">${p.next_action_at?dt(p.next_action_at):""}</div></td></tr>`).join("")}</table>`:`<div class="empty">Nincs nyitott teendő.</div>`}</div>
+  <div class="card"><h2>Legutóbb történt</h2><ul class="tl">${d.events.map(e=>`<li class="k-${e.kind}"><time>${ago(e.at)}</time><div><b>${esc(e.title)}</b><div class="sm mut">${e.customer_id?`<a href="#c/${e.customer_id}">${esc(e.business||e.name||e.email||e.customer_id)}</a>`:""}</div></div></li>`).join("")||`<div class="empty">Még nincs esemény.</div>`}</ul></div></div>
+  <div class="card" style="margin-top:14px"><h2>Honnan jönnek? <span class="mut sm">(utolsó 90 nap)</span></h2>${d.sources&&d.sources.length?`<table><tr><th>Forrás</th><th>Érdeklődő</th><th>Megnyert</th><th>Konverzió</th><th>Befizetve</th></tr>${d.sources.map(s=>`<tr><td><b>${esc(s.source)}</b></td><td>${s.leads}</td><td>${s.won}</td><td>${s.leads?Math.round(s.won/s.leads*100):0}%</td><td>${[s.paid_huf?money(s.paid_huf,"HUF"):"",s.paid_eur?money(s.paid_eur,"EUR"):""].filter(Boolean).join(" + ")||"–"}</td></tr>`).join("")}</table>`:`<div class="empty">Még nincs adat. Az új rendeléseknél a weboldal automatikusan rögzíti a forrást (Google, Meta, ajánlás, UTM-kampány).</div>`}</div>`;
   app.querySelectorAll("tr[data-c]").forEach(r=>r.onclick=()=>location.hash="c/"+r.dataset.c);
 }
 
@@ -91,7 +96,7 @@ async function list(qs){
   const q=qs.get("q")||"",st=qs.get("stage")||"";
   const d=await api(`customers?q=${encodeURIComponent(q)}&stage=${st}`);
   app.innerHTML=`<div class="toolbar"><input id="q" placeholder="Keresés: név, cég, e-mail, telefon, rendelésszám" value="${esc(q)}"><select id="st"><option value="">Minden státusz</option>${Object.entries(STAGES).map(([k,v])=>`<option value="${k}" ${k===st?"selected":""}>${v}</option>`).join("")}</select><span class="mut" style="align-self:center">${d.customers.length} ügyfél</span></div>
-  <div class="card" style="padding:4px 10px">${d.customers.length?`<table><tr><th>Ügyfél</th><th>Státusz</th><th>Érték</th><th>Fizetve</th><th>Következő lépés</th><th>Frissült</th></tr>${d.customers.map(c=>`<tr class="click" data-c="${c.id}"><td><b>${esc(c.business||c.name||c.email||c.phone)}</b><div class="mut sm">${esc([c.name,c.email,c.phone].filter(Boolean).join(" · "))}</div></td><td>${stage(c.stage||"lead")}</td><td>${c.amount?money(c.amount,c.currency):"–"}</td><td>${c.paid?money(c.paid,c.currency):"–"}</td><td class="sm">${esc(c.next_action||"")}</td><td class="mut sm">${ago(c.updated_at)}</td></tr>`).join("")}</table>`:`<div class="empty">Nincs találat.</div>`}</div>`;
+  <div class="card" style="padding:4px 10px">${d.customers.length?`<table><tr><th>Ügyfél</th><th>Státusz</th><th>Forrás</th><th>Érték</th><th>Fizetve</th><th>Következő lépés</th><th>Frissült</th></tr>${d.customers.map(c=>`<tr class="click" data-c="${c.id}"><td><b>${esc(c.business||c.name||c.email||c.phone)}</b><div class="mut sm">${esc([c.name,c.email,c.phone].filter(Boolean).join(" · "))}</div></td><td>${stage(c.stage||"lead")}<div>${["live","care","lost"].includes(c.stage)?"":sla(c.sla)}</div></td><td class="sm">${esc(c.lead_source||c.source||"")}</td><td>${c.amount?money(c.amount,c.currency):"–"}</td><td>${c.paid?money(c.paid,c.currency):"–"}</td><td class="sm">${esc(c.next_action||"")}</td><td class="mut sm">${ago(c.updated_at)}</td></tr>`).join("")}</table>`:`<div class="empty">Nincs találat.</div>`}</div>`;
   const go=()=>location.hash=`ugyfelek?q=${encodeURIComponent($("#q").value)}&stage=${$("#st").value}`;
   $("#q").onkeydown=e=>{if(e.key==="Enter")go()};$("#st").onchange=go;
   app.querySelectorAll("tr[data-c]").forEach(r=>r.onclick=()=>location.hash="c/"+r.dataset.c);
@@ -103,7 +108,7 @@ async function detail(id){
   <div class="grid g2">
    <div class="grid" style="align-content:start">
     <div class="card"><div class="row" style="justify-content:space-between"><div><h1>${esc(c.business||c.name||c.email||c.phone)}</h1><div class="mut">${esc([c.name,c.email,c.phone].filter(Boolean).join(" · "))}</div></div><button class="btn" id="edit">Szerkesztés</button></div>
-     <dl class="dl" style="margin-top:12px"><dt>Forrás</dt><dd>${esc(c.source||"")}</dd><dt>Nyelv</dt><dd>${c.lang==="en"?"Angol":"Magyar"}</dd><dt>Vevő</dt><dd>${c.buyer_type==="b2c"?"Magánszemély":"Cég"} ${esc(c.company||"")}</dd><dt>Adószám</dt><dd>${esc(c.vat_id||"–")}</dd><dt>Számlázási cím</dt><dd>${esc(c.billing_addr||"–")}</dd><dt>Ügyfél óta</dt><dd>${dt(c.created_at)}</dd><dt>Címkék</dt><dd>${esc(c.tags||"–")}</dd></dl></div>
+     <dl class="dl" style="margin-top:12px"><dt>Forrás</dt><dd>${esc(c.source||"")}${attrTxt(c.attribution)?`<div class="sm mut">${esc(attrTxt(c.attribution))}</div>`:""}</dd><dt>Nyelv</dt><dd>${c.lang==="en"?"Angol":"Magyar"}</dd><dt>Vevő</dt><dd>${c.buyer_type==="b2c"?"Magánszemély":"Cég"} ${esc(c.company||"")}</dd><dt>Adószám</dt><dd>${esc(c.vat_id||"–")}</dd><dt>Számlázási cím</dt><dd>${esc(c.billing_addr||"–")}</dd><dt>Ügyfél óta</dt><dd>${dt(c.created_at)}</dd><dt>Címkék</dt><dd>${esc(c.tags||"–")}</dd></dl></div>
     ${d.projects.map(p=>proj(p)).join("")||`<div class="card empty">Nincs projekt.</div>`}
     <div class="card"><h2>Jegyzet</h2><textarea id="note" placeholder="Pl. telefonon egyeztettünk: a logó maradjon, csak frissítsük."></textarea><div class="row" style="margin-top:8px"><button class="btn pri" id="addnote">Mentés az idővonalra</button></div></div>
    </div>
@@ -122,9 +127,9 @@ async function detail(id){
 
 function proj(p){
   const items=JSON.parse(p.items||"[]"),brief=JSON.parse(p.brief||"{}");
-  return `<div class="card proj"><div class="row" style="justify-content:space-between"><div><b>${esc(p.title||p.id)}</b> <span class="mut sm">${p.id}</span></div><select data-stage="${p.id}" style="width:auto">${Object.entries(STAGES).map(([k,v])=>`<option value="${k}" ${k===p.stage?"selected":""}>${v}</option>`).join("")}</select></div>
+  return `<div class="card proj"><div class="row" style="justify-content:space-between"><div><b>${esc(p.title||p.id)}</b> <span class="mut sm">${p.id}</span>${["live","care","lost"].includes(p.stage)?"":`<div>${sla(p.sla)}</div>`}</div><select data-stage="${p.id}" style="width:auto">${Object.entries(STAGES).map(([k,v])=>`<option value="${k}" ${k===p.stage?"selected":""}>${v}</option>`).join("")}</select></div>
   <div class="chips" style="margin:10px 0">${items.map(i=>`<span class="dot">${esc(ITEMS[i]||i)}</span>`).join("")}<button class="btn sm" data-items="${p.id}" data-cur='${JSON.stringify(items)}' style="padding:2px 8px">Tételek</button></div>
-  <dl class="dl sm"><dt>Érték (nettó)</dt><dd><b>${money(p.amount,p.currency)}</b></dd>${p.due_at?`<dt>Határidő</dt><dd>${dt(p.due_at)}</dd>`:""}<dt>Domain</dt><dd>${esc([p.domain_mode,p.domain_name].filter(Boolean).join(" · ")||"–")}</dd>${brief.what?`<dt>Mivel foglalkozik</dt><dd>${esc(brief.what)}</dd>`:""}${brief.who?`<dt>Vevők</dt><dd>${esc(brief.who)}</dd>`:""}${brief.tone?`<dt>Hangnem</dt><dd>${esc(brief.tone)}</dd>`:""}${brief.extra?`<dt>Egyéb</dt><dd>${esc(brief.extra)}</dd>`:""}</dl>
+  <dl class="dl sm"><dt>Érték (nettó)</dt><dd><b>${money(p.amount,p.currency)}</b></dd>${p.due_at?`<dt>Határidő</dt><dd>${dt(p.due_at)}</dd>`:""}<dt>Domain</dt><dd>${esc([p.domain_mode,p.domain_name].filter(Boolean).join(" · ")||"–")}</dd>${attrTxt(p.attribution)?`<dt>Forrás</dt><dd>${esc(attrTxt(p.attribution))}</dd>`:""}${brief.what?`<dt>Mivel foglalkozik</dt><dd>${esc(brief.what)}</dd>`:""}${brief.who?`<dt>Vevők</dt><dd>${esc(brief.who)}</dd>`:""}${brief.tone?`<dt>Hangnem</dt><dd>${esc(brief.tone)}</dd>`:""}${brief.extra?`<dt>Egyéb</dt><dd>${esc(brief.extra)}</dd>`:""}</dl>
   <div class="row" style="margin-top:10px"><input id="na-${p.id}" placeholder="Következő lépés" value="${esc(p.next_action||"")}" style="flex:2;min-width:180px"><input id="nat-${p.id}" type="datetime-local" value="${p.next_action_at?new Date(new Date(p.next_action_at)-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16):""}" style="flex:1;min-width:150px"><button class="btn" data-next="${p.id}">Mentés</button></div>
   <div class="row" style="margin-top:10px"><button class="btn" data-pay="${p.id}:sketch">Vázlatdíj-link</button><button class="btn" data-pay="${p.id}:deposit">Előleg-link (50%)</button><button class="btn" data-pay="${p.id}:final">Végösszeg-link</button><button class="btn pri" data-mail="${p.id}">E-mail írása</button></div></div>`;
 }

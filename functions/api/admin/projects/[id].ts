@@ -1,5 +1,5 @@
 // POST /api/admin/projects/:id – státusz, következő teendő, tételek módosítása
-import { Env, json, bad, clean, nowIso, logEvent, STAGES, STAGE_HU, itemById, priceOf } from "../../../../lib/core";
+import { Env, json, bad, clean, nowIso, logEvent, STAGES, itemById, priceOf, setStage } from "../../../../lib/core";
 
 export const onRequestPost: PagesFunction<Env> = async ({ params, request, env }) => {
   const id = String(params.id);
@@ -12,9 +12,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ params, request, env }
   const stage = clean(b.stage, 30);
   if (stage && stage !== p.stage) {
     if (!(STAGES as readonly string[]).includes(stage)) return bad("Ismeretlen státusz.");
-    stmts.push(env.DB.prepare("UPDATE projects SET stage=?1, updated_at=?2 WHERE id=?3").bind(stage, t, id));
-    if (stage === "brief_ok") stmts.push(env.DB.prepare("UPDATE projects SET due_at=?1 WHERE id=?2").bind(new Date(Date.now() + 864e5).toISOString(), id));
-    await logEvent(env, { customer_id: p.customer_id, project_id: id, kind: "stage", actor: "zsolt", title: `Státusz: ${STAGE_HU[p.stage] || p.stage} → ${STAGE_HU[stage]}` });
+    await setStage(env, p, stage, "zsolt");
   }
   if (typeof b.next_action === "string") {
     stmts.push(env.DB.prepare("UPDATE projects SET next_action=?1, next_action_at=?2, updated_at=?3 WHERE id=?4").bind(clean(b.next_action, 300) || null, clean(b.next_action_at, 40) || null, t, id));

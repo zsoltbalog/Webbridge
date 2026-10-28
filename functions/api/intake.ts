@@ -1,5 +1,5 @@
 // POST /api/intake – a weboldal űrlapjai (rendelés, visszahívás, chat-érdeklődő) ide küldenek.
-import { Env, json, bad, clean, isEmail, orderNo, nowIso, upsertCustomer, logEvent, priceOf, itemById, money, sketchAmount } from "../../lib/core";
+import { Env, json, bad, clean, isEmail, orderNo, nowIso, upsertCustomer, logEvent, priceOf, itemById, money, sketchAmount, cleanAttr, sourceLabel } from "../../lib/core";
 import { sendMail, layout, rows } from "../../lib/mail";
 
 type Body = Record<string, unknown>;
@@ -40,17 +40,20 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   };
   const id = orderNo();
   const t = nowIso();
+  const attr = cleanAttr(b.attr);
+  const src = sourceLabel(attr);
   await env.DB.prepare(
-    "INSERT INTO projects (id,customer_id,created_at,updated_at,title,stage,items,amount,currency,domain_mode,domain_name,brief,next_action,next_action_at) VALUES (?1,?2,?3,?3,?4,'lead',?5,?6,?7,?8,?9,?10,?11,?12)"
+    "INSERT INTO projects (id,customer_id,created_at,updated_at,stage_at,title,stage,items,amount,currency,domain_mode,domain_name,brief,next_action,next_action_at,attribution) VALUES (?1,?2,?3,?3,?3,?4,'lead',?5,?6,?7,?8,?9,?10,?11,?12,?13)"
   ).bind(id, cust.id, t, business || email, JSON.stringify(items), once, cur, clean(b.domain_mode, 10) || null, clean(b.domain_name, 200) || null,
-    JSON.stringify(brief), "Brief-összefoglaló küldése (1 órán belül)", new Date(Date.now() + 3600e3).toISOString()).run();
+    JSON.stringify(brief), "Brief-összefoglaló küldése (1 órán belül)", new Date(Date.now() + 3600e3).toISOString(), JSON.stringify({ ...attr, source: src })).run();
+  await env.DB.prepare("UPDATE customers SET attribution=?1 WHERE id=?2 AND (attribution IS NULL OR attribution='{}' OR attribution='')").bind(JSON.stringify({ ...attr, source: src }), cust.id).run();
 
   const itemNames = items.map((x) => itemById(x)![hu ? "hu" : "en"]).join(", ");
   await logEvent(env, {
     customer_id: cust.id, project_id: id, kind: "lead", actor: "customer",
     title: hu ? `Új rendelés: ${business || email}` : `New order: ${business || email}`,
     body: `${itemNames}\n${money(once, cur, lang)}${monthly ? ` + ${money(monthly, cur, lang)}/hó` : ""}`,
-    meta: { items, once, monthly, currency: cur },
+    meta: { items, once, monthly, currency: cur, source: src },
   });
 
   // Visszaigazolás az ügyfélnek
@@ -70,7 +73,7 @@ ${rows([["Business", business], ["Items", itemNames], ["One-off (net)", money(on
   // Belső értesítés
   await sendMail(env, {
     to: env.NOTIFY_TO, subject: `🟠 Új rendelés ${id} – ${business || email}`, template: "internal_new_order", customer_id: cust.id, project_id: id, replyTo: email,
-    html: layout("hu", `Új rendelés: ${business || email}`, rows([["Rendelés", id], ["E-mail", email], ["Tételek", itemNames], ["Egyszeri", money(once, cur)], ["Havi", monthly ? money(monthly, cur) : ""], ["Domain", `${clean(b.domain_mode, 10)} ${clean(b.domain_name, 200)}`], ["Mivel foglalkozik", brief.what], ["Vevők", brief.who], ["Hangnem", brief.tone], ["Egyéb", brief.extra]]),
+    html: layout("hu", `Új rendelés: ${business || email}`, rows([["Rendelés", id], ["E-mail", email], ["Tételek", itemNames], ["Egyszeri", money(once, cur)], ["Havi", monthly ? money(monthly, cur) : ""], ["Domain", `${clean(b.domain_mode, 10)} ${clean(b.domain_name, 200)}`], ["Forrás", src + (attr.utm_campaign ? ` · ${attr.utm_campaign}` : "")], ["Mivel foglalkozik", brief.what], ["Vevők", brief.who], ["Hangnem", brief.tone], ["Egyéb", brief.extra]]),
       { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${cust.id}` }),
   });
 
@@ -84,6 +87,7 @@ async function callback(env: Env, b: Body, lang: string) {
   if (b.consent !== true) return bad(hu ? "A hozzájárulás szükséges." : "Consent is required.");
   const name = clean(b.name, 200), slot = clean(b.slot, 100);
   const cust = await upsertCustomer(env, { name, phone, lang, source: "callback" });
+  await saveAttr(env, cust.id, b.attr);
   await logEvent(env, { customer_id: cust.id, kind: "call", actor: "customer", title: hu ? `Visszahívást kér: ${slot}` : `Callback requested: ${slot}`, body: `${name} ${phone}` });
   await env.DB.prepare("UPDATE customers SET tags=TRIM(tags||' callback') WHERE id=?1").bind(cust.id).run();
   await sendMail(env, {
@@ -98,10 +102,16 @@ async function chatLead(env: Env, b: Body, lang: string) {
   const transcript = clean(b.transcript, 8000);
   if (!isEmail(email)) return bad(lang === "hu" ? "Érvénytelen e-mail-cím." : "Invalid email.");
   const cust = await upsertCustomer(env, { email, name: clean(b.name, 200), lang, source: "chat" });
+  await saveAttr(env, cust.id, b.attr);
   await logEvent(env, { customer_id: cust.id, kind: "lead", actor: "customer", title: lang === "hu" ? "Érdeklődés a chatből" : "Lead from chat", body: transcript });
   await sendMail(env, {
     to: env.NOTIFY_TO, subject: `💬 Chat-érdeklődő: ${email}`, template: "internal_chat", customer_id: cust.id, replyTo: email,
     html: layout("hu", "Chat-érdeklődő", `<pre style="white-space:pre-wrap;font-family:inherit">${transcript.replace(/[<>&]/g, "")}</pre>`, { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${cust.id}` }),
   });
   return json({ ok: true });
+}
+
+async function saveAttr(env: Env, customerId: string, raw: unknown) {
+  const a = cleanAttr(raw);
+  await env.DB.prepare("UPDATE customers SET attribution=?1 WHERE id=?2 AND (attribution IS NULL OR attribution='{}' OR attribution='')").bind(JSON.stringify({ ...a, source: sourceLabel(a) }), customerId).run();
 }

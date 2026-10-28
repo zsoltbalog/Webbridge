@@ -8,6 +8,7 @@ SITE_URL = "https://webbridge-1zo.pages.dev"
 MAIL_FROM = "hello@webbridge.hu"
 MAIL_FROM_NAME = "Webbridge"
 NOTIFY_TO = "hello@webbridge.hu"
+# REVIEW_URL = "https://g.page/r/…/review"   # Google-értékelés link: ha megvan a Cégprofil, ide kerül
 
 [[d1_databases]]
 binding = "DB"

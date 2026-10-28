@@ -1,6 +1,6 @@
 // GET /api/admin/customers/:id – egy ügyfél teljes képe: adatok, projektek, idővonal, fizetések, levelek
 // POST /api/admin/customers/:id – adatok módosítása / jegyzet
-import { Env, json, bad, clean, nowIso, logEvent } from "../../../../lib/core";
+import { Env, json, bad, clean, nowIso, logEvent, stuckInfo } from "../../../../lib/core";
 
 export const onRequestGet: PagesFunction<Env> = async ({ params, env }) => {
   const id = String(params.id);
@@ -12,7 +12,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ params, env }) => {
     env.DB.prepare("SELECT id,at,project_id,kind,amount,currency,status FROM payments WHERE customer_id=?1 ORDER BY at DESC").bind(id).all(),
     env.DB.prepare("SELECT at,project_id,template,to_addr,subject,status,error FROM emails WHERE customer_id=?1 ORDER BY id DESC LIMIT 100").bind(id).all(),
   ]);
-  return json({ customer: c, projects: projects.results, events: events.results, payments: payments.results, emails: emails.results });
+  return json({ customer: c, projects: (projects.results as any[]).map((p) => ({ ...p, sla: stuckInfo(p.stage, p.stage_at || p.updated_at) })), events: events.results, payments: payments.results, emails: emails.results });
 };
 
 const FIELDS = ["name", "business", "email", "phone", "lang", "buyer_type", "company", "vat_id", "billing_addr", "currency", "tags"] as const;

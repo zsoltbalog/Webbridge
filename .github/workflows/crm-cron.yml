@@ -1,0 +1,19 @@
+# Óránkénti CRM-időzítő: emlékeztetők, értékeléskérés, reggeli összesítő.
+# Kell hozzá: GitHub repo secret CRON_SECRET (ugyanaz, mint a Cloudflare Pages CRON_SECRET titka).
+name: CRM cron
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch: {}
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Call /api/cron
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE: ${{ vars.SITE_URL || 'https://webbridge-1zo.pages.dev' }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then echo "CRON_SECRET nincs beállítva"; exit 0; fi
+          curl -fsS -X POST -H "x-cron-secret: $CRON_SECRET" "$SITE/api/cron"

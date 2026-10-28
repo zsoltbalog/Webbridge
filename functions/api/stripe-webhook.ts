@@ -1,5 +1,5 @@
 // POST /api/stripe-webhook – Stripe események: fizetés → CRM státusz + e-mail.
-import { Env, json, nowIso, logEvent, touch, money } from "../../lib/core";
+import { Env, json, nowIso, logEvent, touch, money, setStage, once } from "../../lib/core";
 import { verifyStripeSig } from "../../lib/stripe";
 import { sendMail, layout, rows } from "../../lib/mail";
 
@@ -26,7 +26,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     await env.DB.prepare("INSERT OR REPLACE INTO payments (id,at,customer_id,project_id,kind,amount,currency,status,raw) VALUES (?1,?2,?3,?4,?5,?6,?7,'paid',?8)")
       .bind(o.id, nowIso(), md.customer_id || null, md.project_id || null, kind, amount, cur, JSON.stringify({ payment_intent: o.payment_intent, invoice: o.invoice, email: o.customer_details?.email })).run();
     if (md.project_id && NEXT_STAGE[kind]) {
-      await env.DB.prepare("UPDATE projects SET stage=?1, updated_at=?2 WHERE id=?3").bind(NEXT_STAGE[kind], nowIso(), md.project_id).run();
+      const p = await env.DB.prepare("SELECT id, customer_id, stage FROM projects WHERE id=?1").bind(md.project_id).first<{ id: string; customer_id: string; stage: string }>();
+      if (p) await setStage(env, p, NEXT_STAGE[kind], "customer");
     }
     if (o.customer && md.customer_id) {
       await env.DB.prepare("UPDATE customers SET stripe_customer_id=COALESCE(stripe_customer_id,?1) WHERE id=?2").bind(o.customer, md.customer_id).run();
@@ -45,7 +46,40 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     const amount = Math.round((paid ? o.amount_paid : o.amount_due) / 100);
     await env.DB.prepare("INSERT OR REPLACE INTO payments (id,at,customer_id,project_id,kind,amount,currency,status,raw) VALUES (?1,?2,?3,NULL,?4,?5,?6,?7,?8)")
       .bind(o.id, nowIso(), cust?.id ?? null, o.subscription ? "subscription" : "other", amount, cur, paid ? "paid" : "failed", JSON.stringify({ number: o.number, url: o.hosted_invoice_url })).run();
-    if (cust) await logEvent(env, { customer_id: cust.id, kind: "payment", title: `${paid ? "Számla fizetve" : "Sikertelen fizetés"}: ${o.number || o.id} – ${money(amount, cur)}` });
+    if (cust) await logEvent(env, { customer_id: cust.id, kind: "payment", title: `${paid ? "Számla fizetve" : "Sikertelen fizetés"}: ${o.number || o.id} – ${money(amount, cur)}`, body: paid ? undefined : `${o.attempt_count || 1}. próbálkozás. A Stripe automatikusan újrapróbálja, és e-mailben kéri az ügyfelet a kártya frissítésére.` });
+    if (!paid) {
+      // Teendő a legutóbbi projekten + belső értesítés (csak az első sikertelen próbálkozásnál).
+      if (cust) {
+        await env.DB.prepare("UPDATE projects SET next_action=?1, next_action_at=?2, updated_at=?2 WHERE id=(SELECT id FROM projects WHERE customer_id=?3 ORDER BY created_at DESC LIMIT 1)")
+          .bind(`Sikertelen fizetés (${o.number || "előfizetés"}) – ha 3 napon belül sem rendeződik, hívd fel`, nowIso(), cust.id).run();
+      }
+      if ((o.attempt_count || 1) <= 1) {
+        await sendMail(env, {
+          to: env.NOTIFY_TO, subject: `⚠️ Sikertelen fizetés: ${money(amount, cur)} – ${o.customer_email || ""}`, template: "internal_payment_failed", customer_id: cust?.id,
+          html: layout("hu", "Sikertelen fizetés", rows([["Számla", o.number || o.id], ["Összeg", money(amount, cur)], ["Ügyfél", o.customer_email || ""], ["Próbálkozás", String(o.attempt_count || 1)], ["Következő próbálkozás", o.next_payment_attempt ? new Date(o.next_payment_attempt * 1000).toLocaleString("hu-HU") : "nincs"]]), cust ? { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${cust.id}` } : undefined),
+        });
+      }
+    }
+  } else if (evt.type === "checkout.session.expired") {
+    // Lejárt (ki nem fizetett) fizetési link: új link az ügyfélnek, egyszer, teendő nekünk.
+    const md = o.metadata || {};
+    const url: string | undefined = o.after_expiration?.recovery?.url;
+    const p = md.project_id ? await env.DB.prepare("SELECT p.id, p.customer_id, p.stage, p.title, c.email, c.name, c.lang FROM projects p JOIN customers c ON c.id=p.customer_id WHERE p.id=?1").bind(md.project_id).first<any>() : null;
+    if (p) {
+      const kind = md.kind || "other";
+      const paidAlready = await env.DB.prepare("SELECT 1 FROM payments WHERE project_id=?1 AND kind=?2 AND status='paid'").bind(p.id, kind).first();
+      await logEvent(env, { customer_id: p.customer_id, project_id: p.id, kind: "payment", title: `Lejárt fizetési link: ${kindHu(kind)}`, meta: { session: o.id, recovery: url } });
+      if (!paidAlready) {
+        await env.DB.prepare("UPDATE projects SET next_action=?1, next_action_at=?2 WHERE id=?3").bind(`Nem fizette ki: ${kindHu(kind)} – rákérdezni`, new Date(Date.now() + 2 * 864e5).toISOString(), p.id).run();
+        if (url && p.email && (await once(env, p.id, `expired-${kind}`))) {
+          const hu = p.lang !== "en";
+          const body = hu
+            ? `<p>Szia${p.name ? " " + p.name : ""}!</p><p>A korábban küldött fizetési link lejárt. Ha szeretnéd folytatni, itt egy új. Ha közben kérdésed van, vagy mást szeretnél, csak válaszolj erre a levélre.</p>`
+            : `<p>Hi${p.name ? " " + p.name : ""},</p><p>The payment link we sent earlier has expired. If you'd like to go ahead, here's a fresh one. Any questions or changes, just reply to this email.</p>`;
+          await sendMail(env, { to: p.email, subject: hu ? `Új fizetési link – ${p.id}` : `New payment link – ${p.id}`, html: layout(hu ? "hu" : "en", hu ? "Itt egy új link" : "Here's a fresh link", body, { label: hu ? "Folytatom" : "Continue", url }), template: "checkout_recovery", customer_id: p.customer_id, project_id: p.id });
+        }
+      }
+    }
   }
   return json({ ok: true });
 };

@@ -11,6 +11,8 @@ export interface Env {
   STRIPE_SECRET_KEY?: string;       // titok (restricted key)
   STRIPE_WEBHOOK_SECRET?: string;   // titok (whsec_…)
   ANTHROPIC_API_KEY?: string;       // titok (Pult AI, később)
+  CRON_SECRET?: string;             // titok: az óránkénti időzítő (/api/cron) kulcsa
+  REVIEW_URL?: string;              // Google-értékelés link (értékeléskérő levélhez)
 }
 
 export type Ctx = EventContext<Env, string, Record<string, unknown>>;
@@ -137,4 +139,48 @@ export async function upsertCustomer(env: Env, c: Record<string, string>) {
     "INSERT INTO customers (id,created_at,updated_at,name,business,email,phone,lang,buyer_type,company,vat_id,billing_addr,currency,source) VALUES (?1,?2,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13)"
   ).bind(id, t, c.name || null, c.business || null, email || null, c.phone || null, c.lang || "hu", c.buyer_type || null, c.company || null, c.vat_id || null, c.billing_addr || null, c.currency || "HUF", c.source || "form").run();
   return { id, isNew: true };
+}
+
+/** Csúszásjelző: ennyi óra után számít elakadtnak egy projekt az adott státuszban. */
+export const STUCK_HOURS: Record<string, number> = {
+  lead: 4, brief_sent: 48, brief_ok: 24, sketch_paid: 24, sketches: 72, deposit_paid: 24, building: 24, review: 72,
+};
+export function stuckInfo(stage: string, stageAt?: string | null) {
+  const lim = STUCK_HOURS[stage];
+  if (!lim || !stageAt) return null;
+  const h = (Date.now() - Date.parse(stageAt)) / 36e5;
+  return { hours: Math.round(h), limit: lim, stuck: h > lim };
+}
+
+/** Státuszváltás egy helyen: stage_at is frissül, az idővonalra is kerül. */
+export async function setStage(env: Env, p: { id: string; customer_id: string; stage: string }, stage: string, actor = "system") {
+  if (stage === p.stage) return;
+  const t = nowIso();
+  await env.DB.prepare("UPDATE projects SET stage=?1, stage_at=?2, updated_at=?2 WHERE id=?3").bind(stage, t, p.id).run();
+  if (stage === "brief_ok") await env.DB.prepare("UPDATE projects SET due_at=?1 WHERE id=?2").bind(new Date(Date.now() + 864e5).toISOString(), p.id).run();
+  await logEvent(env, { customer_id: p.customer_id, project_id: p.id, kind: "stage", actor, title: `Státusz: ${STAGE_HU[p.stage] || p.stage} → ${STAGE_HU[stage] || stage}` });
+}
+
+/** Egyszeri művelet-zár (emlékeztetők, összesítő): true, ha most először fut. */
+export async function once(env: Env, projectId: string, key: string) {
+  const r = await env.DB.prepare("INSERT OR IGNORE INTO reminders (project_id,key,at) VALUES (?1,?2,?3)").bind(projectId, key, nowIso()).run();
+  return !!r.meta.changes;
+}
+
+/** Lead-forrás tisztítása (a weboldal küldi: első érintés). */
+export function cleanAttr(v: unknown) {
+  const o = (v && typeof v === "object" ? v : {}) as Record<string, unknown>;
+  const keys = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "referrer", "gclid", "fbclid", "ref", "landing", "first_at"];
+  const r: Record<string, string> = {};
+  for (const k of keys) { const x = clean(o[k], 300); if (x) r[k] = x; }
+  return r;
+}
+/** Egy szavas forráscímke a riporthoz. */
+export function sourceLabel(a: Record<string, string>) {
+  if (a.ref) return "ajánlás";
+  if (a.gclid || /google/i.test(a.utm_source || "") && /cpc|ppc|paid/i.test(a.utm_medium || "")) return "google ads";
+  if (a.fbclid || /facebook|instagram|meta|fb|ig/i.test(a.utm_source || "")) return "meta";
+  if (a.utm_source) return a.utm_source.toLowerCase();
+  if (a.referrer) { try { const h = new URL(a.referrer).hostname.replace(/^www\./, ""); if (/google\./.test(h)) return "google organikus"; if (/bing\.|duckduckgo/.test(h)) return "kereső"; return h; } catch { /* */ } }
+  return "közvetlen";
 }

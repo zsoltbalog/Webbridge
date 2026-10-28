@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS customers (
   currency      TEXT DEFAULT 'HUF',
   source        TEXT,                          -- form | callback | chat | phone | email | manual
   stripe_customer_id TEXT,
-  tags          TEXT DEFAULT ''
+  tags          TEXT DEFAULT '',
+  attribution   TEXT DEFAULT '{}'              -- első érintés (JSON)
 );
 CREATE UNIQUE INDEX IF NOT EXISTS customers_email ON customers(email) WHERE email IS NOT NULL AND email <> '';
 CREATE INDEX IF NOT EXISTS customers_updated ON customers(updated_at DESC);
@@ -39,7 +40,9 @@ CREATE TABLE IF NOT EXISTS projects (
   brief         TEXT DEFAULT '{}',             -- JSON: a brief mezői
   due_at        TEXT,                          -- 24 órás határidő
   next_action   TEXT,                          -- mi a következő lépés (belső)
-  next_action_at TEXT
+  next_action_at TEXT,
+  stage_at      TEXT,                          -- mikor került az aktuális státuszba (csúszásjelző)
+  attribution   TEXT DEFAULT '{}'              -- JSON: utm_*, referrer, gclid, fbclid, ref, landing
 );
 CREATE INDEX IF NOT EXISTS projects_customer ON projects(customer_id);
 CREATE INDEX IF NOT EXISTS projects_stage ON projects(stage, updated_at DESC);
@@ -90,4 +93,11 @@ CREATE TABLE IF NOT EXISTS stripe_events (
   id            TEXT PRIMARY KEY,              -- evt_… (idempotencia)
   at            TEXT NOT NULL,
   type          TEXT
+);
+
+CREATE TABLE IF NOT EXISTS reminders (
+  project_id TEXT NOT NULL,                    -- projekt, vagy '_' a napi összesítőnél
+  key        TEXT NOT NULL,
+  at         TEXT NOT NULL,
+  PRIMARY KEY (project_id, key)
 );

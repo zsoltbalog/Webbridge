@@ -49,6 +49,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ params, request, env }
     customer_creation: p.stripe_customer_id ? undefined : "always",
     invoice_creation: { enabled: true, invoice_data: { description: `${label} – ${id}`, footer: "Tactical Edge Systems OÜ · Narva mnt 5, 10117 Tallinn · EE103014676" } },
     tax_id_collection: { enabled: true },
+    after_expiration: { recovery: { enabled: true, allow_promotion_codes: false } },
     billing_address_collection: "required",
     locale: hu ? "hu" : "en",
     success_url: `${env.SITE_URL}/?paid=${kind}&order=${id}`,

@@ -197,6 +197,8 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:co
 
 /* bundles */
 .bundles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.promise{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.promise>div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:grid;gap:8px;align-content:start}.promise .pi{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--sunk);font-size:19px}.promise h3{font-size:18px}.promise p{color:var(--muted);font-size:15px;line-height:1.55}.promise .fine{font-size:13px}
+@media (max-width:860px){.promise{grid-template-columns:1fr}}
 @media (max-width:900px){.bundles{grid-template-columns:1fr}}
 .bundle{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:grid;gap:14px;align-content:start}
 .bundle.hot{border:2px solid var(--ink);position:relative}
@@ -1130,6 +1132,20 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
   </div>
 </section>
 
+<section id="promise" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow" data-t="g-e">Ígéretünk</span>
+      <h2 data-t="g-h">Kockázat nélkül, és minden a tiéd.</h2>
+    </div>
+    <div class="promise">
+      <div><span class="pi" aria-hidden="true">↺</span><h3 data-t="g1h">Vázlat-garancia</h3><p data-t="g1p">Ha a brief jóváhagyása után 24 órán belül nem kapod meg a 3 vázlatirányt, vagy egyik sem tetszik, a vázlatdíjat visszaadjuk. 200 000 Ft alatt vázlatdíj sincs.</p></div>
+      <div><span class="pi" aria-hidden="true">⚑</span><h3 data-t="g2h">Minden a tiéd</h3><p data-t="g2p">A domain a te nevedre szól. A teljes kifizetés után a logó, az arculat, a szövegek és a weboldal fájljai is a tieid, és bármikor magaddal viheted őket.</p></div>
+      <div><span class="pi" aria-hidden="true">✓</span><h3 data-t="g3h">Kötöttség nélkül</h3><p data-t="g3p">A havidíjas szolgáltatások havonta, 30 napos felmondással lemondhatók, büntetés nélkül. Lemondáskor díjmentesen átadjuk a teljes mentést és minden hozzáférést.</p></div>
+    </div>
+  </div>
+</section>
+
 <section id="order" style="padding-top:0">
   <div class="wrap">
     <div class="sec-head">
@@ -1270,7 +1286,7 @@ try:"Próbáld ki: a vállalkozásod neve",ind:"Iparág",run:"Mutasd, mit kapok"
 "menu-e":"Étlap, fix árakkal","menu-h":"Válaszd ki, mit készítsünk.","menu-l":"Pipáld be, amire szükséged van, vagy <a href=\"#guide\">kérd a tanácsadónkat</a>. Ha a választásod lefed egy csomagot, a kedvezményes csomagárat automatikusan alkalmazzuk.",
 ticket:"Rendelési lap",once:"Egyszeri díj",monthly:"Havi díj",tcta:"Tovább a kérdőívhez",fineB2c:"Végső árak: cégünk korlátozott ÁFA-alany, ÁFÁ-t nem számít fel. A vázlatdíjat beszámítjuk. A fájlokat és a felhasználási jogot a teljes kifizetéskor adjuk át.",fine:"Nettó árak. EU-s céges vevőnek fordított adózással számlázunk. A vázlatdíjat beszámítjuk. A fájlokat és a felhasználási jogot a teljes kifizetéskor adjuk át.",pay:["Fizetés 3 lépésben","Vázlat, most","Választás, 50%","Átadás, 50%","Havidíj az élesítéstől"],hostSelf:"Tárhely és domain: saját, közvetlenül a szolgáltatónak fizeted. Vagy válaszd a Gondtalan üzemeltetést.",
 empty:"Még üres. Pipálj be egy tételt.",bundleApplied:"Csomagár: ",save:"Megtakarítás",
-"b-e":"Csomagok","b-h":"Vagy vidd egyben, olcsóbban.","b-logo":"Nincs még logód? Bármelyik csomaghoz hozzáadhatod a Logótervezést 59 900 Ft-ért, és a brandbook már az új logóra épül.",pick:"Ezt kérem",instead:"tételenként",popular:"Legnépszerűbb",perMonth:"/hó",
+"b-e":"Csomagok","b-h":"Vagy vidd egyben, olcsóbban.","g-e":"Ígéretünk","g-h":"Kockázat nélkül, és minden a tiéd.","g1h":"Vázlat-garancia","g1p":"Ha a brief jóváhagyása után 24 órán belül nem kapod meg a 3 vázlatirányt, vagy egyik sem tetszik, a vázlatdíjat visszaadjuk. 200 000 Ft alatt vázlatdíj sincs.","g2h":"Minden a tiéd","g2p":"A domain a te nevedre szól. A teljes kifizetés után a logó, az arculat, a szövegek és a weboldal fájljai is a tieid, és bármikor magaddal viheted őket.","g3h":"Kötöttség nélkül","g3p":"A havidíjas szolgáltatások havonta, 30 napos felmondással lemondhatók, büntetés nélkül. Lemondáskor díjmentesen átadjuk a teljes mentést és minden hozzáférést.","b-logo":"Nincs még logód? Bármelyik csomaghoz hozzáadhatod a Logótervezést 59 900 Ft-ért, és a brandbook már az új logóra épül.",pick:"Ezt kérem",instead:"tételenként",popular:"Legnépszerűbb",perMonth:"/hó",
 "o-e":"A kérdőív","o-h":"10 perc, és indulunk.","o-l":"Ennyit kérdezünk. Töltsd fel a logód, és nézd meg, ahogy kiolvassuk belőle a márkaszíneidet.",
 "f-name":"Vállalkozás neve","f-what":"Mivel foglalkozol, egy mondatban?","f-what-ph":"Pl. friss indiai ebédmenü irodaházak dolgozóinak","f-who":"Kik a vevőid?","f-who-ph":"Pl. 25–45 éves irodai dolgozók a XIII. kerületben",
 "f-logo":"Logó és anyagok","f-drop":"Húzd ide a fájlokat, vagy kattints","f-drop-s":"Logó (PNG, SVG, JPG), étlap, árlista, fotók, PDF","f-extract":"Márkaszínek kiolvasva a logóból, és rákerültek a fenti előnézetre.",
@@ -1298,7 +1314,7 @@ try:"Try it: your business name",ind:"Industry",run:"Show me mine",
 "menu-e":"The menu, fixed prices","menu-h":"Pick what we build.","menu-l":"Tick what you need, or <a href=\"#guide\">use our advisor</a>. If your selection covers a bundle, the discounted bundle price applies automatically.",
 ticket:"Work order",once:"One-off",monthly:"Monthly",tcta:"Continue to questionnaire",fineB2c:"Final prices: we are a limited VAT liable person and charge no VAT. The sketch fee is credited. Files and usage rights are handed over on full payment.",fine:"Prices excl. VAT. EU business customers are invoiced under reverse charge. The sketch fee is credited. Files and usage rights are handed over on full payment.",pay:["Pay in 3 steps","Sketch, now","Choice, 50%","Handover, 50%","Monthly from go-live"],hostSelf:"Hosting and domain: your own, paid directly to the providers. Or choose Worry-free hosting.",
 empty:"Empty so far. Tick an item.",bundleApplied:"Bundle price: ",save:"You save",
-"b-e":"Bundles","b-h":"Or take it all, for less.","b-logo":"No logo yet? Add Logo design to any bundle for {logo}, and the brandbook is built on the new logo.",pick:"Choose this",instead:"item by item",popular:"Most popular",perMonth:"/mo",
+"b-e":"Bundles","b-h":"Or take it all, for less.","g-e":"Our promise","g-h":"No risk, and it's all yours.","g1h":"Sketch guarantee","g1p":"If you don't get your 3 sketch directions within 24 hours of approving the brief, or you don't like any of them, we refund the sketch fee. Under €520 there is no sketch fee at all.","g2h":"It's all yours","g2p":"The domain is registered in your name. Once paid in full, the logo, brand, copy and website files are yours too, and you can take them anywhere.","g3h":"No lock-in","g3p":"Monthly services can be cancelled any month with 30 days' notice, no penalty. When you leave, we hand over a full backup and every login, free of charge.","b-logo":"No logo yet? Add Logo design to any bundle for {logo}, and the brandbook is built on the new logo.",pick:"Choose this",instead:"item by item",popular:"Most popular",perMonth:"/mo",
 "o-e":"The questionnaire","o-h":"10 minutes, and we start.","o-l":"This is all we ask. Upload your logo and watch us read your brand colours straight out of it.",
 "f-name":"Business name","f-what":"What do you do, in one sentence?","f-what-ph":"E.g. fresh Indian lunch menus for office workers","f-who":"Who are your customers?","f-who-ph":"E.g. office workers aged 25–45 in District XIII",
 "f-logo":"Logo and files","f-drop":"Drop files here, or click","f-drop-s":"Logo (PNG, SVG, JPG), menu, price list, photos, PDF","f-extract":"Brand colours read from your logo and applied to the preview above.",
@@ -1574,7 +1590,10 @@ $("#f-name").addEventListener("input",()=>{$("#biz").value=$("#f-name").value;re
 function showStep(){["p1","p2","p3"].forEach((id,i)=>{$("#"+id).hidden=i+1!==step});document.querySelectorAll("#prog i").forEach((el,i)=>el.classList.toggle("on",i<step));$("#back").style.visibility=step>1?"visible":"hidden";$("#next").textContent=step===3?T[lang].submit:T[lang].next}
 $("#back").onclick=()=>{if(step>1){step--;showStep()}};
 const LIVE=/(^|\.)webbridge\.(hu|studio)$|\.pages\.dev$/.test(location.hostname);
-async function postIntake(data){const r=await fetch("/api/intake",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...data,lang,website:""})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||(lang==="hu"?"Nem sikerült elküldeni. Próbáld újra, vagy írj a hello@webbridge.hu címre.":"Could not send. Please try again or email hello@webbridge.hu."));return j}
+/* lead-forrás: csak az aktuális látogatásból (URL-paraméterek + hivatkozó oldal), tárolás nélkül */
+const ATTR=(()=>{const q=new URLSearchParams(location.search),a={};["utm_source","utm_medium","utm_campaign","utm_term","utm_content","gclid","fbclid","ref"].forEach(k=>{const v=q.get(k);if(v)a[k]=v.slice(0,200)});
+ try{if(document.referrer&&new URL(document.referrer).hostname!==location.hostname)a.referrer=document.referrer.slice(0,300)}catch(e){}a.landing=location.pathname+(location.hash||"");a.first_at=new Date().toISOString();return a})();
+async function postIntake(data){const r=await fetch("/api/intake",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...data,lang,website:"",attr:ATTR})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||(lang==="hu"?"Nem sikerült elküldeni. Próbáld újra, vagy írj a hello@webbridge.hu címre.":"Could not send. Please try again or email hello@webbridge.hu."));return j}
 $("#form").addEventListener("submit",async e=>{e.preventDefault();if(step<3){step++;showStep();return}
   if(!$("#f-terms").checked){$("#f-err").hidden=false;return}$("#f-err").hidden=true;
   let code="WB-"+new Date().toISOString().slice(2,10).replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
@@ -1995,7 +2014,7 @@ aszf:{t:"Általános Szerződési Feltételek",h:`
 <p>a) <b>Vázlatdíj</b> a szerződés létrejöttekor: 200 000 Ft alatti egyszeri végösszegnél nincs vázlatdíj, felette 19 900 Ft. Az Ügyfél 3 vázlatirányt kap. A vázlatdíjat a végösszegbe beszámítjuk.</p>
 <p>b) <b>Választáskor</b> az egyszeri végösszeg 50%-a, csökkentve a vázlatdíjjal.</p>
 <p>c) <b>Átadáskor</b> a fennmaradó 50%, a végleges változat jóváhagyásakor.</p>
-<p>5.3. Ha az Ügyfélnek egyik vázlat sem felel meg, újabb vázlatdíj ellenében új irányokat kérhet, vagy a szerződéstől további fizetési kötelezettség nélkül elállhat. A megfizetett vázlatdíj ilyenkor nem jár vissza, kivéve a 10. pont szerinti fogyasztói elállást.</p>
+<p>5.3. <b>Vázlat-garancia.</b> Ha az Ügyfél a Brief jóváhagyásától (vázlatdíjas rendelésnél a vázlatdíj megfizetésétől) számított 24 órán belül nem kapja meg a 3 vázlatirányt, vagy egyik vázlat sem felel meg neki, választhat: újabb vázlatdíj ellenében új irányokat kér, vagy a szerződéstől további fizetési kötelezettség nélkül eláll. Elállás esetén a Szolgáltató a megfizetett vázlatdíjat 14 napon belül, az eredeti fizetési módon visszatéríti.</p>
 <p>5.4. Az előfizetések díját havonta előre, kártyás terheléssel fizeti az Ügyfél, az élesítés napjától.</p>
 <p>5.5. A számlákat elektronikusan állítjuk ki. Késedelmes fizetés esetén a Szolgáltató a teljesítést felfüggesztheti, és a jogszabály szerinti késedelmi kamatot számíthatja fel.</p>
 <h4>6. Módosítások és jóváhagyás</h4>
@@ -2012,6 +2031,7 @@ aszf:{t:"Általános Szerződési Feltételek",h:`
 <p>7.3. Harmadik féltől származó elemekre (betűtípusok, fotók, nyílt forráskódú komponensek) azok saját licencfeltételei vonatkoznak.</p>
 <p>7.4. A nem választott vázlatirányok a Szolgáltatónál maradnak.</p>
 <p>7.5. A Szolgáltató az elkészült munkát referenciaként bemutathatja, kivéve, ha az Ügyfél ezt írásban megtiltja.</p>
+<p>7.6. <b>Kilépés.</b> Bármely előfizetés megszűnésekor a Szolgáltató díjmentesen átadja az Ügyfélnek a weboldal teljes mentését és forrásfájljait, a logó és az arculati elemek fájljait, valamint az Ügyfél nevére szóló domain és a fiókok hozzáféréseit. Az átadást a Szolgáltató semmilyen további díjhoz nem kötheti, kivéve a már esedékes, ki nem fizetett díjakat.</p>
 <h4>8. Az Ügyfél kötelezettségei</h4>
 <p>8.1. Az Ügyfél szavatolja, hogy az általa átadott anyagok (logó, fotók, szövegek, adatok) felhasználására jogosult, és azok nem sértik harmadik személy jogait.</p>
 <p>8.2. Az Ügyfél felel a megadott tényadatok (árak, nyitvatartás, elérhetőségek, jogi információk) helyességéért, és jóváhagyás előtt köteles azokat ellenőrizni.</p>
@@ -2136,7 +2156,7 @@ aszf:{t:"Terms of Service",h:`
 <p>a) <b>Sketch fee</b> on formation of the contract: none for one-off totals under €520, otherwise €49. The Customer receives 3 sketch directions. The sketch fee is credited to the total.</p>
 <p>b) <b>On choice</b>: 50% of the one-off total, less the sketch fee.</p>
 <p>c) <b>On handover</b>: the remaining 50%, on approval of the final version.</p>
-<p>5.3. If none of the sketches suit, the Customer may request new directions for another sketch fee, or withdraw without further payment obligation. The sketch fee paid is then not refunded, except in a consumer withdrawal under section 10.</p>
+<p>5.3. <b>Sketch guarantee.</b> If the Customer does not receive the 3 sketch directions within 24 hours of approving the Brief (or, where a sketch fee applies, of paying it), or none of the sketches suit, the Customer may either request new directions for another sketch fee, or withdraw without further payment obligation. On withdrawal the Provider refunds the sketch fee paid within 14 days, to the original payment method.</p>
 <p>5.4. Subscription fees are paid monthly in advance by card, from the go-live date.</p>
 <p>5.5. Invoices are issued electronically. On late payment the Provider may suspend performance and charge statutory late interest.</p>
 <h4>6. Changes and approval</h4>
@@ -2153,6 +2173,7 @@ aszf:{t:"Terms of Service",h:`
 <p>7.3. Third-party elements (fonts, photos, open-source components) remain subject to their own licences.</p>
 <p>7.4. Directions not chosen remain with the Provider.</p>
 <p>7.5. The Provider may show the finished work as a reference unless the Customer forbids this in writing.</p>
+<p>7.6. <b>Exit.</b> When any subscription ends, the Provider hands over to the Customer, free of charge, a full backup and the source files of the website, the logo and brand files, and access to the domain registered in the Customer's name and to all accounts. The handover may not be made subject to any further fee, except fees already due and unpaid.</p>
 <h4>8. Customer obligations</h4>
 <p>8.1. The Customer warrants that they are entitled to use the materials they provide (logo, photos, copy, data) and that these do not infringe third-party rights.</p>
 <p>8.2. The Customer is responsible for the accuracy of the facts they provide (prices, opening hours, contact details, legal information) and must check them before approval.</p>

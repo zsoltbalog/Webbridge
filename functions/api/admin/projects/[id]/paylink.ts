@@ -50,6 +50,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ params, request, env }
     invoice_creation: { enabled: true, invoice_data: { description: `${label} – ${id}`, footer: "Tactical Edge Systems OÜ · Narva mnt 5, 10117 Tallinn · EE103014676" } },
     tax_id_collection: { enabled: true },
     after_expiration: { recovery: { enabled: true, allow_promotion_codes: false } },
+    // A fiókon alapból be van kapcsolva a Managed Payments (Stripe mint értékesítő); mi magunk számlázunk, ezért kikapcsoljuk.
+    managed_payments: { enabled: false },
     billing_address_collection: "required",
     locale: hu ? "hu" : "en",
     success_url: `${env.SITE_URL}/?paid=${kind}&order=${id}`,

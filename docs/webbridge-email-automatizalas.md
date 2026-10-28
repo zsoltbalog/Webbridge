@@ -3,7 +3,7 @@
 2026-10-28 · Cél: az összes megerősítő és ügyfél-e-mailt a rendszer küldi, Zsolt nem levelez kézzel.
 
 ## Felépítés
-- **Kimenő levelek:** tranzakciós levelezőszolgáltatáson keresztül, nem Gmailből. Jelölt: Brevo (francia, EU-s adatkezelés) vagy Amazon SES (eu-central-1). Feladó: `hello@webbridge.hu` (EN: `hello@webbridge.studio`), a technikai küldés a `mail.webbridge.hu` aldomainről megy, így nem ütközik a Google Workspace-szel.
+- **Kimenő levelek:** tranzakciós levelezőszolgáltatáson keresztül, nem Gmailből. Választott szolgáltató: **Brevo** (francia, EU-s adatkezelés), fiók a Tactical Edge Systems OÜ nevére (2026-10-28). A webbridge.hu domain hitelesítése a Brevóban folyamatban; DNS-rekordok a Tárhely.Eu-n felvéve: brevo-code TXT, DKIM CNAME `brevo1/brevo2._domainkey`, DMARC `p=none; rua=mailto:rua@dmarc.brevo.com`, nyomkövető aldomain `em` (`em`, `r.em`, `img.em` CNAME). Feladó: `hello@webbridge.hu` (EN: `hello@webbridge.studio`), a technikai küldés a `mail.webbridge.hu` aldomainről megy, így nem ütközik a Google Workspace-szel.
 - **DNS:** SPF, DKIM és DMARC a küldő aldomainre. A gyökérdomain MX-e marad a Google-nél.
 - **Bejövő válaszok:** a `hello@` címre jönnek (Gmail), és egy továbbítási szabály vagy inbound webhook a rendszerbe is beküldi őket.
   - A rendszer elolvassa a választ: frissíti a briefet, vagy kérést nyit a Pultban.

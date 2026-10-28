@@ -1,6 +1,6 @@
 // POST /api/admin/projects/:id/paylink  {kind: "sketch"|"deposit"|"final", send?: boolean}
 // Stripe Checkout fizetési linket készít, és (alapból) e-mailben elküldi az ügyfélnek.
-import { Env, json, bad, clean, logEvent, touch, money, priceOf, sketchFor } from "../../../../../lib/core";
+import { Env, json, bad, clean, logEvent, touch, money, priceOf, sketchFor, sketchAmount } from "../../../../../lib/core";
 import { stripe } from "../../../../../lib/stripe";
 import { sendMail, layout, rows } from "../../../../../lib/mail";
 
@@ -20,22 +20,23 @@ export const onRequestPost: PagesFunction<Env> = async ({ params, request, env }
   const items: string[] = JSON.parse(p.items || "[]");
   const { once } = priceOf(items, cur);
   const sketch = sketchFor(priceOf(items, "HUF").once);
-  const sketchAmt = sketch === "sketch_l" ? (cur === "EUR" ? 79 : 29900) : (cur === "EUR" ? 25 : 9900);
+  const sketchAmt = sketchAmount(priceOf(items, "HUF").once, cur);
 
   let lineItems: Record<string, unknown>[];
   let amount: number;
   let label: string;
   if (kind === "sketch") {
+    if (!sketch) return bad(hu ? "Ennél a rendelésnél nincs vázlatdíj (200 000 Ft alatt)." : "No sketch fee for this order.");
     const prod = await stripe(env, "GET", `/products/wb_${sketch}`);
     lineItems = [{ price: prod.default_price, quantity: 1 }];
     amount = sketchAmt;
     label = hu ? "Vázlatdíj" : "Sketch fee";
   } else {
     // Előleg: a végösszeg 50%-a; végösszeg: a maradék (a befizetett vázlatdíj és előleg levonásával).
-    const paid = await env.DB.prepare("SELECT COALESCE(SUM(amount),0) s FROM payments WHERE project_id=?1 AND status='paid' AND kind IN ('sketch','deposit')").bind(id).first<{ s: number }>();
-    amount = kind === "deposit" ? Math.round(once / 2) - sketchAmt : once - (paid?.s ?? 0);
+    const paid = await env.DB.prepare("SELECT COALESCE(SUM(amount),0) s, COALESCE(SUM(CASE WHEN kind='sketch' THEN amount ELSE 0 END),0) sk FROM payments WHERE project_id=?1 AND status='paid' AND kind IN ('sketch','deposit')").bind(id).first<{ s: number; sk: number }>();
+    amount = kind === "deposit" ? Math.round(once / 2) - (paid?.sk ?? 0) : once - (paid?.s ?? 0);
     if (amount <= 0) return bad("Nincs fizetendő összeg.");
-    label = kind === "deposit" ? (hu ? "Előleg (50%, a vázlatdíj levonva)" : "Deposit (50%, sketch fee deducted)") : (hu ? "Végösszeg" : "Final payment");
+    label = kind === "deposit" ? (paid?.sk ? (hu ? "Előleg (50%, a vázlatdíj levonva)" : "Deposit (50%, sketch fee deducted)") : (hu ? "Előleg (50%)" : "Deposit (50%)")) : (hu ? "Végösszeg" : "Final payment");
     lineItems = [{ quantity: 1, price_data: { currency: cur.toLowerCase(), unit_amount: amount * 100, tax_behavior: "exclusive", product_data: { name: `${label} – ${p.title || id}` } } }];
   }
 

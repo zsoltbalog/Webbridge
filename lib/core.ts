@@ -54,22 +54,22 @@ export interface Item { id: string; huf: number; eur: number; monthly?: boolean;
 export const CATALOG: Item[] = [
   { id: "landing", huf: 99900, eur: 259, hu: "Egyoldalas weboldal", en: "One-page website" },
   { id: "site", huf: 199900, eur: 519, hu: "Céges weboldal", en: "Business website" },
-  { id: "shop", huf: 359900, eur: 919, hu: "Webshop indulócsomag", en: "Webshop starter" },
+  { id: "shop", huf: 399900, eur: 1039, hu: "Webshop indulócsomag", en: "Webshop starter" },
   { id: "logo", huf: 59900, eur: 159, hu: "Logótervezés", en: "Logo design" },
-  { id: "brand", huf: 119900, eur: 299, hu: "Brandbook", en: "Brandbook" },
-  { id: "strategy", huf: 139900, eur: 359, hu: "Marketingstratégia", en: "Marketing strategy" },
-  { id: "plan", huf: 99900, eur: 259, hu: "90 napos marketingterv", en: "90-day marketing plan" },
-  { id: "setup", huf: 79900, eur: 199, hu: "Technikai beállítás", en: "Technical setup" },
+  { id: "brand", huf: 89900, eur: 229, hu: "Brandbook", en: "Brandbook" },
+  { id: "strategy", huf: 129900, eur: 339, hu: "Marketingstratégia", en: "Marketing strategy" },
+  { id: "plan", huf: 59900, eur: 159, hu: "90 napos marketingterv", en: "90-day marketing plan" },
+  { id: "setup", huf: 39900, eur: 99, hu: "Pro technikai csomag", en: "Pro technical package" },
   { id: "move", huf: 29900, eur: 75, hu: "Költöztetés", en: "Migration" },
-  { id: "lang", huf: 39900, eur: 99, hu: "+1 nyelv", en: "+1 language" },
-  { id: "newpage", huf: 29900, eur: 75, hu: "Új aloldal", en: "New page" },
+  { id: "lang", huf: 49900, eur: 129, hu: "+1 nyelv", en: "+1 language" },
+  { id: "newpage", huf: 19900, eur: 49, hu: "Új aloldal", en: "New page" },
   { id: "care", huf: 9900, eur: 25, monthly: true, hu: "Gondtalan üzemeltetés", en: "Carefree hosting" },
   { id: "mkt1", huf: 39900, eur: 99, monthly: true, hu: "Marketing · Minimális", en: "Marketing · Minimal" },
   { id: "mkt2", huf: 79900, eur: 199, monthly: true, hu: "Marketing · Közepes", en: "Marketing · Medium" },
   { id: "mkt3", huf: 149900, eur: 379, monthly: true, hu: "Marketing · Maximális", en: "Marketing · Maximum" },
   { id: "shopcare", huf: 29900, eur: 79, monthly: true, hu: "Webshop-üzemeltetés", en: "Webshop care" },
-  { id: "email", huf: 2900, eur: 8, monthly: true, hu: "Céges e-mail", en: "Business email" },
-  { id: "chat", huf: 14900, eur: 39, monthly: true, hu: "Virtuális asszisztens a weboldalon", en: "Website assistant" },
+  { id: "email", huf: 3490, eur: 9, monthly: true, hu: "Céges e-mail", en: "Business email" },
+  { id: "chat", huf: 19900, eur: 49, monthly: true, hu: "Virtuális asszisztens a weboldalon", en: "Website assistant" },
   { id: "phone", huf: 29900, eur: 79, monthly: true, hu: "Virtuális recepciós", en: "Virtual receptionist" },
   { id: "extra", huf: 9900, eur: 25, monthly: true, hu: "Extra marketingcsatorna", en: "Extra marketing channel" },
 ];
@@ -86,8 +86,9 @@ export function priceOf(ids: string[], cur: "HUF" | "EUR") {
   return { once, monthly };
 }
 
-/** Vázlatdíj: 200 000 Ft (≈ €519) alatt a kicsi, felette a nagy. */
-export function sketchFor(onceHuf: number) { return onceHuf >= 200000 ? "sketch_l" : "sketch_s"; }
+/** Vázlatdíj: 200 000 Ft (≈ €520) alatt nincs, felette 19 900 Ft / €49 (Stripe: wb_sketch_l). */
+export function sketchFor(onceHuf: number) { return onceHuf >= 200000 ? "sketch_l" : null; }
+export function sketchAmount(onceHuf: number, cur: string) { return sketchFor(onceHuf) ? (cur === "EUR" ? 49 : 19900) : 0; }
 
 export function money(v: number, cur: string, lang = "hu") {
   return cur === "EUR"

@@ -1,5 +1,5 @@
 // POST /api/intake – a weboldal űrlapjai (rendelés, visszahívás, chat-érdeklődő) ide küldenek.
-import { Env, json, bad, clean, isEmail, orderNo, nowIso, upsertCustomer, logEvent, priceOf, itemById, money, sketchFor } from "../../lib/core";
+import { Env, json, bad, clean, isEmail, orderNo, nowIso, upsertCustomer, logEvent, priceOf, itemById, money, sketchAmount } from "../../lib/core";
 import { sendMail, layout, rows } from "../../lib/mail";
 
 type Body = Record<string, unknown>;
@@ -54,16 +54,16 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   });
 
   // Visszaigazolás az ügyfélnek
-  const sketchFee = sketchFor(onceHuf) === "sketch_l" ? (cur === "EUR" ? 79 : 29900) : (cur === "EUR" ? 25 : 9900);
+  const sketchFee = sketchAmount(onceHuf, cur);
   const subj = hu ? `Megkaptuk – ${id}` : `Received – ${id}`;
   const body = hu
     ? `<p>Köszönjük! Megkaptuk a kérésedet, a rendelésszámod: <b>${id}</b>.</p>
 <p>Egy órán belül (munkaidőben) visszaküldjük írásban, amit megértettünk, és ha valami hiányzik, rákérdezünk. A 24 óra akkor indul, amikor ezt jóváhagyod.</p>
-${rows([["Vállalkozás", business], ["Tételek", itemNames], ["Egyszeri díj (nettó)", money(once, cur, "hu")], ["Havidíj (nettó)", monthly ? money(monthly, cur, "hu") + "/hó" : ""], ["Vázlatdíj (beszámítjuk)", money(sketchFee, cur, "hu")]])}
+${rows([["Vállalkozás", business], ["Tételek", itemNames], ["Egyszeri díj (nettó)", money(once, cur, "hu")], ["Havidíj (nettó)", monthly ? money(monthly, cur, "hu") + "/hó" : ""], ["Vázlatdíj", sketchFee ? money(sketchFee, cur, "hu") + " (beszámítjuk)" : "nincs"]])}
 <p>Csatolnál még valamit (logó, étlap, fotók)? Válaszolj erre a levélre, és tedd mellé.</p>`
     : `<p>Thank you! We've received your request. Your order number is <b>${id}</b>.</p>
 <p>Within an hour (business hours) we'll send back in writing what we understood, and ask about anything missing. The 24 hours start when you approve it.</p>
-${rows([["Business", business], ["Items", itemNames], ["One-off (net)", money(once, cur, "en")], ["Monthly (net)", monthly ? money(monthly, cur, "en") + "/mo" : ""], ["Sketch fee (credited)", money(sketchFee, cur, "en")]])}
+${rows([["Business", business], ["Items", itemNames], ["One-off (net)", money(once, cur, "en")], ["Monthly (net)", monthly ? money(monthly, cur, "en") + "/mo" : ""], ["Sketch fee", sketchFee ? money(sketchFee, cur, "en") + " (credited)" : "none"]])}
 <p>Anything to attach (logo, menu, photos)? Just reply to this email with it.</p>`;
   await sendMail(env, { to: email, subject: subj, html: layout(lang, hu ? "Megkaptuk, köszönjük!" : "Got it, thank you!", body), template: "order_received", customer_id: cust.id, project_id: id });
 

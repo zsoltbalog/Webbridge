@@ -12,8 +12,8 @@
       "name": "Céges weboldal / Business website"
     },
     "wb_shop": {
-      "huf": 359900,
-      "eur": 919,
+      "huf": 399900,
+      "eur": 1039,
       "name": "Webshop indulócsomag / Webshop starter"
     },
     "wb_logo": {
@@ -22,24 +22,24 @@
       "name": "Logótervezés / Logo design"
     },
     "wb_brand": {
-      "huf": 119900,
-      "eur": 299,
+      "huf": 89900,
+      "eur": 229,
       "name": "Brandbook"
     },
     "wb_strategy": {
-      "huf": 139900,
-      "eur": 359,
+      "huf": 129900,
+      "eur": 339,
       "name": "Marketingstratégia / Marketing strategy"
     },
     "wb_plan": {
-      "huf": 99900,
-      "eur": 259,
+      "huf": 59900,
+      "eur": 159,
       "name": "90 napos marketingterv / 90-day marketing plan"
     },
     "wb_setup": {
-      "huf": 79900,
-      "eur": 199,
-      "name": "Technikai beállítás / Technical setup"
+      "huf": 39900,
+      "eur": 99,
+      "name": "Pro technikai csomag / Pro technical package"
     },
     "wb_move": {
       "huf": 29900,
@@ -47,25 +47,25 @@
       "name": "Költöztetés / Migration"
     },
     "wb_lang": {
-      "huf": 39900,
-      "eur": 99,
+      "huf": 49900,
+      "eur": 129,
       "name": "+1 nyelv / +1 language"
     },
     "wb_sketch_s": {
       "huf": 9900,
       "eur": 25,
-      "name": "Vázlatdíj (200 000 Ft alatt)"
+      "name": "Vázlatdíj (200 000 Ft alatt)",
+      "archived": "2026-10-28 – 200 000 Ft alatt nincs vázlatdíj"
     },
     "wb_sketch_l": {
-      "huf": 29900,
-      "eur": 79,
-      "name": "Vázlatdíj (200 000 Ft felett)"
+      "huf": 19900,
+      "eur": 49,
+      "name": "Vázlatdíj (200 000 Ft / €520 felett)"
     },
     "wb_newpage": {
-      "huf": 29900,
-      "eur": 75,
-      "name": "Új aloldal / New page",
-      "todo": "ár véglegesítendő"
+      "huf": 19900,
+      "eur": 49,
+      "name": "Új aloldal / New page"
     }
   },
   "monthly": {
@@ -95,20 +95,22 @@
       "name": "Webshop-üzemeltetés"
     },
     "wb_email": {
-      "huf": 2900,
-      "eur": 8,
+      "huf": 3490,
+      "eur": 9,
       "name": "Céges e-mail (Google Workspace)",
       "unit": "mailbox"
     },
     "wb_chat": {
-      "huf": 14900,
-      "eur": 39,
+      "huf": 19900,
+      "eur": 49,
       "name": "Virtuális asszisztens a weboldalon"
     },
     "wb_phone": {
       "huf": 29900,
       "eur": 79,
-      "name": "Virtuális recepciós"
+      "name": "Virtuális recepciós",
+      "included_minutes": 200,
+      "overage_huf_per_min": 49
     },
     "wb_extra": {
       "huf": 9900,
@@ -132,6 +134,7 @@
     "created": "2026-10-28",
     "product_ids": "azonos a sandboxszal (wb_*)",
     "customer_portal": "bpc_1UVV17K2X4Us0unD3wHlanwh",
-    "archived_duplicate": "prod_VWY5OC6MG8Ziw8"
+    "archived_duplicate": "prod_VWY5OC6MG8Ziw8",
+    "repriced": "2026-10-28 (HU versenytárs-elemzés után; régi árak archiválva)"
   }
 }

@@ -220,3 +220,5 @@ CREATE TABLE IF NOT EXISTS post_decisions (
   PRIMARY KEY (version_id, post_id)
 );
 CREATE INDEX IF NOT EXISTS post_decisions_work ON post_decisions(work_id);
+-- Bejövő levelek ismétlődésének szűrése (Brevo újraküldés / dupla item)
+CREATE TABLE IF NOT EXISTS inbound_seen (key TEXT PRIMARY KEY, at TEXT NOT NULL);

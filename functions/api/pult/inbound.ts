@@ -2,8 +2,9 @@
 // Ha a címzett pult+<munka>@<REPLY_DOMAIN>, a válasz megjegyzésként kerül a munka legutóbbi verziójához.
 import { Env, json, nowIso } from "../../../lib/core";
 import { addComment, Work } from "../../../lib/works";
+import { sha256 } from "../../../lib/portal";
 
-type Item = { From?: { Address?: string; Name?: string }; To?: { Address?: string }[]; Recipients?: string[]; Subject?: string; ExtractedMarkdownMessage?: string; RawTextBody?: string; Attachments?: { Name: string; ContentType: string; DownloadToken?: string; ContentLength?: number }[] };
+type Item = { MessageId?: string; SentAtDate?: string; Uuid?: string[]; From?: { Address?: string; Name?: string }; To?: { Address?: string }[]; Recipients?: string[]; Subject?: string; ExtractedMarkdownMessage?: string; RawTextBody?: string; Attachments?: { Name: string; ContentType: string; DownloadToken?: string; ContentLength?: number }[] };
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const k = new URL(request.url).searchParams.get("k") || "";
@@ -26,6 +27,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     const text = (it.ExtractedMarkdownMessage || it.RawTextBody || "").trim().slice(0, 4000);
     const atts = (it.Attachments || []).map((a) => a.Name).filter(Boolean);
     if (!text && !atts.length) continue;
+    // ismétlődés szűrése: ugyanaz a levél (Message-ID, vagy feladó + munka + szöveg) csak egyszer lesz megjegyzés
+    const key = it.MessageId ? `mid:${it.MessageId}` : `h:${await sha256(`${w.id}|${from}|${it.SentAtDate || ""}|${text}|${atts.join(",")}`)}`;
+    const ins = await env.DB.prepare("INSERT OR IGNORE INTO inbound_seen (key,at) VALUES (?1,?2)").bind(key, nowIso()).run();
+    if (!ins.meta.changes) continue;
     await addComment(env, { work: w, version_id: v.id, author_kind: "email", user_id: u?.id || null, author_name: it.From?.Name || from, action: "change",
       body: text + (atts.length ? `\n\n[Csatolmány a levélben: ${atts.join(", ")} – a hello@ postafiókban]` : "") });
     added++;

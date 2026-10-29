@@ -1602,7 +1602,8 @@ $("#form").addEventListener("submit",async e=>{e.preventDefault();if(step<3){ste
     try{const r=await postIntake({kind:"order",business:$("#f-name").value,what:$("#f-what").value,who:$("#f-who").value,tone:$("#f-tone").selectedOptions[0]?.textContent||"",industry:ind.id,email:em,
       domain_mode:$("#f-dom").value,domain_name:$("#f-domname").value,buyer_type:$("#fb-b2c").getAttribute("aria-pressed")==="true"?"b2c":"b2b",company:$("#f-co").value,vat_id:$("#f-vat").value,
       billing_addr:$("#f-addr").value,invoice_lang:$("#f-ilang").value,currency:$("#f-cur").value,extra:$("#f-extra").value,terms:true,start_now:$("#f-start").checked,
-      items:[...sel],files:[...(fi.files||[])].map(f=>f.name)});code=r.order}
+      items:[...sel],files:[...(fi.files||[])].map(f=>f.name)});code=r.order;
+      try{const c_=compute(),v_=c_.best&&c_.best.o<c_.raw.o?c_.best.o:c_.raw.o;window.wbConv&&window.wbConv(v_,cur,code)}catch(e){}}
     catch(err){btn.disabled=false;$("#f-err").hidden=false;$("#f-err").textContent=err.message;return}btn.disabled=false}
   ["p1","p2","p3","fnav"].forEach(id=>$("#"+id).hidden=true);$("#fnav").style.display="none";
   $("#code").textContent=code;$("[data-t='d-proto']").hidden=LIVE;
@@ -2111,8 +2112,9 @@ adatvedelem:{t:"Adatkezelési tájékoztató",h:`
 <p>Ha a szolgáltatás során a te ügyfeleid adatait kezeljük (pl. hírlevél-feliratkozók, értékelők), abban adatfeldolgozóként járunk el, a te utasításaid szerint. Erről az <a href="#adatfeldolgozas" data-lg="adatfeldolgozas">Adatfeldolgozási feltételek</a> szólnak.</p>`},
 sutik:{t:"Süti tájékoztató",h:`
 <p class="lg-meta">Hatályos: ${K("élesítés dátuma")}</p>
-<p>Ez a weboldal jelenleg csak a működéshez feltétlenül szükséges technikai megoldásokat használ. Hirdetési vagy nyomkövető sütit nem helyezünk el, ezért hozzájárulást kérő sütisávra jelenleg nincs szükség.</p>
-<p>Ha a jövőben látogatottságmérést vagy hirdetési sütit vezetünk be, azt csak a hozzájárulásod után kapcsoljuk be, és ezt a tájékoztatót frissítjük.</p>
+<p><b>Feltétlenül szükséges:</b> a weboldal működéséhez szükséges technikai megoldások (pl. a választott nyelv és a süti-döntésed tárolása a böngésződben). Ezekhez nem kell hozzájárulás.</p>
+<p><b>Hirdetésmérés (csak hozzájárulással):</b> ha a sütisávon az „Elfogadom” gombot választod, betöltjük a Google Ads címkéjét (Google Ireland Ltd.). Ez sütiket helyez el (pl. _gcl_au), hogy mérjük, melyik hirdetésből érkezett megrendelés, és a hirdetéseket ennek alapján optimalizáljuk. Megőrzés: legfeljebb 90 nap. Ha elutasítod, semmilyen hirdetési vagy mérő kódot nem töltünk be.</p>
+<p>A döntésedet bármikor megváltoztathatod az oldal alján a „Süti beállítások” linkkel.</p>
 <p>A betűtípusokat és minden más erőforrást saját szerverünkről szolgáljuk ki, így a látogatásod adatai nem kerülnek külső szolgáltatóhoz. ${K("élesítéskor ellenőrzendő")}</p>`},
 adatfeldolgozas:{t:"Adatfeldolgozási feltételek",h:`
 <p class="lg-meta">Az ÁSZF melléklete (GDPR 28. cikk) · Hatályos: ${K("élesítés dátuma")}</p>
@@ -2253,8 +2255,9 @@ adatvedelem:{t:"Privacy Policy",h:`
 <p>Where we process your customers' data during the service (e.g. newsletter subscribers, reviewers), we act as your processor, on your instructions. See the <a href="#adatfeldolgozas" data-lg="adatfeldolgozas">Data Processing Terms</a>.</p>`},
 sutik:{t:"Cookie Policy",h:`
 <p class="lg-meta">Effective: ${KE("launch date")}</p>
-<p>This website currently uses only the technical means strictly necessary for it to work. We set no advertising or tracking cookies, so no consent banner is currently required.</p>
-<p>If we add analytics or advertising cookies in future, we will switch them on only after your consent and update this policy.</p>
+<p><b>Strictly necessary:</b> technical means the site needs to work (e.g. storing your language and your cookie choice in your browser). No consent is needed for these.</p>
+<p><b>Ad measurement (only with consent):</b> if you choose "Accept" in the cookie banner, we load the Google Ads tag (Google Ireland Ltd.). It sets cookies (e.g. _gcl_au) so we can measure which ad led to an order and optimise our ads accordingly. Retention: up to 90 days. If you decline, no advertising or measurement code is loaded.</p>
+<p>You can change your choice at any time with the "Cookie settings" link at the bottom of the page.</p>
 <p>Fonts and all other resources are served from our own server, so your visit is not shared with external providers. ${KE("verify at launch")}</p>`},
 adatfeldolgozas:{t:"Data Processing Terms",h:`
 <p class="lg-meta">Annex to the Terms of Service (GDPR Art. 28) · Effective: ${KE("launch date")}</p>
@@ -2618,5 +2621,42 @@ applyStatic();showStep();
 setInterval(renderEta,30000);
 try{$("#f-ilang").value=lang}catch(e){}
 (function(){const h=(location.hash||"").slice(1);if(LG_ORDER.includes(h))lgOpen(h,false)})();
+})();
+</script>
+<style>
+.cc{position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;max-width:560px;margin:0 auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 8px 30px rgba(0,0,0,.18);display:grid;gap:12px;font-size:14px;line-height:1.5}
+.cc[hidden]{display:none}.cc p{margin:0;color:var(--muted)}.cc a{color:inherit;text-decoration:underline}
+.cc-row{display:flex;gap:10px;flex-wrap:wrap}.cc-row button{flex:1 1 140px;padding:10px 14px;border-radius:8px;border:1px solid var(--ink);background:transparent;color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+</style>
+<div class="cc" id="cc" role="dialog" aria-live="polite" aria-labelledby="cc-t" hidden>
+  <strong id="cc-t"></strong>
+  <p id="cc-p"></p>
+  <div class="cc-row"><button type="button" id="cc-no"></button><button type="button" id="cc-yes"></button></div>
+</div>
+<script>
+/* Süti-hozzájárulás + Google Ads konverziómérés (alap mód: a címke csak elfogadás után töltődik be) */
+(function(){
+  var AW="AW-18543641613", LEAD=AW+"/ENYiCPvu660dEI2IpopF", KEY="wb-consent";
+  var LIVE=/(^|\.)webbridge\.(hu|studio)$|\.pages\.dev$/.test(location.hostname);
+  var T={hu:{t:"Sütik",p:"A hirdetéseink méréséhez a Google Ads sütijeit használnánk. Csak akkor töltjük be, ha elfogadod. Részletek: ",l:"Süti tájékoztató",no:"Elutasítom",yes:"Elfogadom",set:"Süti beállítások"},
+         en:{t:"Cookies",p:"We'd like to use Google Ads cookies to measure our ads. They load only if you accept. Details: ",l:"Cookie Policy",no:"Decline",yes:"Accept",set:"Cookie settings"}};
+  function L(){return (document.documentElement.lang||"hu").slice(0,2)==="en"?"en":"hu"}
+  function get(){try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){return null}}
+  function put(v){try{localStorage.setItem(KEY,JSON.stringify({v:v,at:new Date().toISOString()}))}catch(e){}}
+  var loaded=false;
+  function load(){if(loaded||!LIVE)return;loaded=true;window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};
+    gtag("consent","default",{ad_storage:"granted",ad_user_data:"granted",ad_personalization:"denied",analytics_storage:"denied"});
+    gtag("js",new Date());gtag("config",AW);var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id="+AW;document.head.appendChild(s)}
+  window.wbConv=function(value,currency,orderId){var c=get();if(!c||c.v!=="granted")return;load();
+    gtag("event","conversion",{send_to:LEAD,value:Number(value)||0,currency:currency||"HUF",transaction_id:orderId||""})};
+  var box=document.getElementById("cc");
+  function show(){var t=T[L()];document.getElementById("cc-t").textContent=t.t;var p=document.getElementById("cc-p");p.textContent=t.p;
+    var a=document.createElement("a");a.href="#sutik";a.setAttribute("data-lg","sutik");a.textContent=t.l;p.appendChild(a);
+    document.getElementById("cc-no").textContent=t.no;document.getElementById("cc-yes").textContent=t.yes;box.hidden=false}
+  document.getElementById("cc-yes").onclick=function(){put("granted");box.hidden=true;load()};
+  document.getElementById("cc-no").onclick=function(){put("denied");box.hidden=true;
+    try{document.cookie.split(";").forEach(function(c){var n=c.split("=")[0].trim();if(/^_g/.test(n))document.cookie=n+"=;max-age=0;path=/;domain=."+location.hostname.split(".").slice(-2).join(".")})}catch(e){}};
+  var nav=document.querySelector(".legal-links");if(nav){var a=document.createElement("a");a.href="#";a.id="cc-open";a.textContent=T[L()].set;a.onclick=function(e){e.preventDefault();show()};nav.appendChild(a)}
+  var c=get();if(c&&c.v==="granted")load();else if(!c&&LIVE)show();
 })();
 </script>

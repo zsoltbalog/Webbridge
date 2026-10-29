@@ -2121,6 +2121,7 @@ adatvedelem:{t:"Adatkezelési tájékoztató",h:`
 <tr><td>Fiókösszekötés (Folyamatos marketing)</td><td>hozzáférési tokenek, fiókazonosítók, teljesítményadatok</td><td>szerződés teljesítése (6. cikk (1) b)</td><td>a hozzáférés visszavonásáig vagy a szerződés megszűnéséig</td></tr>
 <tr><td>Számlázás és könyvelés</td><td>számlázási név, cím, adószám, fizetési adatok</td><td>jogi kötelezettség (6. cikk (1) c)</td><td>az észt számviteli törvény szerint 7 év</td></tr>
 <tr><td>Fizetés</td><td>tranzakcióazonosító, összeg (kártyaadatot nem tárolunk)</td><td>szerződés teljesítése (6. cikk (1) b)</td><td>mint a számlázásnál</td></tr>
+<tr><td>Látogatottság mérése (Google Analytics 4)</td><td>süti-azonosító, a meglátogatott oldalak, kattintások, eszköz- és böngészőtípus, hozzávetőleges hely (ország/város); IP-címet a Google Analytics 4 nem tárol</td><td>hozzájárulás (6. cikk (1) a), a sütisávon; bármikor visszavonható a „Süti beállítások” linkkel</td><td>a sütik legfeljebb 13 hónapig, a mérési adatok 2 hónapig; csak összesítve nézzük</td></tr>
 <tr><td>Hirdetéseink mérése (Google Ads konverziómérés, bővített konverziók)</td><td>hirdetési kattintásazonosító, süti-azonosító, a rendelés értéke és azonosítója; rendeléskor az e-mail-címed, amelyet a böngésződ még elküldés előtt titkosít (SHA-256 kivonat)</td><td>hozzájárulás (6. cikk (1) a), a sütisávon; bármikor visszavonható a „Süti beállítások” linkkel</td><td>a sütik legfeljebb 90 napig; a Google a kivonatot csak a hirdetési kattintás és a rendelés összepárosítására használja</td></tr>
 <tr><td>Weboldal biztonságos működése</td><td>IP-cím, böngésző adatai, naplók</td><td>jogos érdek (6. cikk (1) f)</td><td>${K("legfeljebb 30 nap – ellenőrzendő")}</td></tr>
 </tbody></table></div>
@@ -2132,7 +2133,7 @@ adatvedelem:{t:"Adatkezelési tájékoztató",h:`
 · e-mail és ügyfélkommunikáció (Google Workspace, Google Ireland Ltd.); ${K("szolgáltató neve, ország")}<br>
 · fizetés: Stripe Payments Europe Ltd. (Írország)<br>
 · tranzakciós e-mailek: Sendinblue SAS / Brevo (Franciaország)<br>
-· hirdetésmérés (csak hozzájárulással): Google Ireland Ltd. (Írország), Google Ads konverziómérés és bővített konverziók; az adatokat a Google Ads adatfeldolgozási feltételei szerint kezeli<br>
+· hirdetés- és látogatottságmérés (csak hozzájárulással): Google Ireland Ltd. (Írország), Google Ads konverziómérés, bővített konverziók és Google Analytics 4; az adatokat a Google Ads adatfeldolgozási feltételei szerint kezeli<br>
 · számlázás: ${K("pl. Számlázz.hu / Merit")}<br>
 · telefonos asszisztens, hívásrögzítés és -átírás: ${K("szolgáltató neve, ország")}<br>
 · szöveg-, kép- és adatfeldolgozó automatizálási szolgáltatók: ${K("szolgáltatók neve, ország")}<br>
@@ -2158,6 +2159,7 @@ sutik:{t:"Süti tájékoztató",h:`
 <p class="lg-meta">Hatályos: ${K("élesítés dátuma")}</p>
 <p><b>Feltétlenül szükséges:</b> a weboldal működéséhez szükséges technikai megoldások (pl. a választott nyelv és a süti-döntésed tárolása a böngésződben). Ezekhez nem kell hozzájárulás.</p>
 <p><b>Hirdetésmérés (csak hozzájárulással):</b> ha a sütisávon az „Elfogadom” gombot választod, betöltjük a Google Ads címkéjét (Google Ireland Ltd.). Ez sütiket helyez el (pl. _gcl_au), hogy mérjük, melyik hirdetésből érkezett megrendelés, és a hirdetéseket ennek alapján optimalizáljuk. Rendeléskor az e-mail-címed titkosított kivonatát (SHA-256) is átadjuk a Google-nek a pontosabb mérés érdekében (bővített konverziók). Megőrzés: legfeljebb 90 nap. Ha elutasítod, semmilyen hirdetési vagy mérő kódot nem töltünk be.</p>
+<p><b>Látogatottság mérése (csak hozzájárulással):</b> ugyanezzel az „Elfogadom” gombbal a Google Analytics 4-et (Google Ireland Ltd.) is betöltjük. Ez sütiket helyez el (_ga, _ga_*), hogy összesítve lássuk, hányan és honnan jönnek, mely oldalakat nézik, és hol akadnak el a rendelésben. Megőrzés: a sütik legfeljebb 13 hónapig, a mérési adatok 2 hónapig. Hirdetési személyre szabásra nem használjuk.</p>
 <p>A döntésedet bármikor megváltoztathatod az oldal alján a „Süti beállítások” linkkel.</p>
 <p>A betűtípusokat és minden más erőforrást saját szerverünkről szolgáljuk ki, így a látogatásod adatai nem kerülnek külső szolgáltatóhoz. ${K("élesítéskor ellenőrzendő")}</p>`},
 adatfeldolgozas:{t:"Adatfeldolgozási feltételek",h:`
@@ -2267,6 +2269,7 @@ adatvedelem:{t:"Privacy Policy",h:`
 <tr><td>Account connections (Continuous marketing)</td><td>access tokens, account IDs, performance data</td><td>contract (Art. 6(1)(b))</td><td>until access is revoked or the contract ends</td></tr>
 <tr><td>Invoicing and accounting</td><td>billing name, address, tax number, payment details</td><td>legal obligation (Art. 6(1)(c))</td><td>7 years under the Estonian Accounting Act</td></tr>
 <tr><td>Payments</td><td>transaction ID, amount (we do not store card data)</td><td>contract (Art. 6(1)(b))</td><td>as for invoicing</td></tr>
+<tr><td>Measuring site traffic (Google Analytics 4)</td><td>cookie ID, pages visited, clicks, device and browser type, approximate location (country/city); Google Analytics 4 does not store IP addresses</td><td>consent (Art. 6(1)(a)) via the cookie banner; withdraw any time with the “Cookie settings” link</td><td>cookies up to 13 months, measurement data 2 months; we only look at aggregates</td></tr>
 <tr><td>Measuring our ads (Google Ads conversion tracking, enhanced conversions)</td><td>ad click ID, cookie ID, order value and ID; when you order, your email address, which your browser hashes before sending (SHA-256)</td><td>consent (Art. 6(1)(a)) via the cookie banner; withdraw any time with the “Cookie settings” link</td><td>cookies up to 90 days; Google uses the hash only to match an ad click to an order</td></tr>
 <tr><td>Secure operation of the website</td><td>IP address, browser data, logs</td><td>legitimate interest (Art. 6(1)(f))</td><td>${KE("max. 30 days – to be confirmed")}</td></tr>
 </tbody></table></div>
@@ -2278,7 +2281,7 @@ adatvedelem:{t:"Privacy Policy",h:`
 · email and customer communication (Google Workspace, Google Ireland Ltd.); ${KE("provider, country")}<br>
 · payments: Stripe Payments Europe Ltd. (Ireland)<br>
 · transactional email: Sendinblue SAS / Brevo (France)<br>
-· ad measurement (only with consent): Google Ireland Ltd. (Ireland), Google Ads conversion tracking and enhanced conversions, under the Google Ads Data Processing Terms<br>
+· ad and traffic measurement (only with consent): Google Ireland Ltd. (Ireland), Google Ads conversion tracking, enhanced conversions and Google Analytics 4, under the Google Ads Data Processing Terms<br>
 · invoicing: ${KE("e.g. Számlázz.hu / Merit")}<br>
 · phone assistant, call recording and transcription: ${KE("provider, country")}<br>
 · text, image and data processing automation providers: ${KE("providers, countries")}<br>
@@ -2304,6 +2307,7 @@ sutik:{t:"Cookie Policy",h:`
 <p class="lg-meta">Effective: ${KE("launch date")}</p>
 <p><b>Strictly necessary:</b> technical means the site needs to work (e.g. storing your language and your cookie choice in your browser). No consent is needed for these.</p>
 <p><b>Ad measurement (only with consent):</b> if you choose "Accept" in the cookie banner, we load the Google Ads tag (Google Ireland Ltd.). It sets cookies (e.g. _gcl_au) so we can measure which ad led to an order and optimise our ads accordingly. When you order, we also pass a hashed (SHA-256) version of your email address to Google for more accurate measurement (enhanced conversions). Retention: up to 90 days. If you decline, no advertising or measurement code is loaded.</p>
+<p><b>Traffic measurement (only with consent):</b> the same "Accept" button also loads Google Analytics 4 (Google Ireland Ltd.). It sets cookies (_ga, _ga_*) so we can see, in aggregate, how many people visit, where they come from, which pages they read and where they get stuck in the order form. Retention: cookies up to 13 months, measurement data 2 months. Not used for ad personalisation.</p>
 <p>You can change your choice at any time with the "Cookie settings" link at the bottom of the page.</p>
 <p>Fonts and all other resources are served from our own server, so your visit is not shared with external providers. ${KE("verify at launch")}</p>`},
 adatfeldolgozas:{t:"Data Processing Terms",h:`
@@ -2683,20 +2687,21 @@ try{$("#f-ilang").value=lang}catch(e){}
 <script>
 /* Süti-hozzájárulás + Google Ads konverziómérés (alap mód: a címke csak elfogadás után töltődik be) */
 (function(){
-  var AW="AW-18543641613", LEAD=AW+"/ENYiCPvu660dEI2IpopF", KEY="wb-consent";
+  var AW="AW-18543641613", GA="G-DPPENGPK32", LEAD=AW+"/ENYiCPvu660dEI2IpopF", KEY="wb-consent";
   var LIVE=/(^|\.)webbridge\.(hu|studio)$|\.pages\.dev$/.test(location.hostname);
-  var T={hu:{t:"Sütik",p:"A hirdetéseink méréséhez a Google Ads sütijeit használnánk, rendeléskor pedig az e-mail-címed titkosított kivonatát. Csak akkor, ha elfogadod. Részletek: ",l:"Süti tájékoztató",no:"Elutasítom",yes:"Elfogadom",set:"Süti beállítások"},
-         en:{t:"Cookies",p:"We'd like to use Google Ads cookies to measure our ads and, when you order, a hashed version of your email. Only if you accept. Details: ",l:"Cookie Policy",no:"Decline",yes:"Accept",set:"Cookie settings"}};
+  var T={hu:{t:"Sütik",p:"A látogatottság és a hirdetéseink méréséhez a Google Analytics és a Google Ads sütijeit használnánk, rendeléskor pedig az e-mail-címed titkosított kivonatát. Csak akkor, ha elfogadod. Részletek: ",l:"Süti tájékoztató",no:"Elutasítom",yes:"Elfogadom",set:"Süti beállítások"},
+         en:{t:"Cookies",p:"We'd like to use Google Analytics and Google Ads cookies to measure visits and our ads and, when you order, a hashed version of your email. Only if you accept. Details: ",l:"Cookie Policy",no:"Decline",yes:"Accept",set:"Cookie settings"}};
   function L(){return (document.documentElement.lang||"hu").slice(0,2)==="en"?"en":"hu"}
   function get(){try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){return null}}
   function put(v){try{localStorage.setItem(KEY,JSON.stringify({v:v,at:new Date().toISOString()}))}catch(e){}}
   var loaded=false;
   function load(){if(loaded||!LIVE)return;loaded=true;window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};
-    gtag("consent","default",{ad_storage:"granted",ad_user_data:"granted",ad_personalization:"denied",analytics_storage:"denied"});
-    gtag("js",new Date());gtag("config",AW);var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id="+AW;document.head.appendChild(s)}
+    gtag("consent","default",{ad_storage:"granted",ad_user_data:"granted",ad_personalization:"denied",analytics_storage:"granted"});
+    gtag("js",new Date());gtag("config",AW);if(/(^|\.)webbridge\.(hu|studio)$/.test(location.hostname))gtag("config",GA,{allow_google_signals:false,allow_ad_personalization_signals:false,cookie_expires:33696000});var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id="+AW;document.head.appendChild(s)}
   window.wbConv=function(value,currency,orderId,email){var c=get();if(!c||c.v!=="granted")return;load();
     if(email)gtag("set","user_data",{email:String(email).trim().toLowerCase()});
-    gtag("event","conversion",{send_to:LEAD,value:Number(value)||0,currency:currency||"HUF",transaction_id:orderId||""})};
+    gtag("event","conversion",{send_to:LEAD,value:Number(value)||0,currency:currency||"HUF",transaction_id:orderId||""});
+    gtag("event","purchase",{send_to:GA,value:Number(value)||0,currency:currency||"HUF",transaction_id:orderId||""})};
   var box=document.getElementById("cc");
   function show(){var t=T[L()];document.getElementById("cc-t").textContent=t.t;var p=document.getElementById("cc-p");p.textContent=t.p;
     var a=document.createElement("a");a.href="#sutik";a.setAttribute("data-lg","sutik");a.textContent=t.l;p.appendChild(a);

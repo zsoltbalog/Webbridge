@@ -47,7 +47,7 @@ Az ügyfél egy helyen lássa az oldalát, kérjen módosítást, fizessen és l
 - Az új aloldal végleges ára.
 - A Facebook-belépés időzítése.
 - A 14/30 napos ablak a Start csomagnál is 14 nap legyen-e (most: igen).
-- Az R2 tároló EU-joghatóságba költöztetése (most ENAM régió, még üres).
+- (Kész) R2: webbridge-uploads-eu, EU-joghatóság.
 
 ## 7. Megépítve – állapot 2026-10-29 (Pult v1, élesben: /pult/)
 - **Belépés (saját megoldás, nem Supabase/Clerk – Zsolt döntése):**

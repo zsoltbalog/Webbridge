@@ -228,6 +228,14 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:co
 .files{display:grid;gap:6px;font-size:13px}
 .files div{display:flex;justify-content:space-between;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 10px}
 .files span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.site-box{display:grid;gap:10px;border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--bg)}
+.site-row{display:flex;gap:8px}.site-row input{flex:1;min-width:0}.site-row .btn{white-space:nowrap}
+.site-res{display:grid;gap:8px;font-size:13px}.site-res .st{color:var(--muted)}
+.site-pg{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:8px}
+.site-pg span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1 1 160px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}.seg button{border:0;background:transparent;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink,#111);color:var(--bg,#fff)}
+.files .rm{border:0;background:none;cursor:pointer;color:var(--muted);font-size:15px;line-height:1;padding:0 2px}
 .extract{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
 .extract .sw{display:flex;gap:4px}.extract .sw i{width:22px;height:22px;border-radius:4px;border:1px solid var(--line)}
 .form-nav{display:flex;justify-content:space-between;gap:10px}
@@ -1190,10 +1198,18 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
           <div class="field"><label for="f-who" data-t="f-who">Kik a vevőid?</label><button type="button" class="pbtn" data-prompt="f-who" data-t="pBtn">✦ Prompt a saját AI-odnak</button><input id="f-who" type="text" data-tp="f-who-ph"></div>
         </div>
         <div id="p2" hidden style="display:grid;gap:14px">
+          <div class="field"><span class="lbl" data-t="f-site">Van már weboldalad?</span>
+            <div class="site-box">
+              <div class="site-row"><input id="f-site" type="text" inputmode="url" autocomplete="url" data-tp="f-site-ph" aria-label="Weboldal címe"><button type="button" class="btn" id="site-scan" data-t="f-site-go">Átnézem</button></div>
+              <div class="site-res" id="site-res" hidden></div>
+              <label for="f-site-notes" class="sm" style="color:var(--muted)" data-t="f-site-n">Mit tartsunk meg, mi ne kerüljön át, mi legyen más?</label>
+              <textarea id="f-site-notes" rows="3" data-tp="f-site-n-ph"></textarea>
+            </div>
+          </div>
           <div class="field"><span class="lbl" data-t="f-logo">Logó és anyagok</span>
             <label class="drop" id="drop" for="f-files">
               <strong data-t="f-drop">Húzd ide a fájlokat, vagy kattints</strong>
-              <small data-t="f-drop-s">Logó (PNG, SVG, JPG), étlap, árlista, fotók, PDF</small>
+              <small data-t="f-drop-s">Logó, fotók, étlap, árlista, szórólap, céges anyagok (PDF, Word, kép) – max. 15 fájl, egyenként 25 MB</small>
             </label>
             <input id="f-files" type="file" multiple hidden>
           </div>
@@ -1289,7 +1305,8 @@ empty:"Még üres. Pipálj be egy tételt.",bundleApplied:"Csomagár: ",save:"Me
 "b-e":"Csomagok","b-h":"Vagy vidd egyben, olcsóbban.","g-e":"Ígéretünk","g-h":"Kockázat nélkül, és minden a tiéd.","g1h":"Vázlat-garancia","g1p":"Ha a brief jóváhagyása után 24 órán belül nem kapod meg a 3 vázlatirányt, vagy egyik sem tetszik, a vázlatdíjat visszaadjuk. 200 000 Ft alatt vázlatdíj sincs.","g2h":"Minden a tiéd","g2p":"A domain a te nevedre szól. A teljes kifizetés után a logó, az arculat, a szövegek és a weboldal fájljai is a tieid, és bármikor magaddal viheted őket.","g3h":"Kötöttség nélkül","g3p":"A havidíjas szolgáltatások havonta, 30 napos felmondással lemondhatók, büntetés nélkül. Lemondáskor díjmentesen átadjuk a teljes mentést és minden hozzáférést.","b-logo":"Nincs még logód? Bármelyik csomaghoz hozzáadhatod a Logótervezést 59 900 Ft-ért, és a brandbook már az új logóra épül.",pick:"Ezt kérem",instead:"tételenként",popular:"Legnépszerűbb",perMonth:"/hó",
 "o-e":"A kérdőív","o-h":"10 perc, és indulunk.","o-l":"Ennyit kérdezünk. Töltsd fel a logód, és nézd meg, ahogy kiolvassuk belőle a márkaszíneidet.",
 "f-name":"Vállalkozás neve","f-what":"Mivel foglalkozol, egy mondatban?","f-what-ph":"Pl. friss indiai ebédmenü irodaházak dolgozóinak","f-who":"Kik a vevőid?","f-who-ph":"Pl. 25–45 éves irodai dolgozók a XIII. kerületben",
-"f-logo":"Logó és anyagok","f-drop":"Húzd ide a fájlokat, vagy kattints","f-drop-s":"Logó (PNG, SVG, JPG), étlap, árlista, fotók, PDF","f-extract":"Márkaszínek kiolvasva a logóból, és rákerültek a fenti előnézetre.",
+"f-logo":"Logó és anyagok","f-drop":"Húzd ide a fájlokat, vagy kattints","f-extract":"Márkaszínek kiolvasva a logóból, és rákerültek a fenti előnézetre.",
+"f-site":"Van már weboldalad?","f-site-ph":"cegem.hu (ha nincs, hagyd üresen)","f-site-go":"Átnézem","f-site-n":"Mit tartsunk meg, mi ne kerüljön át, mi legyen más?","f-site-n-ph":"Pl. a Rólunk szöveg maradjon, az árlista elavult, a régi logót ne használjuk, a galéria képei jók…","site-busy":"Megnyitjuk az oldalad…","site-found":"Ezt találtuk. Oldalanként jelöld, mi legyen vele:","site-keep":"Marad","site-chg":"Más legyen","site-drop":"Nem kell","site-more":"A teljes oldalt a rendelés után részletesen is átnézzük.","f-drop-s":"Logó, fotók, étlap, árlista, szórólap, céges anyagok (PDF, Word, kép) – max. 15 fájl, egyenként 25 MB","f-big":"Túl nagy (max. 25 MB)","f-max":"Legfeljebb 15 fájlt csatolhatsz.","up-ing":"Fájlok feltöltése","up-fail":"Néhány fájl nem töltődött fel. Válaszolj a visszaigazoló levelünkre, és csatold őket.",
 "f-tone":"Milyen hangon szóljunk?","f-email":"E-mail cím a szállításhoz","f-extra":"Bármi más, amit tudnunk kell","f-extra-ph":"Nyitvatartás, akciók, amit a versenytársaknál utálsz…",
 back:"Vissza",next:"Tovább",submit:"Gyártás indítása","d-e":"Rendelésszám","d-proto":"Ez a weboldal prototípusa: a beküldés még nincs bekötve, adat nem került továbbításra.",
 n1h:"Ki dolgozik rajta?",n1p:"Mi, egy bejáratott folyamattal. A válaszaidból megírjuk a szövegeket, összerakjuk az arculatot és felépítjük az oldalt. Szállítás előtt minden anyag minőségellenőrzésen megy át: helyesírás, működő linkek, mobilnézet, betöltési sebesség, és hogy az árak és elérhetőségek egyeznek-e a briefeddel.",
@@ -1317,7 +1334,8 @@ empty:"Empty so far. Tick an item.",bundleApplied:"Bundle price: ",save:"You sav
 "b-e":"Bundles","b-h":"Or take it all, for less.","g-e":"Our promise","g-h":"No risk, and it's all yours.","g1h":"Sketch guarantee","g1p":"If you don't get your 3 sketch directions within 24 hours of approving the brief, or you don't like any of them, we refund the sketch fee. Under €520 there is no sketch fee at all.","g2h":"It's all yours","g2p":"The domain is registered in your name. Once paid in full, the logo, brand, copy and website files are yours too, and you can take them anywhere.","g3h":"No lock-in","g3p":"Monthly services can be cancelled any month with 30 days' notice, no penalty. When you leave, we hand over a full backup and every login, free of charge.","b-logo":"No logo yet? Add Logo design to any bundle for {logo}, and the brandbook is built on the new logo.",pick:"Choose this",instead:"item by item",popular:"Most popular",perMonth:"/mo",
 "o-e":"The questionnaire","o-h":"10 minutes, and we start.","o-l":"This is all we ask. Upload your logo and watch us read your brand colours straight out of it.",
 "f-name":"Business name","f-what":"What do you do, in one sentence?","f-what-ph":"E.g. fresh Indian lunch menus for office workers","f-who":"Who are your customers?","f-who-ph":"E.g. office workers aged 25–45 in District XIII",
-"f-logo":"Logo and files","f-drop":"Drop files here, or click","f-drop-s":"Logo (PNG, SVG, JPG), menu, price list, photos, PDF","f-extract":"Brand colours read from your logo and applied to the preview above.",
+"f-logo":"Logo and files","f-drop":"Drop files here, or click","f-extract":"Brand colours read from your logo and applied to the preview above.",
+"f-site":"Do you already have a website?","f-site-ph":"mycompany.com (leave empty if none)","f-site-go":"Review it","f-site-n":"What should we keep, drop or change?","f-site-n-ph":"E.g. keep the About text, the price list is outdated, don't use the old logo, the gallery photos are good…","site-busy":"Opening your site…","site-found":"Here's what we found. Mark what to do with each page:","site-keep":"Keep","site-chg":"Change","site-drop":"Drop","site-more":"After you order, we'll review the whole site in detail.","f-drop-s":"Logo, photos, menu, price list, flyers, company documents (PDF, Word, images) – up to 15 files, 25 MB each","f-big":"Too large (max 25 MB)","f-max":"You can attach up to 15 files.","up-ing":"Uploading files","up-fail":"Some files didn't upload. Please reply to our confirmation email with them attached.",
 "f-tone":"What tone should we use?","f-email":"Email for delivery","f-extra":"Anything else we should know","f-extra-ph":"Opening hours, offers, what you dislike about competitors…",
 back:"Back",next:"Next",submit:"Start production","d-e":"Order number","d-proto":"This is a prototype of the site: submission isn't connected yet and no data was sent.",
 n1h:"Who works on it?",n1p:"We do, with a well-refined process. From your answers we write the copy, shape the brand and build the site. Before delivery, everything goes through quality checks: spelling, working links, mobile layout, loading speed, and whether prices and contact details match your brief.",
@@ -1564,12 +1582,31 @@ function extract(img){
   const lum=v=>.2126*v.r+.7152*v.g+.0722*v.b;const deep=lum(second)<lum(main)?second:dark;
   return [hex(main),hex(deep),hex(tint),hex({r:main.r*.18,g:main.g*.18,b:main.b*.18})];
 }
+const upFiles=[];const MAXF=25*1024*1024;
+function renderFiles(){const fl=$("#filelist");fl.innerHTML="";upFiles.forEach((f,i)=>{const row=document.createElement("div");const big=f.size>MAXF;
+  row.innerHTML=`<span>${esc(f.name)}</span><span class="tnum" style="color:${big?"var(--hazard,#c2410c)":"var(--muted)"}">${big?T[lang]["f-big"]:(f.size/1024<1024?(f.size/1024).toFixed(0)+" KB":(f.size/1048576).toFixed(1)+" MB")}</span><button type="button" class="rm" aria-label="×" data-rm="${i}">×</button>`;fl.appendChild(row)})}
+$("#filelist").addEventListener("click",e=>{const b=e.target.closest("[data-rm]");if(!b)return;upFiles.splice(+b.dataset.rm,1);renderFiles()});
 function handleFiles(list){
-  const fl=$("#filelist");
-  [...list].forEach(f=>{const row=document.createElement("div");row.innerHTML=`<span>${esc(f.name)}</span><span class="tnum" style="color:var(--muted)">${(f.size/1024).toFixed(0)} KB</span>`;fl.appendChild(row);
+  [...list].forEach(f=>{if(upFiles.length>=15){toastMsg(T[lang]["f-max"]);return}if(upFiles.some(x=>x.name===f.name&&x.size===f.size))return;upFiles.push(f);
     if(f.type.startsWith("image/")&&!logoURL){const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{const cols=extract(img);if(cols){logoColors=cols;logoURL=rd.result;$("#extract-sw").innerHTML=cols.map(c=>`<i style="background:${c}"></i>`).join("");$("#extract").hidden=false;renderSite();renderLoop();run()}};img.src=rd.result};rd.readAsDataURL(f)}
-  });
+  });renderFiles();
 }
+function toastMsg(m){const e=$("#f-err");e.hidden=false;e.textContent=m;setTimeout(()=>{if(e.textContent===m)e.hidden=true},5000)}
+/* meglévő weboldal átnézése */
+let sitePages=[];
+function renderSitePages(info){const t=T[lang],box=$("#site-res");box.hidden=false;
+  box.innerHTML=`<div><b>${esc(info.title||info.url)}</b>${info.description?`<div class="st">${esc(info.description)}</div>`:""}</div><div class="st">${t["site-found"]}</div>`+
+  sitePages.map((p,i)=>`<div class="site-pg"><span title="${esc(p.url)}">${esc(p.title)}</span><span class="seg" role="group">${[["keep","site-keep"],["change","site-chg"],["drop","site-drop"]].map(([v,k])=>`<button type="button" data-pg="${i}" data-ch="${v}" aria-pressed="${p.choice===v}">${t[k]}</button>`).join("")}</span></div>`).join("")+`<div class="st">${t["site-more"]}</div>`}
+$("#site-res").addEventListener("click",e=>{const b=e.target.closest("[data-pg]");if(!b)return;sitePages[+b.dataset.pg].choice=b.dataset.ch;b.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+$("#site-scan").onclick=async()=>{const u=$("#f-site").value.trim();if(!u){$("#f-site").focus();return}const box=$("#site-res");box.hidden=false;box.innerHTML=`<div class="st">${T[lang]["site-busy"]}</div>`;
+  if(!LIVE){sitePages=[{url:u,title:lang==="hu"?"Főoldal":"Home page",choice:"keep"},{url:u+"/rolunk",title:lang==="hu"?"Rólunk":"About",choice:"keep"},{url:u+"/arak",title:lang==="hu"?"Árak":"Prices",choice:"keep"}];renderSitePages({url:u,title:u});return}
+  try{const r=await fetch("/api/site-peek",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({url:u,lang})});const j=await r.json();if(!r.ok||!j.ok)throw new Error(j.error||"");
+    sitePages=j.pages.map(p=>({...p,choice:"keep"}));renderSitePages(j)}catch(err){sitePages=[];box.innerHTML=`<div class="st">${esc(err.message||"")}</div>`}};
+$("#f-site").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("#site-scan").click()}});
+async function uploadAll(order,token){let fail=0;const btn=$("#next"),ok=upFiles.filter(f=>f.size<=MAXF);fail=upFiles.length-ok.length;
+  for(let i=0;i<ok.length;i++){btn.textContent=`${T[lang]["up-ing"]} ${i+1}/${ok.length}…`;
+    try{const r=await fetch("/api/upload",{method:"POST",headers:{"x-order":order,"x-token":token,"x-filename":encodeURIComponent(ok[i].name),"x-lang":lang,"content-type":ok[i].type||"application/octet-stream"},body:ok[i]});if(!r.ok)fail++}catch(e){fail++}}
+  return fail}
 
 /* events */
 $("#lang-hu").onclick=()=>{lang="hu";applyStatic()};
@@ -1585,7 +1622,7 @@ const drop=$("#drop"),fi=$("#f-files");
 ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
 ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("over")}));
 drop.addEventListener("drop",e=>handleFiles(e.dataTransfer.files));
-fi.addEventListener("change",()=>handleFiles(fi.files));
+fi.addEventListener("change",()=>{handleFiles(fi.files);fi.value=""});
 $("#f-name").addEventListener("input",()=>{$("#biz").value=$("#f-name").value;renderSite()});
 function showStep(){["p1","p2","p3"].forEach((id,i)=>{$("#"+id).hidden=i+1!==step});document.querySelectorAll("#prog i").forEach((el,i)=>el.classList.toggle("on",i<step));$("#back").style.visibility=step>1?"visible":"hidden";$("#next").textContent=step===3?T[lang].submit:T[lang].next}
 $("#back").onclick=()=>{if(step>1){step--;showStep()}};
@@ -1596,17 +1633,19 @@ const ATTR=(()=>{const q=new URLSearchParams(location.search),a={};["utm_source"
 async function postIntake(data){const r=await fetch("/api/intake",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...data,lang,website:"",attr:ATTR})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||(lang==="hu"?"Nem sikerült elküldeni. Próbáld újra, vagy írj a hello@webbridge.hu címre.":"Could not send. Please try again or email hello@webbridge.hu."));return j}
 $("#form").addEventListener("submit",async e=>{e.preventDefault();if(step<3){step++;showStep();return}
   if(!$("#f-terms").checked){$("#f-err").hidden=false;return}$("#f-err").hidden=true;
-  let code="WB-"+new Date().toISOString().slice(2,10).replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
+  let upFail=false;let code="WB-"+new Date().toISOString().slice(2,10).replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
   if(LIVE){const em=$("#f-email").value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){$("#f-err").hidden=false;$("#f-err").textContent=lang==="hu"?"Adj meg egy érvényes e-mail-címet.":"Please enter a valid email address.";$("#f-email").focus();return}
     const btn=$("#next");btn.disabled=true;
     try{const r=await postIntake({kind:"order",business:$("#f-name").value,what:$("#f-what").value,who:$("#f-who").value,tone:$("#f-tone").selectedOptions[0]?.textContent||"",industry:ind.id,email:em,
       domain_mode:$("#f-dom").value,domain_name:$("#f-domname").value,buyer_type:$("#fb-b2c").getAttribute("aria-pressed")==="true"?"b2c":"b2b",company:$("#f-co").value,vat_id:$("#f-vat").value,
       billing_addr:$("#f-addr").value,invoice_lang:$("#f-ilang").value,currency:$("#f-cur").value,extra:$("#f-extra").value,terms:true,start_now:$("#f-start").checked,
-      items:[...sel],files:[...(fi.files||[])].map(f=>f.name)});code=r.order;
+      items:[...sel],files:upFiles.map(f=>f.name),site:($("#f-site").value.trim()||$("#f-site-notes").value.trim())?{url:$("#f-site").value.trim(),notes:$("#f-site-notes").value,pages:sitePages}:null});code=r.order;
+      if(upFiles.length){const fail=r.upload?await uploadAll(r.order,r.upload):upFiles.length;if(fail)upFail=true}
       try{const c_=compute(),v_=c_.best&&c_.best.o<c_.raw.o?c_.best.o:c_.raw.o;window.wbConv&&window.wbConv(v_,cur,code,em)}catch(e){}}
     catch(err){btn.disabled=false;$("#f-err").hidden=false;$("#f-err").textContent=err.message;return}btn.disabled=false}
   ["p1","p2","p3","fnav"].forEach(id=>$("#"+id).hidden=true);$("#fnav").style.display="none";
   $("#code").textContent=code;$("[data-t='d-proto']").hidden=LIVE;
+  {let w=$("#up-warn");if(upFail){if(!w){w=document.createElement("p");w.id="up-warn";w.className="c-err";$("#code").after(w)}w.textContent=T[lang]["up-fail"];w.hidden=false}else if(w)w.hidden=true}
   $("#pdone").hidden=false;renderEta();run();confetti($("#pdone"))});
 
 

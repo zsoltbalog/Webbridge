@@ -1,10 +1,11 @@
 // POST /api/intake – a weboldal űrlapjai (rendelés, visszahívás, chat-érdeklődő) ide küldenek.
-import { Env, json, bad, clean, isEmail, orderNo, nowIso, upsertCustomer, logEvent, priceOf, itemById, money, sketchAmount, cleanAttr, sourceLabel } from "../../lib/core";
+import { Env, json, bad, clean, isEmail, orderNo, nowIso, rid, esc, upsertCustomer, logEvent, priceOf, itemById, money, sketchAmount, cleanAttr, sourceLabel } from "../../lib/core";
 import { sendMail, layout, rows } from "../../lib/mail";
+import { normalizeUrl, reviewSite, SiteBrief } from "../../lib/site";
 
 type Body = Record<string, unknown>;
 
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUntil }) => {
   let b: Body;
   try { b = (await request.json()) as Body; } catch { return bad("Érvénytelen kérés."); }
   if (clean(b.website)) return json({ ok: true }); // honeypot: botoknak csendben "ok"
@@ -37,6 +38,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     what: clean(b.what, 600), who: clean(b.who, 600), tone: clean(b.tone, 100), industry: clean(b.industry, 60),
     extra: clean(b.extra, 3000), files: (Array.isArray(b.files) ? b.files : []).slice(0, 20).map((x) => clean(x, 200)),
     start_now: b.start_now === true, invoice_lang: clean(b.invoice_lang, 2),
+    site: siteFrom(b.site), upload_token: rid("up_", 24), uploads: [] as unknown[],
   };
   const id = orderNo();
   const t = nowIso();
@@ -73,12 +75,42 @@ ${rows([["Business", business], ["Items", itemNames], ["One-off (net)", money(on
   // Belső értesítés
   await sendMail(env, {
     to: env.NOTIFY_TO, subject: `🟠 Új rendelés ${id} – ${business || email}`, template: "internal_new_order", customer_id: cust.id, project_id: id, replyTo: email,
-    html: layout("hu", `Új rendelés: ${business || email}`, rows([["Rendelés", id], ["E-mail", email], ["Tételek", itemNames], ["Egyszeri", money(once, cur)], ["Havi", monthly ? money(monthly, cur) : ""], ["Domain", `${clean(b.domain_mode, 10)} ${clean(b.domain_name, 200)}`], ["Forrás", src + (attr.utm_campaign ? ` · ${attr.utm_campaign}` : "")], ["Mivel foglalkozik", brief.what], ["Vevők", brief.who], ["Hangnem", brief.tone], ["Egyéb", brief.extra]]),
+    html: layout("hu", `Új rendelés: ${business || email}`, rows([["Rendelés", id], ["E-mail", email], ["Tételek", itemNames], ["Egyszeri", money(once, cur)], ["Havi", monthly ? money(monthly, cur) : ""], ["Domain", `${clean(b.domain_mode, 10)} ${clean(b.domain_name, 200)}`], ["Forrás", src + (attr.utm_campaign ? ` · ${attr.utm_campaign}` : "")], ["Mivel foglalkozik", brief.what], ["Vevők", brief.who], ["Hangnem", brief.tone], ["Egyéb", brief.extra], ["Meglévő oldal", brief.site ? brief.site.url : ""], ["Utasítások az oldalhoz", brief.site?.notes || ""], ["Oldalak", brief.site ? brief.site.pages.map((p) => `${p.title}: ${({ keep: "marad", change: "más legyen", drop: "nem kell" } as Record<string, string>)[p.choice] || p.choice}`).join("; ") : ""], ["Csatolt fájlok", brief.files.join(", ")]]) + (brief.site ? "<p><i>Az oldal automatikus átnézése pár perc múlva megjelenik a CRM idővonalán.</i></p>" : ""),
       { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${cust.id}` }),
   });
 
-  return json({ ok: true, order: id });
+  if (brief.site) waitUntil(siteReviewJob(env, id, cust.id, brief.site, { business, what: brief.what, items: items.map((x) => itemById(x)!.hu) }));
+  return json({ ok: true, order: id, upload: env.UPLOADS ? brief.upload_token : null });
 };
+
+function siteFrom(v: unknown): SiteBrief | null {
+  if (!v || typeof v !== "object") return null;
+  const o = v as Record<string, unknown>;
+  const u = normalizeUrl(clean(o.url, 500));
+  const notes = clean(o.notes, 4000);
+  if (!u && !notes) return null;
+  const pages = (Array.isArray(o.pages) ? o.pages : []).slice(0, 25).map((p) => {
+    const x = (p || {}) as Record<string, unknown>;
+    const c = clean(x.choice, 10);
+    return { url: clean(x.url, 500), title: clean(x.title, 100), choice: ["keep", "change", "drop"].includes(c) ? c : "keep" };
+  }).filter((p) => p.url);
+  return { url: u ? u.toString() : "", notes, pages };
+}
+
+async function siteReviewJob(env: Env, projectId: string, customerId: string, site: SiteBrief, ctx: { business: string; what: string; items: string[] }) {
+  if (!site.url) return;
+  const review = await reviewSite(env, site, ctx);
+  if (!review) return;
+  const cur = await env.DB.prepare("SELECT brief FROM projects WHERE id=?1").bind(projectId).first<{ brief: string }>();
+  const b = JSON.parse(cur?.brief || "{}");
+  b.site_review = review;
+  await env.DB.prepare("UPDATE projects SET brief=?1 WHERE id=?2").bind(JSON.stringify(b), projectId).run();
+  await logEvent(env, { customer_id: customerId, project_id: projectId, kind: "system", title: "A meglévő weboldal átnézve", body: review });
+  await sendMail(env, {
+    to: env.NOTIFY_TO, subject: `🔎 Meglévő oldal átnézve – ${projectId}`, template: "internal_site_review", customer_id: customerId, project_id: projectId,
+    html: layout("hu", `Meglévő oldal: ${site.url}`, `<pre style="white-space:pre-wrap;font-family:inherit">${esc(review)}</pre>`, { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${customerId}` }),
+  });
+}
 
 async function callback(env: Env, b: Body, lang: string) {
   const hu = lang === "hu";

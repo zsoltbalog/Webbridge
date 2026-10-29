@@ -125,11 +125,20 @@ async function detail(id){
   app.querySelectorAll("[data-items]").forEach(b=>b.onclick=()=>itemsDlg(b.dataset.items,JSON.parse(b.dataset.cur||"[]")));
 }
 
+const CH={keep:"marad",change:"más legyen",drop:"nem kell"};
+function siteDl(b){let h="";const st=b.site;
+  if(st&&st.url)h+=`<dt>Meglévő oldal</dt><dd><a href="${esc(st.url)}" target="_blank" rel="noopener noreferrer">${esc(st.url)}</a></dd>`;
+  if(st&&st.notes)h+=`<dt>Utasítások</dt><dd style="white-space:pre-wrap">${esc(st.notes)}</dd>`;
+  if(st&&st.pages&&st.pages.length)h+=`<dt>Oldalak</dt><dd>${st.pages.map(x=>`${esc(x.title)}: <b>${CH[x.choice]||esc(x.choice)}</b>`).join(" · ")}</dd>`;
+  const up=b.uploads||[];
+  if(up.length)h+=`<dt>Fájlok (${up.length})</dt><dd>${up.map(f=>`<a href="/api/admin/file?key=${encodeURIComponent(f.key)}">${esc(f.name)}</a> <span class="mut">${Math.round(f.size/1024)} KB</span>`).join("<br>")}</dd>`;
+  else if(b.files&&b.files.length)h+=`<dt>Fájlok</dt><dd class="mut">${esc(b.files.join(", "))} (nem töltődtek fel – e-mailben kérd el)</dd>`;
+  return h}
 function proj(p){
   const items=JSON.parse(p.items||"[]"),brief=JSON.parse(p.brief||"{}");
   return `<div class="card proj"><div class="row" style="justify-content:space-between"><div><b>${esc(p.title||p.id)}</b> <span class="mut sm">${p.id}</span>${["live","care","lost"].includes(p.stage)?"":`<div>${sla(p.sla)}</div>`}</div><select data-stage="${p.id}" style="width:auto">${Object.entries(STAGES).map(([k,v])=>`<option value="${k}" ${k===p.stage?"selected":""}>${v}</option>`).join("")}</select></div>
   <div class="chips" style="margin:10px 0">${items.map(i=>`<span class="dot">${esc(ITEMS[i]||i)}</span>`).join("")}<button class="btn sm" data-items="${p.id}" data-cur='${JSON.stringify(items)}' style="padding:2px 8px">Tételek</button></div>
-  <dl class="dl sm"><dt>Érték (nettó)</dt><dd><b>${money(p.amount,p.currency)}</b></dd>${p.due_at?`<dt>Határidő</dt><dd>${dt(p.due_at)}</dd>`:""}<dt>Domain</dt><dd>${esc([p.domain_mode,p.domain_name].filter(Boolean).join(" · ")||"–")}</dd>${attrTxt(p.attribution)?`<dt>Forrás</dt><dd>${esc(attrTxt(p.attribution))}</dd>`:""}${brief.what?`<dt>Mivel foglalkozik</dt><dd>${esc(brief.what)}</dd>`:""}${brief.who?`<dt>Vevők</dt><dd>${esc(brief.who)}</dd>`:""}${brief.tone?`<dt>Hangnem</dt><dd>${esc(brief.tone)}</dd>`:""}${brief.extra?`<dt>Egyéb</dt><dd>${esc(brief.extra)}</dd>`:""}</dl>
+  <dl class="dl sm"><dt>Érték (nettó)</dt><dd><b>${money(p.amount,p.currency)}</b></dd>${p.due_at?`<dt>Határidő</dt><dd>${dt(p.due_at)}</dd>`:""}<dt>Domain</dt><dd>${esc([p.domain_mode,p.domain_name].filter(Boolean).join(" · ")||"–")}</dd>${attrTxt(p.attribution)?`<dt>Forrás</dt><dd>${esc(attrTxt(p.attribution))}</dd>`:""}${brief.what?`<dt>Mivel foglalkozik</dt><dd>${esc(brief.what)}</dd>`:""}${brief.who?`<dt>Vevők</dt><dd>${esc(brief.who)}</dd>`:""}${brief.tone?`<dt>Hangnem</dt><dd>${esc(brief.tone)}</dd>`:""}${brief.extra?`<dt>Egyéb</dt><dd>${esc(brief.extra)}</dd>`:""}${siteDl(brief)}</dl>${brief.site_review?`<details style="margin-top:8px"><summary class="sm"><b>Meglévő oldal – automatikus átnézés</b></summary><div class="sm" style="white-space:pre-wrap;margin-top:6px">${esc(brief.site_review)}</div></details>`:""}
   <div class="row" style="margin-top:10px"><input id="na-${p.id}" placeholder="Következő lépés" value="${esc(p.next_action||"")}" style="flex:2;min-width:180px"><input id="nat-${p.id}" type="datetime-local" value="${p.next_action_at?new Date(new Date(p.next_action_at)-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16):""}" style="flex:1;min-width:150px"><button class="btn" data-next="${p.id}">Mentés</button></div>
   <div class="row" style="margin-top:10px"><button class="btn" data-pay="${p.id}:sketch">Vázlatdíj-link</button><button class="btn" data-pay="${p.id}:deposit">Előleg-link (50%)</button><button class="btn" data-pay="${p.id}:final">Végösszeg-link</button><button class="btn pri" data-mail="${p.id}">E-mail írása</button></div></div>`;
 }

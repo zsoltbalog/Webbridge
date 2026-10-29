@@ -13,6 +13,7 @@ export interface Env {
   ANTHROPIC_API_KEY?: string;       // titok (Pult AI, később)
   CRON_SECRET?: string;             // titok: az óránkénti időzítő (/api/cron) kulcsa
   REVIEW_URL?: string;              // Google-értékelés link (értékeléskérő levélhez)
+  UPLOADS?: R2Bucket;               // R2: az ügyfelek feltöltött fájljai (projects/<rendelés>/…)
 }
 
 export type Ctx = EventContext<Env, string, Record<string, unknown>>;

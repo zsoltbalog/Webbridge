@@ -7,12 +7,59 @@ export interface Work { id: string; customer_id: string; project_id: string | nu
 
 export async function workDetail(env: Env, workId: string) {
   const versions = (await env.DB.prepare(
-    "SELECT v.id,v.n,v.note,v.files,v.status,v.created_at,v.approved_at,v.approved_via,v.chosen,u.name AS approved_by_name,u.email AS approved_by_email FROM versions v LEFT JOIN portal_users u ON u.id=v.approved_by WHERE v.work_id=?1 ORDER BY v.n DESC"
+    "SELECT v.id,v.n,v.note,v.files,v.preview_url,v.status,v.created_at,v.approved_at,v.approved_via,v.chosen,u.name AS approved_by_name,u.email AS approved_by_email FROM versions v LEFT JOIN portal_users u ON u.id=v.approved_by WHERE v.work_id=?1 ORDER BY v.n DESC"
   ).bind(workId).all()).results.map((v) => ({ ...v, files: JSON.parse(String(v.files || "[]")) }));
   const comments = (await env.DB.prepare(
     "SELECT c.*, COALESCE(u.name,u.email,c.author_name) AS author, u.role AS author_role FROM comments c LEFT JOIN portal_users u ON u.id=c.user_id WHERE c.work_id=?1 ORDER BY c.created_at"
   ).bind(workId).all()).results.map((c) => ({ ...c, attachment: c.attachment ? JSON.parse(String(c.attachment)) : null }));
-  return { versions, comments };
+  const decisions = (await env.DB.prepare(
+    "SELECT d.version_id,d.post_id,d.decision,d.at,COALESCE(u.name,u.email) AS by_name FROM post_decisions d LEFT JOIN portal_users u ON u.id=d.user_id WHERE d.work_id=?1"
+  ).bind(workId).all()).results;
+  return { versions, comments, decisions };
+}
+
+/* ---------- Posztnaptár (kind "posts") ---------- */
+export interface Post { id: string; date: string; channel: string; text: string; image_key: string | null; notes: string }
+export const POST_ID_RE = /^[\w.:-]{1,64}$/;
+const CHANNELS = ["facebook", "instagram", "linkedin", "google"];
+
+/** A verzió JSON-fájljából beolvasott posztok (validálva, max. 200). A képet fájlnév vagy kulcs alapján a verzió fájljaihoz kötjük. */
+export async function versionPosts(env: Env, filesJson: string): Promise<Post[] | null> {
+  const files = JSON.parse(filesJson || "[]") as { key: string; name: string; type: string }[];
+  const jf = files.find((f) => f.type === "application/json" || /\.json$/i.test(f.name));
+  if (!jf || !env.UPLOADS) return null;
+  const o = await env.UPLOADS.get(jf.key);
+  if (!o) return null;
+  let raw: unknown;
+  try { raw = JSON.parse(await o.text()); } catch { return null; }
+  return normalizePosts(raw, files);
+}
+export function normalizePosts(raw: unknown, files: { key: string; name: string }[]): Post[] {
+  const arr = Array.isArray(raw) ? raw : raw && typeof raw === "object" && Array.isArray((raw as { posts?: unknown }).posts) ? (raw as { posts: unknown[] }).posts : [];
+  const seen = new Set<string>(), out: Post[] = [];
+  for (const p of arr.slice(0, 200)) {
+    if (!p || typeof p !== "object") continue;
+    const o = p as Record<string, unknown>;
+    const id = String(o.id ?? "").trim().slice(0, 64);
+    if (!POST_ID_RE.test(id) || seen.has(id)) continue;
+    seen.add(id);
+    const img = String(o.image_key ?? o.image ?? "").trim();
+    const f = img ? files.find((x) => x.key === img) || files.find((x) => x.name === img) : null;
+    const ch = String(o.channel ?? "").toLowerCase();
+    out.push({
+      id, date: /^\d{4}-\d{2}-\d{2}$/.test(String(o.date ?? "")) ? String(o.date) : "",
+      channel: CHANNELS.includes(ch) ? ch : "other", text: String(o.text ?? "").slice(0, 5000),
+      image_key: f ? f.key : null, notes: String(o.notes ?? "").slice(0, 1000),
+    });
+  }
+  return out;
+}
+
+/** Posztonkénti döntés mentése (owner és reviewer is). */
+export async function setPostDecision(env: Env, workId: string, versionId: string, postId: string, decision: string, userId: string) {
+  await env.DB.prepare(
+    "INSERT INTO post_decisions (work_id,version_id,post_id,decision,user_id,at) VALUES (?1,?2,?3,?4,?5,?6) ON CONFLICT(version_id,post_id) DO UPDATE SET decision=excluded.decision, user_id=excluded.user_id, at=excluded.at"
+  ).bind(workId, versionId, postId, decision, userId, nowIso()).run();
 }
 
 export const replyTo = (env: Env, workId: string) => (env.REPLY_DOMAIN ? `pult+${workId}@${env.REPLY_DOMAIN}` : env.MAIL_FROM);
@@ -21,12 +68,14 @@ export const replyTo = (env: Env, workId: string) => (env.REPLY_DOMAIN ? `pult+$
 export async function addComment(env: Env, c: {
   work: Work; version_id: string; parent_id?: string | null; author_kind: "customer" | "staff" | "email"; user_id?: string | null; author_name?: string | null;
   file_key?: string | null; page?: number | null; x?: number | null; y?: number | null; action?: string | null; body: string; attachment?: unknown;
+  device?: string | null; path?: string | null; quote?: string | null; anchor?: string | null; post_id?: string | null; proposal?: boolean;
 }) {
   const id = rid("cmt_"), t = nowIso();
   await env.DB.prepare(
-    "INSERT INTO comments (id,work_id,version_id,parent_id,author_kind,user_id,author_name,file_key,page,x,y,action,body,attachment,status,created_at,updated_at) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,'open',?15,?15)"
+    "INSERT INTO comments (id,work_id,version_id,parent_id,author_kind,user_id,author_name,file_key,page,x,y,action,body,attachment,status,created_at,updated_at,device,path,quote,anchor,post_id,proposal) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,'open',?15,?15,?16,?17,?18,?19,?20,?21)"
   ).bind(id, c.work.id, c.version_id, c.parent_id ?? null, c.author_kind, c.user_id ?? null, c.author_name ?? null, c.file_key ?? null, c.page ?? null, c.x ?? null, c.y ?? null,
-    c.action ?? null, c.body, c.attachment ? JSON.stringify(c.attachment) : null, t).run();
+    c.action ?? null, c.body, c.attachment ? JSON.stringify(c.attachment) : null, t,
+    c.device ?? null, c.path ?? null, c.quote ?? null, c.anchor ?? null, c.post_id ?? null, c.proposal ? 1 : 0).run();
   await env.DB.prepare("UPDATE works SET updated_at=?1 WHERE id=?2").bind(t, c.work.id).run();
   if (c.author_kind !== "staff") {
     const act = ({ change: "Változtatás", add: "Hozzáadás", remove: "Törlés" } as Record<string, string>)[c.action || ""] || "Megjegyzés";
@@ -42,6 +91,15 @@ export async function approveVersion(env: Env, work: Work, versionId: string, u:
   if (!v) return { ok: false, error: "Nincs ilyen verzió." };
   if (v.status === "approved") return { ok: true, already: true, n: v.n };
   if (v.status === "superseded") return { ok: false, error: "Ezt a verziót már egy újabb váltotta." };
+  if (work.kind === "posts") {
+    const posts = await versionPosts(env, v.files);
+    if (posts && posts.length) {
+      const dec = (await env.DB.prepare("SELECT post_id FROM post_decisions WHERE version_id=?1").bind(v.id).all<{ post_id: string }>()).results;
+      const have = new Set(dec.map((d) => d.post_id));
+      const missing = posts.filter((p) => !have.has(p.id)).length;
+      if (missing) return { ok: false, error: u.lang === "en" ? `${missing} post(s) still need a decision.` : `Még ${missing} poszthoz nincs döntés (Mehet / Változtatás / Kihagyjuk).` };
+    }
+  }
   const files = JSON.parse(v.files || "[]") as { key: string }[];
   const pick = chosen && files.some((f) => f.key === chosen) ? chosen : null;
   const t = nowIso();
@@ -62,7 +120,10 @@ export async function approveVersion(env: Env, work: Work, versionId: string, u:
 export async function feedbackSubmitted(env: Env, work: Work, versionId: string, u: PUser) {
   const v = await env.DB.prepare("SELECT n FROM versions WHERE id=?1 AND work_id=?2").bind(versionId, work.id).first<{ n: number }>();
   if (!v) return { ok: false, error: "Nincs ilyen verzió." };
-  const open = (await env.DB.prepare("SELECT action,body,page FROM comments WHERE version_id=?1 AND parent_id IS NULL AND status='open' AND author_kind<>'staff' ORDER BY created_at").bind(versionId).all<{ action: string; body: string; page: number }>()).results;
+  const open = (await env.DB.prepare("SELECT action,body,page,device,path,quote,post_id,proposal FROM comments WHERE version_id=?1 AND parent_id IS NULL AND status='open' AND author_kind<>'staff' ORDER BY created_at").bind(versionId)
+    .all<{ action: string; body: string; page: number; device: string | null; path: string | null; quote: string | null; post_id: string | null; proposal: number }>()).results;
+  const where = (c: { page: number; device: string | null; path: string | null; quote: string | null; post_id: string | null; proposal: number }) =>
+    [c.page ? `${c.page}. oldal` : "", c.device ? `${c.device === "mobile" ? "Mobil" : "Gép"} · ${c.path || "/"}` : "", c.post_id ? `poszt: ${c.post_id}${c.proposal ? ", új szöveg" : ""}` : "", c.quote ? `„${c.quote.slice(0, 120)}”` : ""].filter(Boolean).join(" · ");
   if (u.role === "owner") {
     await env.DB.batch([
       env.DB.prepare("UPDATE versions SET status='changes' WHERE id=?1 AND status='review'").bind(versionId),
@@ -72,7 +133,7 @@ export async function feedbackSubmitted(env: Env, work: Work, versionId: string,
   const act = (a: string) => ({ change: "Változtatás", add: "Hozzáadás", remove: "Törlés" } as Record<string, string>)[a] || "Megjegyzés";
   await sendMail(env, {
     to: env.NOTIFY_TO, subject: `✏️ Visszajelzés: ${work.title} v${v.n} (${open.length} pont)`, template: "internal_feedback", customer_id: work.customer_id, project_id: work.project_id,
-    html: layout("hu", `Visszajelzés: ${work.title} v${v.n}`, `<p>${esc(u.email)} (${u.role === "owner" ? "fiók gazdája" : "véleményező"}) elküldte a visszajelzést.</p><ol>${open.map((c) => `<li><b>${act(c.action)}</b>${c.page ? ` (${c.page}. oldal)` : ""}: ${esc(c.body)}</li>`).join("")}</ol>`, { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${work.customer_id}` }),
+    html: layout("hu", `Visszajelzés: ${work.title} v${v.n}`, `<p>${esc(u.email)} (${u.role === "owner" ? "fiók gazdája" : "véleményező"}) elküldte a visszajelzést.</p><ol>${open.map((c) => `<li><b>${act(c.action)}</b>${where(c) ? ` (${esc(where(c))})` : ""}: ${esc(c.body)}</li>`).join("")}</ol>`, { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${work.customer_id}` }),
   });
   await logEvent(env, { customer_id: work.customer_id, project_id: work.project_id, kind: "change_request", actor: "customer", title: `Visszajelzés elküldve: ${work.title} v${v.n} (${open.length} pont)` });
   return { ok: true, count: open.length };

@@ -1,6 +1,7 @@
 // GET /api/admin/works/:id – munka verziókkal és megjegyzésekkel.
 // POST /api/admin/works/:id
-//   {action:"version", files:[{key,name,type,size,label?}], note?, notify?:true}  – új verzió (az előző "superseded")
+//   {action:"version", files:[{key,name,type,size,label?}], preview_url?, note?, notify?:true}  – új verzió (az előző "superseded")
+//     weboldalnál (kind "web") elég a preview_url (https), a fájl nem kötelező
 //   {action:"reply", parent_id, body}                                            – Webbridge-válasz egy megjegyzésre
 //   {action:"comment_status", comment_id, status: open|doing|done}
 //   {action:"status", status: draft|review|changes|approved}
@@ -27,15 +28,21 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, params }
       const o = (f || {}) as Record<string, unknown>;
       return { key: clean(o.key, 300), name: clean(o.name, 120), type: clean(o.type, 100), size: Number(o.size) || 0, label: clean(o.label, 80) || undefined };
     }).filter((f) => f.key.startsWith(`pult/${w.customer_id}/works/${w.id}/`));
-    if (!files.length) return bad("Legalább egy fájl kell.");
+    let preview: string | null = null;
+    const pu = clean(b.preview_url, 500);
+    if (pu) {
+      if (w.kind !== "web") return bad("Előnézeti URL csak weboldalnál adható meg.");
+      try { const u = new URL(pu); if (u.protocol !== "https:" || u.username || u.password) throw 0; preview = u.toString(); } catch { return bad("Az előnézeti URL legyen érvényes https:// cím."); }
+    }
+    if (!files.length && !preview) return bad(w.kind === "web" ? "Adj meg előnézeti URL-t vagy tölts fel fájlt." : "Legalább egy fájl kell.");
     const last = await env.DB.prepare("SELECT MAX(n) n FROM versions WHERE work_id=?1").bind(w.id).first<{ n: number | null }>();
     const n = (last?.n || 0) + 1, id = rid("ver_"), note = clean(b.note, 2000) || null;
     await env.DB.batch([
       env.DB.prepare("UPDATE versions SET status='superseded' WHERE work_id=?1 AND status IN ('review','changes')").bind(w.id),
-      env.DB.prepare("INSERT INTO versions (id,work_id,n,note,files,status,created_at) VALUES (?1,?2,?3,?4,?5,'review',?6)").bind(id, w.id, n, note, JSON.stringify(files), t),
+      env.DB.prepare("INSERT INTO versions (id,work_id,n,note,files,preview_url,status,created_at) VALUES (?1,?2,?3,?4,?5,?6,'review',?7)").bind(id, w.id, n, note, JSON.stringify(files), preview, t),
       env.DB.prepare("UPDATE works SET status='review', updated_at=?1 WHERE id=?2").bind(t, w.id),
     ]);
-    await logEvent(env, { customer_id: w.customer_id, project_id: w.project_id, kind: "note", actor: "zsolt", title: `Pult: ${w.title} v${n} feltöltve (${files.length} fájl)`, body: note || undefined });
+    await logEvent(env, { customer_id: w.customer_id, project_id: w.project_id, kind: "note", actor: "zsolt", title: `Pult: ${w.title} v${n} feltöltve (${preview ? "előnézet" + (files.length ? ` + ${files.length} fájl` : "") : `${files.length} fájl`})`, body: note || undefined });
     const mail = b.notify === false ? { ok: true, skipped: true } : await notifyNewVersion(env, w, { id, n, note });
     return json({ ok: true, id, n, mail });
   }

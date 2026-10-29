@@ -76,6 +76,39 @@ textarea{min-height:84px;resize:vertical}
 dialog{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);width:min(460px,calc(100vw - 24px));padding:20px}dialog::backdrop{background:rgba(0,0,0,.45)}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .help{font-size:13px;color:var(--muted)}
+/* weboldal-előnézet */
+.wtool{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.wtool .seg{flex:none}.wtool .seg button{padding:7px 14px}
+.wpath{display:flex;align-items:center;gap:6px;flex:1 1 220px;min-width:0;margin:0}.wpath label{white-space:nowrap}.wpath input{padding:7px 10px;min-width:0;flex:1}
+#cmode[aria-pressed="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--on-cobalt)}
+.devwrap{display:flex;justify-content:center;min-width:0}
+.dev{position:relative;overflow:hidden;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.12);flex:none}
+.dev .frame{position:absolute;left:0;top:0;transform-origin:0 0}.dev iframe{border:0;width:100%;height:100%;display:block;background:#fff}
+.ovl{position:absolute;inset:0;cursor:crosshair;background:color-mix(in srgb,var(--cobalt) 7%,transparent);box-shadow:inset 0 0 0 4px var(--cobalt)}
+/* dokumentum */
+.doc{background:var(--surface);color:var(--ink);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.12);padding:28px 34px;max-width:820px;width:100%;margin:0 auto;overflow-wrap:anywhere;font-size:16px;line-height:1.6}
+.doc h1,.doc h2,.doc h3,.doc h4{margin:1.2em 0 .45em}.doc h1{font-size:30px}.doc h2{font-size:23px}.doc h3{font-size:19px}.doc h4,.doc h5,.doc h6{font-size:16px}
+.doc>:first-child{margin-top:0}.doc p,.doc ul,.doc ol,.doc blockquote,.doc pre,.doc .tw{margin:0 0 .9em}.doc ul,.doc ol{padding-left:1.4em}.doc li{margin:.2em 0}.doc li.ind{margin-left:1.4em}
+.doc blockquote{border-left:3px solid var(--line);padding:2px 12px;color:var(--muted)}.doc hr{border:0;border-top:1px solid var(--line);margin:1.4em 0}
+.doc code{background:var(--sunk);border-radius:4px;padding:1px 4px;font-size:.92em}.doc pre{background:var(--sunk);border-radius:6px;padding:10px 12px;overflow-x:auto;white-space:pre-wrap}
+.doc .tw{overflow-x:auto}.doc table{border-collapse:collapse;min-width:100%;font-size:14px}.doc th,.doc td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}.doc th{background:var(--sunk)}
+mark.qm{background:color-mix(in srgb,var(--hazard) 32%,transparent);color:inherit;border-radius:2px;cursor:pointer}mark.qm.done,mark.qm.verified{background:color-mix(in srgb,var(--ok) 26%,transparent)}mark.qm.hl{outline:2px solid var(--cobalt)}
+.selbtn{position:fixed;z-index:45;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.quote{font-size:13px;border-left:3px solid var(--hazard);padding:1px 8px;color:var(--muted);font-style:italic;white-space:pre-wrap;overflow-wrap:anywhere}
+/* posztnaptár */
+.psum{display:flex;flex-wrap:wrap;gap:6px}.psum .tag{font-size:13px}
+.week{display:grid;gap:8px}.week>h3{font-size:16px;font-stretch:100%}
+.posts{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));align-items:start}
+.post{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;align-content:start;min-width:0}
+.post.d-ok{box-shadow:inset 0 3px 0 var(--ok)}.post.d-change{box-shadow:inset 0 3px 0 var(--warn)}.post.d-skip .pimg,.post.d-skip .ptext{opacity:.45}.post.hl{outline:2px solid var(--cobalt)}
+.post .phd{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+.post .pimg{width:100%;aspect-ratio:1/1;max-height:260px;object-fit:cover;border-radius:6px;background:var(--sunk);display:block}
+.ch{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;color:#fff}.ch-facebook{background:#1877F2}.ch-instagram{background:#C13584}.ch-linkedin{background:#0A66C2}.ch-google{background:#1E8A55}.ch-other{background:#58616F}
+.ptext{white-space:pre-wrap;font-size:14px;overflow-wrap:anywhere}
+.pbtns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.pbtns .btn{padding:7px 4px;font-size:13px;min-width:0}
+.pbtns .btn[aria-pressed="true"][data-dec="ok"]{background:var(--ok);border-color:var(--ok);color:#fff}.pbtns .btn[aria-pressed="true"][data-dec="change"]{background:var(--warn);border-color:var(--warn);color:#fff}.pbtns .btn[aria-pressed="true"][data-dec="skip"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.dec{font-size:12px;font-weight:700}.dec.ok{color:var(--ok)}.dec.change{color:var(--warn)}.dec.skip{color:var(--muted)}
+.prop{font-size:13px;background:color-mix(in srgb,var(--warn) 12%,transparent);border-radius:6px;padding:6px 8px;white-space:pre-wrap;overflow-wrap:anywhere}
+@media (max-width:640px){.doc{padding:18px 16px}.stage{padding:8px}.wpath label{display:none}}
 @media (max-width:640px){#who{display:none!important}.brand small{display:none}header.top .btn{padding:7px 10px}}
 </style>
 </head>
@@ -115,7 +148,17 @@ const T={hu:{desk:"Pult",team:"Csapat",logout:"Kilépés",
   done:"Kész",teamT:"Csapat",teamP:"Hívd meg az üzlettársadat vagy a kollégádat. Megjegyzést írhat, de jóváhagyni és fizetni csak te tudsz.",
   invite:"Meghívó küldése",name:"Név (nem kötelező)",owner:"gazda",reviewer:"véleményező",remove:"Eltávolítás",never:"még nem lépett be",lastLogin:"utoljára",
   invited:"Meghívó elküldve.",err:"Hiba történt. Próbáld újra.",mail:"E-mailben is válaszolhatsz a levelünkre: az is ide kerül.",uploading:"Feltöltés…",file:"Fájl",
-  page:"oldal",dirOf:"irány"},
+  page:"oldal",dirOf:"irány",
+  livePreview:"Élő előnézet",view:"Nézet",mobile:"Mobil",desktop:"Gép",whichPage:"Melyik oldalon?",go:"Ugrás",cmode:"Megjegyzés mód",openNew:"Új lapon",
+  cmodeOff:"Görgess és kattintgass szabadon az előnézetben. Ha megvan, amihez írnál, kapcsold be a Megjegyzés módot, és kattints rá.",
+  cmodeOn:"Megjegyzés mód: kattints arra a részre, amihez írnál. Görgetéshez kapcsold ki.",
+  webNote:"Ha az előnézetben másik oldalra lépsz, írd be fent az útvonalát (pl. /rolunk).",
+  tipDoc:"Jelölj ki egy szövegrészt, és írd meg, mit változtatnál, adnál hozzá vagy törölnél.",selCmt:"Megjegyzés a kijelöléshez",docErr:"A dokumentum nem tölthető be.",
+  tipPosts:"Minden poszthoz válassz: Mehet, Változtatás vagy Kihagyjuk. A szöveget át is írhatod.",
+  p_ok:"Mehet",p_change:"Változtatás",p_skip:"Kihagyjuk",n_ok:"mehet",n_change:"változtatás",n_skip:"kihagyva",n_pending:"még vár döntésre",
+  editText:"Szöveg átírása",proposed:"Javasolt szöveg",needDec:"Jóváhagyás előtt minden poszthoz kell döntés – még {n} vár.",noDate:"Dátum nélkül",
+  postsErr:"A posztlista nem tölthető be.",cmtN:"megjegyzés",ourNote:"Tőlünk",post:"Poszt",
+  k_logo:"Logó",k_brand:"Arculat",k_flyer:"Szórólap",k_design:"Grafika",k_web:"Weboldal",k_doc:"Dokumentum",k_posts:"Posztok",k_other:"Egyéb"},
  en:{desk:"Desk",team:"Team",logout:"Sign out",
   loginT:"Sign in to the Desk",loginP:"See and review your materials here: logo, brand, flyer, website.",email:"Email address",sendLink:"Send sign-in link",or:"or",google:"Sign in with Google",
   sent:"If there's an account for this address, the sign-in link arrives in a few minutes. Check promotions and spam too.",useOrder:"Use the address you ordered with or were invited to.",
@@ -134,7 +177,17 @@ const T={hu:{desk:"Pult",team:"Csapat",logout:"Kilépés",
   done:"Done",teamT:"Team",teamP:"Invite your business partner or colleague. They can comment, but only you can approve and pay.",
   invite:"Send invite",name:"Name (optional)",owner:"owner",reviewer:"reviewer",remove:"Remove",never:"not signed in yet",lastLogin:"last",
   invited:"Invite sent.",err:"Something went wrong. Please try again.",mail:"You can also reply to our email: it lands here too.",uploading:"Uploading…",file:"File",
-  page:"page",dirOf:"direction"}};
+  page:"page",dirOf:"direction",
+  livePreview:"Live preview",view:"View",mobile:"Mobile",desktop:"Desktop",whichPage:"Which page?",go:"Go",cmode:"Comment mode",openNew:"New tab",
+  cmodeOff:"Scroll and click around the preview freely. When you find what you want to comment on, turn on Comment mode and click it.",
+  cmodeOn:"Comment mode: click the part you want to comment on. Turn it off to scroll.",
+  webNote:"If you go to another page in the preview, type its path above (e.g. /about).",
+  tipDoc:"Select some text and tell us what to change, add or remove.",selCmt:"Comment on selection",docErr:"The document could not be loaded.",
+  tipPosts:"For each post choose: Go, Change or Skip. You can also rewrite the text.",
+  p_ok:"Go",p_change:"Change",p_skip:"Skip",n_ok:"go",n_change:"change",n_skip:"skipped",n_pending:"awaiting decision",
+  editText:"Rewrite text",proposed:"Proposed text",needDec:"Every post needs a decision before approval – {n} left.",noDate:"No date",
+  postsErr:"The post list could not be loaded.",cmtN:"comment(s)",ourNote:"From us",post:"Post",
+  k_logo:"Logo",k_brand:"Brand",k_flyer:"Flyer",k_design:"Design",k_web:"Website",k_doc:"Document",k_posts:"Posts",k_other:"Other"}};
 const t=k=>T[lang][k]??k;
 const pgLabel=i=>lang==="hu"?`${i}. oldal`:`Page ${i}`;
 function toast(m){const e=$("#toast");e.textContent=m;e.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>e.hidden=true,3200)}
@@ -156,7 +209,7 @@ async function route(){
   const h=location.hash.slice(1);
   try{if(h.startsWith("w/"))await workView(h.slice(2));else await listView()}catch(e){app.innerHTML=`<div class="page"><div class="card empty">${esc(e.message)}</div></div>`}
 }
-window.addEventListener("hashchange",()=>{closePop();route()});
+window.addEventListener("hashchange",()=>{closePop();hideSel();route()});
 
 /* ---------- belépés ---------- */
 function loginView(){
@@ -175,7 +228,7 @@ async function listView(){
   const d=await api("works");if(d.__login)return loginView();
   app.innerHTML=`<div class="page"><h1>${t("works")}</h1><p class="mut">${t("worksP")}</p>
   ${d.works.length?`<div class="grid">${d.works.map(w=>{const f=(JSON.parse(w.last_files||"[]")||[]).find(x=>/^image\//.test(x.type));
-    return `<a class="card wcard" href="#w/${w.id}"><div class="th">${f?`<img src="${fileUrl(f.key)}" alt="" loading="lazy">`:`<span class="mut">PDF</span>`}</div><div class="bd"><div class="row" style="justify-content:space-between"><h3>${esc(w.title)}</h3>${stTag(w.status)}</div><div class="sm mut">${t("version")} ${w.last_n||1}${w.open_comments?` · ${w.open_comments} ${t("open")}`:""}</div></div></a>`}).join("")}</div>`:`<div class="card empty" style="margin-top:18px"><p class="mut">${t("noWorks")}</p></div>`}</div>`;
+    return `<a class="card wcard" href="#w/${w.id}"><div class="th">${f?`<img src="${fileUrl(f.key)}" alt="" loading="lazy">`:`<span class="mut">${esc(t("k_"+w.kind))}</span>`}</div><div class="bd"><div class="row" style="justify-content:space-between"><h3>${esc(w.title)}</h3>${stTag(w.status)}</div><div class="sm mut">${t("version")} ${w.last_n||1}${w.open_comments?` · ${w.open_comments} ${t("open")}`:""}</div></div></a>`}).join("")}</div>`:`<div class="card empty" style="margin-top:18px"><p class="mut">${t("noWorks")}</p></div>`}</div>`;
 }
 
 /* ---------- egy munka ---------- */
@@ -185,52 +238,80 @@ async function workView(id,keep){
   const sameWork=W&&W.work.id===id;W=d;
   if(!sameWork||!keep){VI=0;FI=0;CMP=false}
   if(VI>=W.versions.length)VI=0;
-  renderWork();
+  await show();
 }
+/** Posztoknál a JSON betöltése a megjelenítés előtt (a jóváhagyás feltétele is ebből számol). */
+async function show(){const v=curV();if(v&&W.work.kind==="posts")await loadPosts(v);renderWork()}
+/** Csak az oldalsáv frissítése (weboldalnál így nem töltődik újra az előnézet és nem vész el a görgetés). */
+async function refreshSide(){const d=await api("works/"+W.work.id);if(d.__login)return loginView();W=d;const side=app.querySelector(".side");if(!side)return renderWork();
+  const v=curV();side.outerHTML=asideHtml(v);bindAside(v)}
+/** A verzió megjeleníthető elemei: weboldalnál elöl az élő előnézet, utána a fájlok. */
+function viewFiles(v){const fs=v.files.slice();if(v.preview_url)fs.unshift({type:"preview",url:v.preview_url,key:"",name:t("livePreview"),label:t("livePreview")});return fs}
+const isVisual=f=>!!f&&(/^image\//.test(f.type)||f.type==="application/pdf"||/\.pdf$/i.test(f.name||""));
+const isMd=f=>!!f&&(f.type==="text/markdown"||/\.(md|markdown)$/i.test(f.name||""));
+const isDirMode=v=>v.files.length>1&&!["web","doc","posts"].includes(W.work.kind);
+function postStats(v){const ps=POSTS.get(v.id)||[];const ds=new Map(W.decisions.filter(d=>d.version_id===v.id).map(d=>[d.post_id,d.decision]));
+  const c={ok:0,change:0,skip:0,pending:0,total:ps.length};ps.forEach(p=>{const d=ds.get(p.id);if(d&&c[d]!=null)c[d]++;else c.pending++});return {c,ds}}
 const curV=()=>W.versions[VI];
 const editable=()=>{const v=curV();return v&&(v.status==="review"||v.status==="changes")};
 function rootComments(v){return W.comments.filter(c=>c.version_id===v.id&&!c.parent_id)}
 function renderWork(){
   const v=curV(),w=W.work;if(!v){app.innerHTML=`<div class="page"><a href="#">${t("back")}</a><div class="card empty">${t("noWorks")}</div></div>`;return}
-  if(FI>=v.files.length)FI=0;
-  const f=v.files[FI],prev=W.versions[VI+1],pf=prev&&(prev.files[FI]||prev.files[0]);
+  const kind=w.kind,vf=viewFiles(v),isPosts=kind==="posts";
+  if(FI>=vf.length)FI=0;
+  const f=vf[FI],prev=W.versions[VI+1],pf=prev&&(prev.files[FI]||prev.files[0]);
+  const cmpOk=!isPosts&&isVisual(f)&&isVisual(pf);if(!cmpOk)CMP=false;
   const roots=rootComments(v),num=new Map(roots.map((c,i)=>[c.id,i+1]));
-  const isOwner=W.me.role==="owner",multi=v.files.length>1;
-  const openCount=roots.filter(c=>c.status==="open"&&c.author_kind!=="staff").length;
+  const tabs=!isPosts&&vf.length>1;
+  const tip=!editable()?(v.status==="approved"?t("tipAp"):t("tipRo")):isPosts?t("tipPosts"):f&&f.type==="preview"?"":isMd(f)?t("tipDoc"):t("tip");
   app.innerHTML=`<div class="page"><a href="#" class="sm">${t("back")}</a>
    <div class="bar" style="margin-top:8px;justify-content:space-between"><div><h1 style="font-size:30px">${esc(w.title)}</h1></div>
     <div class="bar"><label class="sm mut" for="vsel">${t("version")}</label><select id="vsel" style="width:auto">${W.versions.map((x,i)=>`<option value="${i}" ${i===VI?"selected":""}>v${x.n} · ${dt(x.created_at)}${x.status==="approved"?" ✓":""}</option>`).join("")}</select>${stTag(v.status==="superseded"?"changes":v.status==="approved"?"approved":w.status)}</div></div>
    ${v.note?`<div class="note" style="margin-top:10px">${esc(v.note)}</div>`:""}
    <div class="wv"><section class="stage" aria-label="${esc(w.title)}">
-     <div class="bar" style="justify-content:space-between">${multi?`<div class="tabs" role="group">${v.files.map((x,i)=>`<button type="button" data-fi="${i}" aria-pressed="${i===FI}">${esc(x.label||x.name)}${v.chosen===x.key?" ✓":""}</button>`).join("")}</div>`:"<span></span>"}
-      ${pf?`<label class="sm"><input type="checkbox" id="cmpchk" ${CMP?"checked":""}> ${t("compare")}</label>`:""}</div>
-     <p class="help" style="margin:0">${editable()?t("tip"):v.status==="approved"?t("tipAp"):t("tipRo")}</p>
-     ${CMP&&pf?`<div class="cmp"><div><div class="sm mut">${t("prev")} (v${prev.n})</div><div id="vwprev"></div></div><div><div class="sm mut">${t("cur")} (v${v.n})</div><div id="vw"></div></div></div>`:`<div id="vw"></div>`}
+     ${tabs||cmpOk?`<div class="bar" style="justify-content:space-between">${tabs?`<div class="tabs" role="group">${vf.map((x,i)=>`<button type="button" data-fi="${i}" aria-pressed="${i===FI}">${esc(x.label||x.name)}${x.key&&v.chosen===x.key?" ✓":""}</button>`).join("")}</div>`:"<span></span>"}
+      ${cmpOk?`<label class="sm"><input type="checkbox" id="cmpchk" ${CMP?"checked":""}> ${t("compare")}</label>`:""}</div>`:""}
+     ${tip?`<p class="help" style="margin:0">${tip}</p>`:""}
+     ${CMP&&cmpOk?`<div class="cmp"><div><div class="sm mut">${t("prev")} (v${prev.n})</div><div id="vwprev"></div></div><div><div class="sm mut">${t("cur")} (v${v.n})</div><div id="vw"></div></div></div>`:`<div id="vw"></div>`}
    </section>
-   <aside class="side">
+   ${asideHtml(v)}</div></div>`;
+  $("#vsel").onchange=async e=>{VI=+e.target.value;FI=0;CMP=false;await show()};
+  app.querySelectorAll("[data-fi]").forEach(b=>b.onclick=()=>{FI=+b.dataset.fi;renderWork()});
+  const cc=$("#cmpchk");if(cc)cc.onchange=()=>{CMP=cc.checked;renderWork()};
+  bindAside(v);
+  if(isPosts)renderPosts($("#vw"),v,editable());
+  else renderFile($("#vw"),f,v,num,editable());
+  if(CMP&&cmpOk)renderFile($("#vwprev"),pf,prev,new Map(rootComments(prev).map((c,i)=>[c.id,i+1])),false);
+}
+function asideHtml(v){
+  const roots=rootComments(v),num=new Map(roots.map((c,i)=>[c.id,i+1]));
+  const isOwner=W.me.role==="owner",multi=isDirMode(v),vf=viewFiles(v),f=vf[FI]||vf[0]||{};
+  const openCount=roots.filter(c=>c.status==="open"&&c.author_kind!=="staff").length;
+  const pend=W.work.kind==="posts"?postStats(v).c.pending:0;
+  return `<aside class="side">
      <div class="card" style="padding:14px"><div class="row" style="justify-content:space-between"><h2 style="font-size:18px">${t("comments")}</h2>${editable()?`<button class="btn sm" id="gen">+ ${t("general")}</button>`:""}</div>
       <div id="clist" style="display:grid;gap:8px;margin-top:10px">${roots.length?roots.map(c=>cmHtml(c,num.get(c.id),v)).join(""):`<p class="sm mut">${t("noComments")}</p>`}</div>
       <p class="help" style="margin:10px 0 0">${t("mail")}</p></div>
      ${v.status==="approved"?`<div class="card note" style="background:color-mix(in srgb,var(--ok) 12%,transparent)"><b>✓ ${t("approved")}</b> · ${dt(v.approved_at)}${v.approved_by_name||v.approved_by_email?` · ${t("by")}: ${esc(v.approved_by_name||v.approved_by_email)}`:""}${v.chosen?`<br>${esc((v.files.find(x=>x.key===v.chosen)||{}).label||"")}`:""}</div>`:
       editable()?`<div class="card foot"><button class="btn" id="fb" ${openCount?"":"disabled"}>${t("submit")}${openCount?` (${openCount})`:""}</button><p class="help" style="margin:0">${t("submitP")}</p>
-       ${isOwner?`<button class="btn ok" id="appr">✓ ${multi?t("approveDir"):t("approve")}</button><p class="help" style="margin:0">${t("approveP")}${multi?` <b>${esc(f.label||f.name)}</b>`:""}</p>`:`<p class="note" style="margin:0">${t("reviewerNote")}</p>`}</div>`:""}
-   </aside></div></div>`;
-  $("#vsel").onchange=e=>{VI=+e.target.value;FI=0;CMP=false;renderWork()};
-  app.querySelectorAll("[data-fi]").forEach(b=>b.onclick=()=>{FI=+b.dataset.fi;renderWork()});
-  const cc=$("#cmpchk");if(cc)cc.onchange=()=>{CMP=cc.checked;renderWork()};
+       ${isOwner?`<button class="btn ok" id="appr" ${pend?"disabled":""}>✓ ${multi?t("approveDir"):t("approve")}</button><p class="help" style="margin:0" id="apprhelp">${pend?`<b>${esc(t("needDec").replace("{n}",pend))}</b>`:t("approveP")+(multi?` <b>${esc(f.label||f.name)}</b>`:"")}</p>`:`<p class="note" style="margin:0">${t("reviewerNote")}</p>`}</div>`:""}
+   </aside>`;
+}
+function bindAside(v){
+  const multi=isDirMode(v),f=viewFiles(v)[FI]||{};
   const gen=$("#gen");if(gen)gen.onclick=e=>openPop({general:true},e.currentTarget.getBoundingClientRect());
   const fb=$("#fb");if(fb)fb.onclick=async()=>{fb.disabled=true;try{await api("works/"+W.work.id,{action:"feedback",version_id:v.id});toast(t("sentFb"));workView(W.work.id,true)}catch(e){toast(e.message);fb.disabled=false}};
   const ap=$("#appr");if(ap)ap.onclick=async()=>{if(!confirm(multi?t("confDir"):t("conf")))return;ap.disabled=true;try{await api("works/"+W.work.id,{action:"approve",version_id:v.id,chosen:multi?f.key:null});toast("✓ "+t("approved"));workView(W.work.id,true)}catch(e){toast(e.message);ap.disabled=false}};
   bindComments(v);
-  renderFile($("#vw"),f,v,num,editable());
-  if(CMP&&pf)renderFile($("#vwprev"),pf,prev,new Map(rootComments(prev).map((c,i)=>[c.id,i+1])),false);
 }
 function cmHtml(c,n,v){
   const kids=W.comments.filter(x=>x.parent_id===c.id),mine=c.user_id===W.me.id;
   const fl=c.file_key?v.files.find(x=>x.key===c.file_key):null;
-  const where=[fl&&v.files.length>1?(fl.label||fl.name):"",c.page?pgLabel(c.page):""].filter(Boolean).join(" · ");
-  return `<div class="cm ${HL===c.id?"hl":""}" data-cm="${c.id}"><div class="hd"><span class="n ${c.x==null?"g":""}">${c.x==null?"•":n}</span><b>${c.x==null&&c.action==="change"?t("a_note"):t("a_"+(c.action||"change"))}</b><span class="mut">${esc(c.author||"")}${c.author_kind==="email"?" ✉":""}</span><span class="sp"></span><span class="st ${c.status}">${t("s_"+c.status)}</span></div>
-   ${where?`<div class="sm mut">${esc(where)}</div>`:""}<div class="body">${esc(c.body)}</div>
+  const pinned=c.x!=null||!!c.quote;
+  const where=[fl&&v.files.length>1?(fl.label||fl.name):"",c.page?pgLabel(c.page):"",c.device?`${t(c.device)} · ${c.path||"/"}`:"",c.post_id?postLabel(v,c.post_id):""].filter(Boolean).join(" · ");
+  const label=c.proposal?t("proposed"):!pinned&&!c.post_id&&c.action==="change"?t("a_note"):t("a_"+(c.action||"change"));
+  return `<div class="cm ${HL===c.id?"hl":""}" data-cm="${c.id}"><div class="hd"><span class="n ${pinned?"":"g"}">${pinned?n:"•"}</span><b>${label}</b><span class="mut">${esc(c.author||"")}${c.author_kind==="email"?" ✉":""}</span><span class="sp"></span><span class="st ${c.status}">${t("s_"+c.status)}</span></div>
+   ${where?`<div class="sm mut">${esc(where)}</div>`:""}${c.quote?`<div class="quote">„${esc(c.quote)}”</div>`:""}<div class="body">${esc(c.body)}</div>
    ${c.attachment?(c.attachment.key?`<a class="sm" href="${fileUrl(c.attachment.key)}" target="_blank" rel="noopener">📎 ${esc(c.attachment.name||t("file"))}</a>`:`<a class="sm" href="${esc(c.attachment.url)}" target="_blank" rel="noopener noreferrer">🔗 ${esc(c.attachment.url)}</a>`):""}
    ${kids.map(k=>`<div class="rep ${k.author_kind==="staff"?"staff":""}"><b>${esc(k.author||"")}</b> <span class="mut">${dt(k.created_at)}</span><div style="white-space:pre-wrap">${esc(k.body)}</div></div>`).join("")}
    <div class="row">${c.status==="done"?`<button class="btn sm ok" data-act="verify" data-id="${c.id}">${t("verify")}</button><button class="btn sm" data-act="reopen" data-id="${c.id}">${t("reopen")}</button>`:""}${c.status==="verified"?`<button class="btn sm ghost" data-act="reopen" data-id="${c.id}">${t("reopen")}</button>`:""}${mine&&c.status==="open"&&editable()?`<button class="btn sm ghost" data-act="delete" data-id="${c.id}">${t("del")}</button>`:""}</div>
@@ -240,14 +321,26 @@ function bindComments(v){
   app.querySelectorAll("[data-act]").forEach(b=>b.onclick=async()=>{try{await api("comments/"+b.dataset.id,{action:b.dataset.act});workView(W.work.id,true)}catch(e){toast(e.message)}});
   app.querySelectorAll("[data-rsend]").forEach(b=>b.onclick=async()=>{const i=app.querySelector(`[data-rin="${b.dataset.rsend}"]`);const body=i.value.trim();if(!body)return;b.disabled=true;
     try{await api("comments",{work_id:W.work.id,version_id:v.id,parent_id:b.dataset.rsend,body});workView(W.work.id,true)}catch(e){toast(e.message);b.disabled=false}});
-  app.querySelectorAll("[data-cm]").forEach(el=>el.addEventListener("mouseenter",()=>{document.querySelectorAll(".pin").forEach(p=>p.classList.toggle("hl",p.dataset.pin===el.dataset.cm))}));
+  app.querySelectorAll("[data-cm]").forEach(el=>{
+    el.addEventListener("mouseenter",()=>markHl(el.dataset.cm));
+    // kattintás a megjegyzésre: odagörget a jelöléshez / poszthoz
+    el.addEventListener("click",e=>{if(e.target.closest("button,input,a"))return;markHl(el.dataset.cm);const c=W.comments.find(x=>x.id===el.dataset.cm);
+      const tg=document.querySelector(`mark[data-mk="${el.dataset.cm}"]`)||(c&&c.post_id?document.querySelector(`.post[data-post="${CSS.escape(c.post_id)}"]`):null)||document.querySelector(`.pin[data-pin="${el.dataset.cm}"]`);
+      if(tg&&window.innerWidth>900)tg.scrollIntoView({block:"center",behavior:"smooth"})})});
 }
+function markHl(id){const c=W.comments.find(x=>x.id===id);
+  document.querySelectorAll(".pin").forEach(p=>p.classList.toggle("hl",p.dataset.pin===id));
+  document.querySelectorAll("mark.qm").forEach(m=>m.classList.toggle("hl",m.dataset.mk===id));
+  document.querySelectorAll(".post[data-post]").forEach(p=>p.classList.toggle("hl",!!(c&&c.post_id===p.dataset.post)))}
+function focusComment(id){HL=id;const el=document.querySelector(`[data-cm="${id}"]`);document.querySelectorAll(".cm").forEach(x=>x.classList.toggle("hl",x===el));markHl(id);if(el)el.scrollIntoView({block:"nearest",behavior:"smooth"})}
 
 /* ---------- fájl megjelenítése: kép vagy PDF, rábökéssel ---------- */
 if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 const pdfCache=new Map();
 async function renderFile(host,f,v,num,canComment){
   host.innerHTML="";if(!f)return;
+  if(f.type==="preview")return renderWeb(host,f,v,canComment);
+  if(isMd(f))return renderDoc(host,f,v,canComment);
   const pins=W.comments.filter(c=>c.version_id===v.id&&!c.parent_id&&c.file_key===f.key&&c.x!=null);
   const mk=(page)=>{const box=document.createElement("div");box.className="canvas"+(canComment?"":" ro");box.dataset.page=page||"";
     if(canComment)box.addEventListener("click",e=>{if(e.target.closest(".pin"))return;const r=box.getBoundingClientRect();
@@ -268,6 +361,175 @@ async function renderFile(host,f,v,num,canComment){
     catch(e){host.innerHTML=`<a class="btn" href="${fileUrl(f.key)}" target="_blank">PDF</a>`}
     return}
   host.innerHTML=`<a class="btn" href="${fileUrl(f.key)}&dl=1">${esc(f.name)}</a>`;
+}
+
+/* ---------- 2. lépés: weboldal-előnézet (kind "web") ----------
+   Az előnézet más originről jön (Cloudflare Pages preview), ezért a tartalmát nem látjuk:
+   se a görgetési helyzetet, se az elemet, se az aktuális útvonalat. A megjegyzés mód egy átlátszó
+   réteg az iframe fölött: x,y a LÁTHATÓ iframe-dobozhoz képest (0–1), plusz a nézet (mobile|desktop)
+   és az ügyfél által megadott oldal útvonala. Mivel a görgetés nem ismert, a pontokat nem rajzoljuk
+   vissza az előnézetre, csak listában mutatjuk („Mobil · /rolunk”). v1 korlát, szándékosan. */
+let DEV=window.innerWidth<700?"mobile":"desktop",CMODE=false,WPATH="/";
+const DEVS={mobile:[390,780],desktop:[1280,800]};
+function normPath(s){s=String(s||"").trim();if(/^https?:\/\//i.test(s)){try{const u=new URL(s);s=u.pathname+u.search}catch(e){s="/"}}if(!s.startsWith("/"))s="/"+s;return s.replace(/[\u0000-\u001f\u007f]/g,"").slice(0,300)}
+function previewSrc(base,path){try{const b=new URL(base);const u=new URL(path&&path!=="/"?path:b.pathname+b.search,b);return u.origin===b.origin?u.href:b.href}catch(e){return base}}
+function fitWeb(){const box=$("#devbox");if(!box)return;const [w,h]=DEVS[DEV];const avail=box.parentElement.clientWidth||w;const s=Math.min(1,avail/w);
+  box.style.width=Math.floor(w*s)+"px";box.style.height=Math.floor(h*s)+"px";const fr=box.firstElementChild;fr.style.width=w+"px";fr.style.height=h+"px";fr.style.transform=`scale(${s})`}
+window.addEventListener("resize",()=>{clearTimeout(fitWeb.h);fitWeb.h=setTimeout(fitWeb,120)});
+function renderWeb(host,f,v,canComment){
+  let same=true;try{same=new URL(f.url).origin===location.origin}catch(e){}
+  // Saját originről érkező előnézetnél nem adunk allow-same-origin-t (különben a sandbox kijátszható).
+  const sb="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"+(same?"":" allow-same-origin");
+  const src=previewSrc(f.url,WPATH);
+  host.innerHTML=`<div style="display:grid;gap:10px"><div class="wtool">
+    <div class="seg" role="group" aria-label="${t("view")}">${["mobile","desktop"].map(d=>`<button type="button" data-dev="${d}" aria-pressed="${DEV===d}">${t(d)}</button>`).join("")}</div>
+    <form class="wpath" id="wpf"><label for="wpath" class="sm mut">${t("whichPage")}</label><input type="text" id="wpath" value="${esc(WPATH)}" autocomplete="off" spellcheck="false" inputmode="url"><button class="btn sm">${t("go")}</button></form>
+    ${canComment?`<button type="button" class="btn sm" id="cmode" aria-pressed="${CMODE}">✎ ${t("cmode")}</button>`:""}
+    <a class="btn sm ghost" id="wopen" href="${esc(src)}" target="_blank" rel="noopener noreferrer">↗ ${t("openNew")}</a></div>
+    <p class="help" id="chelp" style="margin:0">${canComment?(CMODE?t("cmodeOn"):t("cmodeOff"))+" ":""}${t("webNote")}</p>
+    <div class="devwrap"><div class="dev" id="devbox"><div class="frame"><iframe id="wfr" title="${esc(t("livePreview"))}" src="${esc(src)}" sandbox="${sb}" referrerpolicy="no-referrer"></iframe><div class="ovl" id="ovl" ${CMODE&&canComment?"":"hidden"}></div></div></div></div></div>`;
+  fitWeb();
+  host.querySelectorAll("[data-dev]").forEach(b=>b.onclick=()=>{DEV=b.dataset.dev;host.querySelectorAll("[data-dev]").forEach(x=>x.setAttribute("aria-pressed",x===b));closePop();fitWeb()});
+  $("#wpf").onsubmit=e=>{e.preventDefault();WPATH=normPath($("#wpath").value);$("#wpath").value=WPATH;const u=previewSrc(f.url,WPATH);$("#wfr").src=u;$("#wopen").href=u};
+  const cm=$("#cmode");if(cm)cm.onclick=()=>{CMODE=!CMODE;cm.setAttribute("aria-pressed",CMODE);$("#ovl").hidden=!CMODE;$("#chelp").textContent=(CMODE?t("cmodeOn"):t("cmodeOff"))+" "+t("webNote");if(!CMODE)closePop()};
+  const ov=$("#ovl");ov.addEventListener("click",e=>{const r=ov.getBoundingClientRect();const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+    WPATH=normPath($("#wpath").value);$("#wpath").value=WPATH;
+    openPop({web:true,device:DEV,path:WPATH,x,y,box:ov},{left:e.clientX,top:e.clientY,bottom:e.clientY,right:e.clientX})});
+}
+
+/* ---------- 3a. lépés: Markdown-dokumentum, szövegkijelöléses megjegyzés ----------
+   Biztonságos, szűk Markdown: címsorok, bekezdések, listák, félkövér/dőlt, kód, idézet, vonal, táblázat, linkek.
+   Minden szöveg escape-elve; nyers HTML nincs (a < > jelek szövegként jelennek meg). */
+const mdCache=new Map();
+function safeUrl(u){u=String(u||"").trim();return /^(https?:|mailto:)/i.test(u)||u.startsWith("#")?u:null}
+function mdInline(src){
+  const toks=[],put=h=>"\u0000"+(toks.push(h)-1)+"\u0000";
+  let s=String(src).replace(/\u0000/g,"");
+  s=s.replace(/`([^`]+)`/g,(_,c)=>put("<code>"+esc(c)+"</code>"));
+  s=s.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g,(_,txt,url)=>{const u=safeUrl(url);return u?put(`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">`)+txt+put("</a>"):txt});
+  s=esc(s);
+  s=s.replace(/\*\*(?=\S)(.+?)\*\*|__(?=\S)(.+?)__/g,(_,a,b)=>"<strong>"+(a||b)+"</strong>");
+  s=s.replace(/\*(?=[^\s*])([^*]+?)\*/g,"<em>$1</em>").replace(/(^|[^\w])_(?=\S)([^_]+?)_(?=[^\w]|$)/g,"$1<em>$2</em>");
+  return s.replace(/\u0000(\d+)\u0000/g,(_,i)=>toks[+i]);
+}
+function mdToHtml(md){
+  const L=String(md).replace(/\r\n?/g,"\n").split("\n"),out=[];let i=0;
+  const cells=l=>l.trim().replace(/^\|/,"").replace(/\|$/,"").split("|").map(x=>x.trim());
+  const isSep=l=>/^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(l);
+  const blockStart=l=>/^\s*(#{1,6}\s|>|```|[-*+]\s|\d+[.)]\s)/.test(l)||/^\s*([-*_])(\s*\1){2,}\s*$/.test(l);
+  while(i<L.length){const l=L[i];
+    if(!l.trim()){i++;continue}
+    let m;
+    if(/^\s*```/.test(l)){const buf=[];i++;while(i<L.length&&!/^\s*```/.test(L[i]))buf.push(L[i++]);i++;out.push(`<pre><code>${esc(buf.join("\n"))}</code></pre>`);continue}
+    if(m=l.match(/^\s*(#{1,6})\s+(.*?)\s*#*\s*$/)){const n=m[1].length;out.push(`<h${n}>${mdInline(m[2])}</h${n}>`);i++;continue}
+    if(/^\s*([-*_])(\s*\1){2,}\s*$/.test(l)){out.push("<hr>");i++;continue}
+    if(/^\s*>/.test(l)){const buf=[];while(i<L.length&&/^\s*>/.test(L[i]))buf.push(L[i++].replace(/^\s*>\s?/,""));out.push(`<blockquote>${buf.filter(x=>x.trim()).map(x=>`<p>${mdInline(x)}</p>`).join("")}</blockquote>`);continue}
+    if(l.includes("|")&&i+1<L.length&&isSep(L[i+1])){const hd=cells(l);i+=2;const rows=[];while(i<L.length&&L[i].includes("|")&&L[i].trim())rows.push(cells(L[i++]));
+      out.push(`<div class="tw"><table><thead><tr>${hd.map(c=>`<th>${mdInline(c)}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${hd.map((_,k)=>`<td>${mdInline(r[k]||"")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`);continue}
+    if(m=l.match(/^(\s*)([-*+]|\d+[.)])\s+/)){const ord=/\d/.test(m[2]);const items=[];
+      while(i<L.length){const mm=L[i].match(/^(\s*)([-*+]|\d+[.)])\s+(.*)$/);
+        if(mm&&(/\d/.test(mm[2])===ord||mm[1].length>=2)){items.push({ind:mm[1].length>=2,txt:mm[3]});i++}
+        else if(L[i].trim()&&/^\s{2,}\S/.test(L[i])&&items.length&&!blockStart(L[i])){items[items.length-1].txt+=" "+L[i].trim();i++}
+        else break}
+      const tg=ord?"ol":"ul";out.push(`<${tg}>${items.map(x=>`<li${x.ind?' class="ind"':""}>${mdInline(x.txt)}</li>`).join("")}</${tg}>`);continue}
+    const buf=[];while(i<L.length&&L[i].trim()&&!blockStart(L[i])&&!(L[i].includes("|")&&i+1<L.length&&isSep(L[i+1])))buf.push(L[i++].trim());
+    if(!buf.length){buf.push(L[i++].trim())}
+    out.push(`<p>${buf.map(mdInline).join(" ")}</p>`)}
+  // minden felső szintű blokk sorszámot kap: erre hivatkozik a megjegyzés helye ("blokk:eltolás")
+  return out.map((h,k)=>h.replace(/^<(\w+)/,`<$1 data-b="${k}"`)).join("");
+}
+async function renderDoc(host,f,v,canComment){
+  let md=mdCache.get(f.key);
+  if(md==null){host.innerHTML=`<p class="sm mut">…</p>`;try{const r=await fetch(fileUrl(f.key),{credentials:"same-origin"});if(!r.ok)throw 0;md=await r.text();mdCache.set(f.key,md)}catch(e){host.innerHTML=`<p class="note">${t("docErr")}</p>`;return}}
+  host.innerHTML=`<article class="doc" id="doc" data-key="${esc(f.key)}" ${canComment?'data-edit="1"':""}>${mdToHtml(md)}</article>`;
+  const doc=host.querySelector("#doc");
+  W.comments.filter(c=>c.version_id===v.id&&!c.parent_id&&c.quote&&c.file_key===f.key).forEach(c=>markQuote(doc,c));
+  doc.addEventListener("click",e=>{const m=e.target.closest("mark.qm");if(m&&!(getSelection()+"").trim())focusComment(m.dataset.mk)});
+}
+/** A megjegyzés idézetének kiemelése a blokkjában (legjobb szándékkal: a mentett eltoláshoz legközelebbi előfordulás). */
+function markQuote(doc,c){
+  const [bi,off]=String(c.anchor||"").split(":").map(Number);
+  const blocks=Number.isFinite(bi)?[doc.querySelector(`[data-b="${bi}"]`)].filter(Boolean):[];
+  if(!blocks.length)blocks.push(...doc.querySelectorAll("[data-b]"));
+  const q=String(c.quote||"").trim(),cands=[q,q.split("\n")[0].trim()].filter(x=>x.length>=2);
+  for(const blk of blocks){const txt=blk.textContent;
+    for(const cand of cands){let best=-1,pos=txt.indexOf(cand);
+      while(pos>=0){if(best<0||Math.abs(pos-(off||0))<Math.abs(best-(off||0)))best=pos;pos=txt.indexOf(cand,pos+1)}
+      if(best>=0){wrapText(blk,best,best+cand.length,c);return}}}
+}
+function wrapText(root,start,end,c){
+  const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let pos=0,n;const segs=[];
+  while((n=tw.nextNode())){const len=n.data.length,a=Math.max(start,pos),b=Math.min(end,pos+len);if(a<b)segs.push([n,a-pos,b-pos]);pos+=len;if(pos>=end)break}
+  segs.forEach(([node,a,b])=>{let mid=node;if(a>0)mid=node.splitText(a);if(b-a<mid.data.length)mid.splitText(b-a);
+    const mk=document.createElement("mark");mk.className="qm "+c.status;mk.dataset.mk=c.id;mk.title=c.body.slice(0,120);mid.parentNode.insertBefore(mk,mid);mk.appendChild(mid)});
+}
+let SELBTN=null,SELCTX=null;
+function hideSel(){if(SELBTN){SELBTN.remove();SELBTN=null}}
+function selOpen(e){if(e){e.preventDefault();e.stopPropagation()}const c=SELCTX,r=SELBTN?SELBTN.getBoundingClientRect():{left:innerWidth/2,top:100,bottom:100,right:innerWidth/2};hideSel();if(c)openPop({doc:true,...c},r)}
+function updateSelBtn(){
+  const doc=$("#doc");if(!doc||!doc.dataset.edit||POP){hideSel();return}
+  const s=getSelection();if(!s||s.isCollapsed||!s.rangeCount){hideSel();return}
+  const r=s.getRangeAt(0);if(!doc.contains(r.commonAncestorContainer)){hideSel();return}
+  const raw=s.toString().trim();if(raw.length<2){hideSel();return}
+  const sn=r.startContainer.nodeType===1?r.startContainer:r.startContainer.parentElement;const blk=sn&&sn.closest("[data-b]");if(!blk||!doc.contains(blk)){hideSel();return}
+  const pre=document.createRange();pre.setStart(blk,0);pre.setEnd(r.startContainer,r.startOffset);
+  SELCTX={quote:raw.slice(0,500),anchor:blk.dataset.b+":"+pre.toString().length,file_key:doc.dataset.key};
+  if(!SELBTN){SELBTN=document.createElement("button");SELBTN.type="button";SELBTN.className="btn pri sm selbtn";SELBTN.textContent="💬 "+t("selCmt");
+    // pointerdown: még a kijelölés megszűnése előtt (érintőképernyőn is)
+    SELBTN.addEventListener("pointerdown",selOpen);SELBTN.addEventListener("click",e=>{if(SELCTX)selOpen(e)});document.body.appendChild(SELBTN)}
+  const rc=r.getBoundingClientRect(),bw=SELBTN.offsetWidth,bh=SELBTN.offsetHeight;
+  let top=rc.bottom+10;if(top+bh>innerHeight-8)top=Math.max(8,rc.top-bh-10);
+  SELBTN.style.top=top+"px";SELBTN.style.left=Math.min(innerWidth-bw-8,Math.max(8,rc.left+rc.width/2-bw/2))+"px";
+}
+document.addEventListener("selectionchange",()=>{clearTimeout(updateSelBtn.h);updateSelBtn.h=setTimeout(updateSelBtn,120)});
+
+/* ---------- 3b. lépés: posztnaptár (kind "posts") ----------
+   A verzió egy JSON-fájl: [{id,date:"YYYY-MM-DD",channel,text,image_key?|image?,notes?}]; a kép a verzió
+   egy fájljára hivatkozik (R2-kulcs vagy fájlnév). Döntés posztonként: ok | change | skip. */
+const POSTS=new Map(),CHN={facebook:"Facebook",instagram:"Instagram",linkedin:"LinkedIn",google:"Google",other:"–"};
+async function loadPosts(v){
+  if(POSTS.has(v.id))return POSTS.get(v.id);
+  const jf=v.files.find(f=>f.type==="application/json"||/\.json$/i.test(f.name||""));let ps=null;
+  if(jf){try{const r=await fetch(fileUrl(jf.key),{credentials:"same-origin"});if(r.ok){const raw=await r.json();const arr=Array.isArray(raw)?raw:raw&&Array.isArray(raw.posts)?raw.posts:[];
+    const seen=new Set();ps=[];for(const o of arr.slice(0,200)){if(!o||typeof o!=="object")continue;const id=String(o.id??"").trim();if(!/^[\w.:-]{1,64}$/.test(id)||seen.has(id))continue;seen.add(id);
+      const img=String(o.image_key??o.image??"").trim();const fl=img?(v.files.find(x=>x.key===img)||v.files.find(x=>x.name===img)):null;const ch=String(o.channel??"").toLowerCase();
+      ps.push({id,date:/^\d{4}-\d{2}-\d{2}$/.test(String(o.date??""))?String(o.date):"",channel:CHN[ch]&&ch!=="other"?ch:"other",text:String(o.text??"").slice(0,5000),image_key:fl?fl.key:null,notes:String(o.notes??"").slice(0,1000)})}}}catch(e){ps=null}}
+  if(ps)ps.forEach((p,k)=>p._k=k),ps.sort((a,b)=>(a.date||"9999").localeCompare(b.date||"9999")||a._k-b._k);
+  POSTS.set(v.id,ps);return ps;
+}
+function postLabel(v,id){const p=(POSTS.get(v.id)||[]).find(x=>x.id===id);if(!p)return t("post")+" "+id;return [p.date?fmtDay(p.date):"",CHN[p.channel]||""].filter(Boolean).join(" · ")}
+const loc=()=>lang==="hu"?"hu-HU":"en-GB";
+const fmtDay=ds=>new Date(ds+"T12:00:00").toLocaleDateString(loc(),{weekday:"short",month:"short",day:"numeric"});
+function weekKey(ds){if(!ds)return "";const d=new Date(ds+"T12:00:00");d.setDate(d.getDate()-((d.getDay()+6)%7));return d.toISOString().slice(0,10)}
+function weekLabel(k){if(!k)return t("noDate");const a=new Date(k+"T12:00:00"),b=new Date(a);b.setDate(b.getDate()+6);const f=d=>d.toLocaleDateString(loc(),{month:"short",day:"numeric"});return `${f(a)} – ${f(b)}`}
+function renderPosts(host,v,canEdit){
+  const ps=POSTS.get(v.id);if(!ps||!ps.length){host.innerHTML=`<p class="note">${t("postsErr")}</p>`;return}
+  const {c,ds}=postStats(v),roots=rootComments(v);
+  const weeks=new Map();ps.forEach(p=>{const k=weekKey(p.date);if(!weeks.has(k))weeks.set(k,[]);weeks.get(k).push(p)});
+  host.innerHTML=`<div style="display:grid;gap:14px"><div class="psum" aria-live="polite"><span class="tag approved">✓ ${c.ok} ${t("n_ok")}</span><span class="tag changes">✎ ${c.change} ${t("n_change")}</span><span class="tag">✕ ${c.skip} ${t("n_skip")}</span>${c.pending?`<span class="tag review">${c.pending} ${t("n_pending")}</span>`:""}</div>
+  ${[...weeks].map(([k,list])=>`<section class="week"><h3>${esc(weekLabel(k))}</h3><div class="posts">${list.map(p=>{
+    const d=ds.get(p.id)||"",pc=roots.filter(x=>x.post_id===p.id),prop=[...pc].reverse().find(x=>x.proposal);
+    return `<article class="post ${d?"d-"+d:""}" data-post="${esc(p.id)}"><div class="phd"><b>${p.date?esc(fmtDay(p.date)):esc(t("noDate"))}</b><span class="ch ch-${p.channel}">${esc(CHN[p.channel])}</span><span class="sp"></span>${d?`<span class="dec ${d}">${esc(t("p_"+d))}</span>`:""}</div>
+     ${p.image_key?`<img class="pimg" src="${fileUrl(p.image_key)}" alt="" loading="lazy">`:""}
+     <div class="ptext" data-pt="${esc(p.id)}">${esc(p.text)}</div>
+     ${prop?`<div class="prop"><b>${t("proposed")}:</b>\n${esc(prop.body)}</div>`:""}
+     ${p.notes?`<div class="sm mut">${t("ourNote")}: ${esc(p.notes)}</div>`:""}
+     ${canEdit?`<div class="pbtns" role="group">${["ok","change","skip"].map(x=>`<button type="button" class="btn" data-dec="${x}" data-p="${esc(p.id)}" aria-pressed="${d===x}">${x==="ok"?"✓ ":x==="change"?"✎ ":"✕ "}${t("p_"+x)}</button>`).join("")}</div>
+       <div class="row" style="justify-content:space-between"><button type="button" class="btn sm ghost" data-edit="${esc(p.id)}">✍ ${t("editText")}</button>${pc.length?`<button type="button" class="btn sm ghost" data-pc="${esc(p.id)}">💬 ${pc.length}</button>`:""}</div>`
+      :pc.length?`<button type="button" class="btn sm ghost" data-pc="${esc(p.id)}">💬 ${pc.length} ${t("cmtN")}</button>`:""}
+    </article>`}).join("")}</div></section>`).join("")}</div>`;
+  const byId=id=>ps.find(p=>p.id===id);
+  host.querySelectorAll("[data-dec]").forEach(b=>b.onclick=async e=>{const pid=b.dataset.p,dec=b.dataset.dec;
+    if(dec==="change"){openPop({post_id:pid},b.getBoundingClientRect());return}
+    b.disabled=true;try{await api("works/"+W.work.id,{action:"post",version_id:v.id,post_id:pid,decision:b.getAttribute("aria-pressed")==="true"?"clear":dec});await workView(W.work.id,true)}catch(err){toast(err.message);b.disabled=false}});
+  host.querySelectorAll("[data-pc]").forEach(b=>b.onclick=()=>{const first=roots.find(x=>x.post_id===b.dataset.pc);if(first)focusComment(first.id)});
+  host.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>{const p=byId(b.dataset.edit),box=host.querySelector(`[data-pt="${CSS.escape(p.id)}"]`);if(!box||box.querySelector("textarea"))return;
+    const pc=roots.filter(x=>x.post_id===p.id&&x.proposal),cur=pc.length?pc[pc.length-1].body:p.text;
+    box.innerHTML=`<textarea aria-label="${t("editText")}" style="min-height:140px">${esc(cur)}</textarea><div class="row" style="justify-content:flex-end;margin-top:6px"><button type="button" class="btn sm ghost" data-x>${t("cancel")}</button><button type="button" class="btn sm pri" data-s>${t("save")}</button></div>`;
+    const ta=box.querySelector("textarea");ta.focus();
+    box.querySelector("[data-x]").onclick=()=>{box.textContent=p.text};
+    box.querySelector("[data-s]").onclick=async ev=>{const body=ta.value.trim();if(!body||body===p.text.trim()){box.textContent=p.text;return}ev.target.disabled=true;
+      try{await api("comments",{work_id:W.work.id,version_id:v.id,post_id:p.id,action:"change",proposal:true,body});await workView(W.work.id,true)}catch(err){toast(err.message);ev.target.disabled=false}}});
 }
 
 /* ---------- megjegyzés-ablak ---------- */
@@ -293,8 +555,10 @@ function openPop(ctx,rect){
     try{const r=await fetch("/api/pult/attach",{method:"POST",headers:{"x-filename":encodeURIComponent(f.name),"content-type":f.type||"application/octet-stream"},body:f});const j=await r.json();if(!r.ok||!j.ok)throw new Error(j.error||t("err"));POP.att=j.attachment;$("#pattn").textContent="📎 "+f.name}catch(e){$("#pattn").textContent="";toast(e.message)}};fi.click()};
   $("#psave").onclick=async()=>{const body=$("#pbody").value.trim();if(!body){$("#pbody").focus();return}const b=$("#psave");b.disabled=true;
     const link=$("#plink").value.trim();const att=POP.att||(link?{url:/^https?:\/\//i.test(link)?link:"https://"+link}:null);
-    try{await api("comments",{work_id:W.work.id,version_id:v.id,file_key:ctx.general?null:ctx.file_key,page:ctx.page||null,x:ctx.general?null:ctx.x,y:ctx.general?null:ctx.y,action:POP.action,body,attachment:att});
-      closePop();workView(W.work.id,true)}catch(e){toast(e.message);b.disabled=false}};
+    const pl={work_id:W.work.id,version_id:v.id,file_key:ctx.general?null:ctx.file_key,page:ctx.page||null,x:ctx.general?null:ctx.x,y:ctx.general?null:ctx.y,action:POP.action,body,attachment:att};
+    if(!ctx.general){if(ctx.web){pl.device=ctx.device;pl.path=ctx.path}if(ctx.doc){pl.quote=ctx.quote;pl.anchor=ctx.anchor}if(ctx.post_id)pl.post_id=ctx.post_id}
+    try{await api("comments",pl);
+      closePop();if(ctx.web)await refreshSide();else await workView(W.work.id,true)}catch(e){toast(e.message);b.disabled=false}};
 }
 
 /* ---------- csapat ---------- */

@@ -1,8 +1,9 @@
 // POST /api/pult/comments – új megjegyzés vagy válasz.
-// {work_id, version_id, parent_id?, file_key?, page?, x?, y?, action: change|add|remove, body, attachment?}
+// {work_id, version_id, parent_id?, file_key?, page?, x?, y?, action: change|add|remove, body, attachment?,
+//  device?: mobile|desktop, path?: "/…" (weboldal), quote?, anchor?: "blokk:eltolás" (dokumentum), post_id?, proposal? (posztnaptár)}
 import { Env, json, bad, clean } from "../../../../lib/core";
 import { requireUser, workFor } from "../../../../lib/portal";
-import { addComment } from "../../../../lib/works";
+import { addComment, versionPosts, setPostDecision, POST_ID_RE } from "../../../../lib/works";
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const u = await requireUser(env, request);
@@ -36,11 +37,40 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     else if (/^https?:\/\//i.test(url)) att = { url };
   }
   const action = clean(b.action, 10);
+  // Weboldal: nézet és oldal útvonala (a görgetési helyzet nem ismert, lásd a Pult kódját).
+  let device: string | null = null, path: string | null = null;
+  if (w.kind === "web" && !parent) {
+    const dv = clean(b.device, 10);
+    device = dv === "mobile" || dv === "desktop" ? dv : null;
+    const pth = clean(b.path, 300).replace(/[\u0000-\u001f\u007f]/g, "");
+    path = pth ? (pth.startsWith("/") ? pth : "/" + pth) : device ? "/" : null;
+  }
+  // Dokumentum: kijelölt szöveg (max. 500 karakter) és a helye.
+  let quote: string | null = null, anchor: string | null = null;
+  if (!parent && typeof b.quote === "string" && b.quote.trim()) {
+    if (b.quote.length > 2000) return bad(u.lang === "en" ? "The selected text is too long." : "A kijelölt szöveg túl hosszú.");
+    quote = clean(b.quote, 500);
+    const an = clean(b.anchor, 20);
+    anchor = /^\d{1,4}:\d{1,7}$/.test(an) ? an : null;
+  }
+  // Posztnaptár: a poszt azonosítójának szerepelnie kell a verzió JSON-jában.
+  let postId: string | null = null;
+  if (b.post_id != null && b.post_id !== "") {
+    const pid = typeof b.post_id === "string" ? b.post_id : String(b.post_id);
+    if (!POST_ID_RE.test(pid) || w.kind !== "posts") return bad("Érvénytelen poszt.");
+    const posts = await versionPosts(env, v.files);
+    if (!posts || !posts.some((p) => p.id === pid)) return bad("Nincs ilyen poszt.", 404);
+    postId = pid;
+  }
+  if (postId && (v.status !== "review" && v.status !== "changes")) return bad(u.lang === "en" ? "This version can no longer be changed." : "Ez a verzió már nem módosítható.");
   const id = await addComment(env, {
     work: w, version_id: v.id, parent_id: parent, author_kind: "customer", user_id: u.id,
     file_key: fileKey && files.some((f) => f.key === fileKey) ? fileKey : null,
     page: num(b.page, 1, 999), x: num(b.x, 0, 1), y: num(b.y, 0, 1),
     action: parent ? null : (["change", "add", "remove"].includes(action) ? action : "change"), body, attachment: att,
+    device, path, quote, anchor, post_id: parent ? null : postId, proposal: !parent && !!postId && b.proposal === true,
   });
+  // Posztnál a megjegyzés egyben „Változtatás” döntés.
+  if (postId && !parent) await setPostDecision(env, w.id, v.id, postId, "change", u.id);
   return json({ ok: true, id });
 };

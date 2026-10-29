@@ -39,7 +39,7 @@ Az ügyfél egy helyen lássa az oldalát, kérjen módosítást, fizessen és l
 ## 5. Technikai megoldás
 - Auth: saját megoldás a meglévő rendszerben (Cloudflare Pages Functions + D1): e-mailes link Brevóval és Google OAuth. Külső auth-szolgáltató nincs.
 - Előnézetek: ügyfelenként és verziónként statikus build (Cloudflare Pages), a megjegyzésréteg szkriptként betöltve (2. lépés).
-- Adatok: D1 (portal_users, sessions, action_tokens, works, versions, comments, events), a fájlok R2-ben (webbridge-uploads).
+- Adatok: D1 (portal_users, sessions, action_tokens, works, versions, comments, post_decisions, events), a fájlok R2-ben (webbridge-uploads).
 - Feldolgozás: kérés → besorolás → módosítás a forráson → build → előnézet URL → értesítés → jóváhagyás → élesítés.
 - Számlázás: Stripe. Az új tétel egy invoice item, csak az ügyfél elfogadása után kerül rá.
 
@@ -70,7 +70,23 @@ Az ügyfél egy helyen lássa az oldalát, kérjen módosítást, fizessen és l
   - Az azonos origin ellenőrzött.
   - Méltányos használat: napi 60 megjegyzés és 60 csatolmány.
 - **Kész, de még beállítandó:** válaszlevélből megjegyzés (/api/pult/inbound). Kell hozzá reply aldomain MX, a Brevo inbound beállítása és a REPLY_DOMAIN változó.
+- **2. lépés – weboldal-megjegyzés az előnézeten (kész, helyben tesztelve; élesítéshez a 0004-es migráció kell):**
+  - A CRM-ben a „Weboldal” munkánál a verzióhoz előnézeti URL adható meg (csak https://, versions.preview_url). Fájl nem kötelező.
+  - A Pultban az előnézet iframe-ben jelenik meg: Mobil (390 px) / Gép (1280 px) nézet, a dobozhoz méretezve; „Melyik oldalon?” mező (alapból „/”), „Új lapon” link.
+  - „Megjegyzés mód”: átlátszó réteg az iframe fölött; a kattintás x,y-ja a látható dobozhoz képest mentődik, a nézettel (comments.device) és az útvonallal (comments.path) együtt.
+  - **Korlát:** az előnézet más originről jön, így a görgetési helyzetet, a kattintott elemet és az aktuális oldalt nem látjuk. Ha az ügyfél az előnézetben továbblép, neki kell beírnia az útvonalat. Ezért a pontok csak listában látszanak („Mobil · /rolunk”), nem rajzoljuk vissza őket az előnézetre. Görgetéshez a megjegyzés módot ki kell kapcsolni.
+  - Saját originről érkező előnézetnél a sandbox nem kap allow-same-origin-t; a saját originre telepített, beépített megjegyzésszkript későbbi lépés.
+- **3a. lépés – dokumentum (marketingterv):**
+  - A PDF továbbra is rábökéssel véleményezhető. Új: Markdown (.md) dokumentum. A Pult saját, biztonságos megjelenítővel rendereli: címsorok, bekezdések, listák, félkövér/dőlt, kód, idézet, vonal, táblázat és linkek (csak http/https/mailto, rel=noopener). Nyers HTML nincs, minden más szövegként jelenik meg.
+  - Szövegkijelölés → „Megjegyzés a kijelöléshez” gomb → a megszokott ablak (Változtatás / Hozzáadás / Törlés, csatolmány). Mentődik az idézet (comments.quote, max. 500 karakter) és a helye (comments.anchor = „blokk:eltolás”).
+  - Az idézett részek kiemelve jelennek meg; a kiemelésre kattintva a megjegyzés kijelölődik a listában. **Korlát:** a kiemelés legjobb szándékú – ha új verzióban a szöveg megváltozik, vagy a kijelölés több blokkon át ér, csak az első sor vagy semmi sem emelődik ki (a megjegyzés ettől még megvan). Fejezetenkénti jóváhagyás nincs, csak a teljes verzió jóváhagyása.
+- **3b. lépés – posztnaptár:**
+  - A „Posztok” munka verziója egy JSON-fájl: [{id, date:"ÉÉÉÉ-HH-NN", channel: facebook|instagram|linkedin|google, text, image (fájlnév) vagy image_key, notes?}]. Mellé ugyanabba a verzióba feltölthetők a képek; a JSON fájlnév szerint hivatkozik rájuk.
+  - A Pult hetente csoportosítja a posztokat (dátum, csatorna, kép, szöveg, a mi megjegyzésünk). Posztonként: Mehet / Változtatás (megjegyzésablak, a megjegyzés a poszthoz kötve: comments.post_id) / Kihagyjuk, valamint „Szöveg átírása”. Az átírt szöveg „change” megjegyzésként mentődik, proposal=1 jelöléssel.
+  - A döntések a post_decisions táblában vannak; a gazda és a véleményező is dönthet. Összesítő: x mehet, y változtatás, z kihagyva, n még vár.
+  - A teljes verzió jóváhagyása továbbra is csak a gazdáé, és csak akkor lehet, ha minden poszthoz van döntés. Ezt a szerver is ellenőrzi, az e-mailes jóváhagyó linknél is.
+  - A CRM posztonként mutatja a döntést (ki, mikor) és a poszthoz tartozó megjegyzéseket.
+- **CRM-feltöltés:** .md és .json is feltölthető. Ha a böngésző nem ad típust, a kiterjesztésből lesz text/markdown, illetve application/json.
 - **Következő lépések:**
-  - 2. weboldal-megjegyzés az előnézeten;
-  - 3. megjegyzés dokumentumon (marketingterv) és posztnaptár;
+  - beépített megjegyzésszkript a saját originre telepített előnézetekhez (elem, görgetés, oldal automatikusan);
   - a belépőlinkek átállítása saját domainre (webbridge.hu/.studio).

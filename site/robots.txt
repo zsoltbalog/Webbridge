@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /pult/
+Disallow: /api/
+
+Sitemap: https://webbridge.studio/sitemap.xml

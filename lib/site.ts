@@ -69,6 +69,7 @@ export function parseHtml(html: string, base: string): Omit<SiteScan, "url"> {
     let u: URL; try { u = new URL(href, final); } catch { continue; }
     if (u.hostname.replace(/^www\./, "") !== origin) continue;
     if (/\.(pdf|jpe?g|png|gif|webp|svg|zip|docx?|xlsx?|mp4|mp3)$/i.test(u.pathname)) continue;
+    if (/^\/(cdn-cgi|wp-admin|wp-login|wp-json|feed|cart|kosar|checkout|my-account)\b/i.test(u.pathname)) continue;
     u.hash = ""; u.search = "";
     const key = u.pathname.replace(/\/$/, "") || "/";
     if (seen.has(key)) continue;

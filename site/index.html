@@ -236,6 +236,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:co
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}.seg button{border:0;background:transparent;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--ink,#111);color:var(--bg,#fff)}
 .files .rm{border:0;background:none;cursor:pointer;color:var(--muted);font-size:15px;line-height:1;padding:0 2px}
+.login-link{font-weight:600;font-size:14px;color:var(--ink);text-decoration:none;white-space:nowrap;padding:6px 4px}.login-link:hover{color:var(--hazard)}@media (max-width:1180px){.login-link{display:none}}
 .extract{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
 .extract .sw{display:flex;gap:4px}.extract .sw i{width:22px;height:22px;border-radius:4px;border:1px solid var(--line)}
 .form-nav{display:flex;justify-content:space-between;gap:10px}
@@ -851,6 +852,7 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
       <a href="#bundles" data-t="nav3">Csomagok</a>
       <a href="#faq" data-t="nav4">GYIK</a>
     </nav>
+    <a class="login-link" href="/pult/" data-t="navlogin">Belépés</a>
     <div class="lang" role="group" aria-label="Nyelv / Language">
       <button type="button" id="lang-hu" aria-pressed="true">HU</button>
       <button type="button" id="lang-en" aria-pressed="false">EN</button>
@@ -1271,7 +1273,7 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
 </main>
 
 <footer><div class="wrap" style="display:grid;gap:12px"><div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between"><span data-t="footco">© 2026 Webbridge · a Tactical Edge Systems OÜ márkája · Tallinn, Észtország</span><span data-t="foot">Magyar és angol nyelvű szolgáltatás</span></div>
-<nav class="legal-links" aria-label="Jogi információk"><a href="#impresszum" data-lg="impresszum" data-t="lg1">Impresszum</a><a href="#aszf" data-lg="aszf" data-t="lg2">ÁSZF</a><a href="#adatvedelem" data-lg="adatvedelem" data-t="lg3">Adatkezelési tájékoztató</a><a href="#sutik" data-lg="sutik" data-t="lg4">Süti tájékoztató</a><a href="#adatfeldolgozas" data-lg="adatfeldolgozas" data-t="lg5">Adatfeldolgozási feltételek</a></nav></div></footer>
+<nav class="legal-links" aria-label="Jogi információk"><a href="/pult/" data-t="navlogin2">Ügyfél-belépés (Pult)</a><a href="#impresszum" data-lg="impresszum" data-t="lg1">Impresszum</a><a href="#aszf" data-lg="aszf" data-t="lg2">ÁSZF</a><a href="#adatvedelem" data-lg="adatvedelem" data-t="lg3">Adatkezelési tájékoztató</a><a href="#sutik" data-lg="sutik" data-t="lg4">Süti tájékoztató</a><a href="#adatfeldolgozas" data-lg="adatfeldolgozas" data-t="lg5">Adatfeldolgozási feltételek</a></nav></div></footer>
 
 <button type="button" class="cb-fab" id="cb-fab" aria-expanded="false" aria-controls="cb-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 10h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span id="cb-fab-t">Kérdezz bátran</span></button>
 <section class="cb-panel" id="cb-panel" role="dialog" aria-labelledby="cb-title" hidden>
@@ -1293,7 +1295,7 @@ hu:{nav5:"A Pult",nav6:"Segítünk választani",nav7:"Marketing",roundsInc:"Korl
 ch1:"Kérdőív",ch1s:"10 perc, online",ch2:"E-mail",ch2s:"Írd meg a saját szavaiddal",ch3:"Telefon",ch3s:"0–24, azonnal felvesszük",
 "m-e":"Brief e-mailben",copy:"Másolás",copied:"Kimásolva","m-p":"Írd meg pár mondatban, és csatold, ami van. Ezekre lesz szükségünk:","m-n":"Egy órán belül visszaküldjük egyetlen levélben az összefoglalót és a hiányzó kérdéseket. A 24 óra a visszaigazolásoddal indul.",
 "c-e":"Telefon","c-e2":"Vagy kérj visszahívást","ph-live":"0–24, azonnal felvesszük","ph-note":"A hívást virtuális asszisztensünk fogadja. A beszélgetést a hívás elején kért hozzájárulásoddal rögzítjük.",phSteps:[["Felvesszük","Bármikor hívsz, első csengésre."],["Végigkérdezünk","Kb. 10 perc: mit csinálsz, kiknek, mit kérsz. Ha elakadsz, segítünk."],["Írásban megkapod","Az összefoglalót e-mailben küldjük jóváhagyásra. Utána indul a 24 óra."]],"cb-name":"Neved","cb-phone":"Telefonszám","cb-slot":"Mikor hívjunk?","cb-n":"A beszélgetést a hozzájárulásoddal rögzítjük, és ebből írjuk meg a briefet. Utána írásban visszaküldjük jóváhagyásra.","cb-go":"Visszahívást kérek",cbDone:"Rögzítettük: {s}. (Prototípus: a kérés még nincs bekötve.)",
-brand:"WEBBRIDGE",nav1:"Hogyan működik",nav2:"Szolgáltatások",nav3:"Csomagok",nav4:"GYIK",navcta:"Megrendelem",
+brand:"WEBBRIDGE",nav1:"Hogyan működik",nav2:"Szolgáltatások",nav3:"Csomagok",nav4:"GYIK",navcta:"Megrendelem",navlogin:"Belépés",navlogin2:"Ügyfél-belépés (Pult)",
 stamp:"Most is dolgozunk · 24 órás átfutás",
 h1:'Ma kitöltöd.<br>Holnap éles.<span class="thin">Weboldal, logó, arculat és marketing. Rád szabva, nem sablonból.</span>',
 lead:"Elmondod, mit csinálsz: kérdőívben, e-mailben vagy telefonon. 24 órán belül megkapod a weboldalt, a logót, a brandbookot és a marketingtervet. Fix áron, meglepetések nélkül.",
@@ -1322,7 +1324,7 @@ en:{nav5:"The Desk",nav6:"Help me choose",nav7:"Marketing",roundsInc:"Unlimited 
 ch1:"Questionnaire",ch1s:"10 minutes, online",ch2:"Email",ch2s:"Write it in your own words",ch3:"Phone",ch3s:"24/7, answered instantly",
 "m-e":"Brief by email",copy:"Copy",copied:"Copied","m-p":"Write a few sentences and attach whatever you have. Here is what we need:","m-n":"Within an hour we reply with a summary and any missing questions, in a single email. The 24 hours start when you confirm.",
 "c-e":"Phone","c-e2":"Or request a callback","ph-live":"24/7, answered instantly","ph-note":"Calls are answered by our virtual assistant. With the consent requested at the start of the call, we record it.",phSteps:[["We pick up","Call any time, first ring."],["We ask the questions","About 10 minutes: what you do, for whom, what you need. We help if you get stuck."],["You get it in writing","We email the summary for approval. Then the 24 hours start."]],"cb-name":"Your name","cb-phone":"Phone number","cb-slot":"When should we call?","cb-n":"With your consent we record the call and write your brief from it. We then send it to you in writing for approval.","cb-go":"Request a callback",cbDone:"Booked: {s}. (Prototype: the request is not connected yet.)",
-brand:"WEBBRIDGE",nav1:"How it works",nav2:"Services",nav3:"Bundles",nav4:"FAQ",navcta:"Order now",
+brand:"WEBBRIDGE",nav1:"How it works",nav2:"Services",nav3:"Bundles",nav4:"FAQ",navcta:"Order now",navlogin:"Sign in",navlogin2:"Client sign-in (Desk)",
 stamp:"Open now · 24-hour turnaround",
 h1:'Brief today.<br>Live tomorrow.<span class="thin">Website, logo, brand and marketing. Made for you, not from a template.</span>',
 lead:"Tell us what you do: by questionnaire, email or phone. Within 24 hours you get your website, logo, brandbook and marketing plan. Fixed prices, no surprises.",
@@ -2114,7 +2116,7 @@ adatvedelem:{t:"Adatkezelési tájékoztató",h:`
 <div class="lg-table"><table><thead><tr><th>Cél</th><th>Adatok</th><th>Jogalap</th><th>Időtartam</th></tr></thead><tbody>
 <tr><td>Ajánlatkérés és brief (kérdőív, e-mail)</td><td>név, vállalkozás neve és adatai, e-mail, telefon, feltöltött fájlok, válaszok</td><td>szerződés előkészítése (GDPR 6. cikk (1) b)</td><td>ha nem jön létre szerződés: 6 hónap; egyébként mint a szerződésnél</td></tr>
 <tr><td>Telefonos brief (virtuális asszisztens) és visszahívás, hívásrögzítés</td><td>név, telefonszám, hangfelvétel, a hívás írott változata</td><td>a hívás kezelése: szerződés előkészítése (6. cikk (1) b); a rögzítés: hozzájárulás (6. cikk (1) a)</td><td>a hangfelvételt a brief jóváhagyása után, legkésőbb 30 nap múlva töröljük; az írott briefet a szerződéssel együtt őrizzük</td></tr>
-<tr><td>Szerződés teljesítése, Pult, módosítási kérések</td><td>fiókadatok (Google-belépésnél a Google által átadott név és e-mail-cím), kérések, csatolt képek, szövegek és linkek, jóváhagyások, feltöltött anyagok</td><td>szerződés teljesítése (6. cikk (1) b)</td><td>a szerződés megszűnése után az igények elévüléséig, legfeljebb 5 évig</td></tr>
+<tr><td>Szerződés teljesítése, Pult, módosítási kérések</td><td>fiókadatok (Google-belépésnél a Google által átadott név és e-mail-cím), az általad meghívott véleményezők neve és e-mail-címe, megjegyzések, kérések, csatolt képek, szövegek és linkek, jóváhagyások, feltöltött anyagok</td><td>szerződés teljesítése (6. cikk (1) b)</td><td>a szerződés megszűnése után az igények elévüléséig, legfeljebb 5 évig</td></tr>
 <tr><td>Szolgáltatásfejlesztés</td><td>a módosítási kérések típusa, az érintett oldalelem, az időpontok és az átfutási idő (az Ügyfél tartalma nélkül)</td><td>jogos érdek (6. cikk (1) f)</td><td>összesítve, személyhez nem köthető formában</td></tr>
 <tr><td>Fiókösszekötés (Folyamatos marketing)</td><td>hozzáférési tokenek, fiókazonosítók, teljesítményadatok</td><td>szerződés teljesítése (6. cikk (1) b)</td><td>a hozzáférés visszavonásáig vagy a szerződés megszűnéséig</td></tr>
 <tr><td>Számlázás és könyvelés</td><td>számlázási név, cím, adószám, fizetési adatok</td><td>jogi kötelezettség (6. cikk (1) c)</td><td>az észt számviteli törvény szerint 7 év</td></tr>
@@ -2260,7 +2262,7 @@ adatvedelem:{t:"Privacy Policy",h:`
 <div class="lg-table"><table><thead><tr><th>Purpose</th><th>Data</th><th>Legal basis</th><th>Retention</th></tr></thead><tbody>
 <tr><td>Enquiry and brief (questionnaire, email)</td><td>name, business details, email, phone, uploaded files, answers</td><td>pre-contractual steps (Art. 6(1)(b))</td><td>6 months if no contract; otherwise as for the contract</td></tr>
 <tr><td>Phone brief (virtual assistant) and callback, call recording</td><td>name, phone number, recording, written version of the call</td><td>handling the call: pre-contractual steps (Art. 6(1)(b)); recording: consent (Art. 6(1)(a))</td><td>the recording is deleted after brief approval, at the latest after 30 days; the written brief is kept with the contract</td></tr>
-<tr><td>Performance of the contract, Desk, change requests</td><td>account data (for Google sign-in, the name and email address Google provides), requests, attached images, text and links, approvals, uploaded materials</td><td>contract (Art. 6(1)(b))</td><td>after the contract ends, until claims expire, at most 5 years</td></tr>
+<tr><td>Performance of the contract, Desk, change requests</td><td>account data (for Google sign-in, the name and email address Google provides), names and email addresses of reviewers you invite, comments, requests, attached images, text and links, approvals, uploaded materials</td><td>contract (Art. 6(1)(b))</td><td>after the contract ends, until claims expire, at most 5 years</td></tr>
 <tr><td>Service improvement</td><td>type of change request, page element concerned, timestamps and turnaround (without the Customer's content)</td><td>legitimate interest (Art. 6(1)(f))</td><td>aggregated, in a form not linked to any person</td></tr>
 <tr><td>Account connections (Continuous marketing)</td><td>access tokens, account IDs, performance data</td><td>contract (Art. 6(1)(b))</td><td>until access is revoked or the contract ends</td></tr>
 <tr><td>Invoicing and accounting</td><td>billing name, address, tax number, payment details</td><td>legal obligation (Art. 6(1)(c))</td><td>7 years under the Estonian Accounting Act</td></tr>

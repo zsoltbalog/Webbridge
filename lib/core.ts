@@ -13,6 +13,9 @@ export interface Env {
   ANTHROPIC_API_KEY?: string;       // titok (Pult AI, később)
   CRON_SECRET?: string;             // titok: az óránkénti időzítő (/api/cron) kulcsa
   REVIEW_URL?: string;              // Google-értékelés link (értékeléskérő levélhez)
+  GOOGLE_CLIENT_ID?: string;        // Pult Google-belépés (OAuth-kliens, TES Google Cloud projekt)
+  GOOGLE_CLIENT_SECRET?: string;    // titok
+  REPLY_DOMAIN?: string;            // bejövő válaszlevelek aldomainje (pl. reply.webbridge.hu)
   UPLOADS?: R2Bucket;               // R2: az ügyfelek feltöltött fájljai (projects/<rendelés>/…)
 }
 

@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Webbridge Pult</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,600..900&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#EDEFF2;--surface:#FFFFFF;--sunk:#E3E6EB;--ink:#10141B;--muted:#58616F;--line:#D2D7DE;
+  --hazard:#FF6B2C;--on-hazard:#10141B;--cobalt:#2B47F5;--on-cobalt:#FFFFFF;--ok:#1E8A55;--warn:#B45309;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--r:8px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1015;--surface:#151A22;--sunk:#10141A;--ink:#ECEFF4;--muted:#8E97A6;--line:#262D38;--cobalt:#7187FF;--on-cobalt:#0D1015;--ok:#4CC488;--warn:#F59E0B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D1015;--surface:#151A22;--sunk:#10141A;--ink:#ECEFF4;--muted:#8E97A6;--line:#262D38;--cobalt:#7187FF;--on-cobalt:#0D1015;--ok:#4CC488;--warn:#F59E0B;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--cobalt)}button,input,textarea,select{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--display);font-stretch:112%;margin:0;line-height:1.05}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+.brand{font-family:var(--display);font-weight:900;font-stretch:118%;font-size:19px;text-decoration:none;color:var(--ink)}.brand i{color:var(--hazard);font-style:normal}
+.brand small{font-family:var(--body);font-weight:500;font-stretch:100%;color:var(--muted);font-size:13px;margin-left:6px}
+.sp{flex:1}.mut{color:var(--muted)}.sm{font-size:13px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:9px 14px;cursor:pointer;font-weight:600;font-size:14px;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn:hover{border-color:var(--muted)}.btn.pri{background:var(--hazard);border-color:var(--hazard);color:var(--on-hazard)}.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.ghost{background:transparent;border-color:transparent}.btn:disabled{opacity:.55;cursor:default}
+.btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,.pin:focus-visible{outline:2px solid var(--cobalt);outline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+input[type=email],input[type=text],input[type=url],textarea,select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:10px 12px}
+textarea{min-height:84px;resize:vertical}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--muted)}
+.tag.review{background:color-mix(in srgb,var(--cobalt) 14%,transparent);color:var(--cobalt)}.tag.changes{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}.tag.approved{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
+/* login */
+.login{min-height:calc(100vh - 60px);display:grid;place-items:center;padding:24px 0}
+.login .card{max-width:420px;width:100%;padding:28px 24px}.login h1{font-size:30px;margin-bottom:8px}
+.or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin:16px 0}.or:before,.or:after{content:"";flex:1;height:1px;background:var(--line)}
+.gbtn{width:100%;background:var(--surface)}
+/* list */
+.page{padding:22px 0 60px}.page>h1{font-size:34px;margin:6px 0 4px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:18px}
+.wcard{display:block;text-decoration:none;color:inherit;padding:0;overflow:hidden}.wcard:hover{border-color:var(--muted)}
+.wcard .th{aspect-ratio:16/10;background:var(--sunk);display:grid;place-items:center;overflow:hidden}.wcard .th img{width:100%;height:100%;object-fit:contain;background:#fff}
+.wcard .bd{padding:14px 16px;display:grid;gap:6px}.wcard h3{font-size:18px}
+.empty{text-align:center;padding:40px 16px}
+/* work view */
+.wv{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start;margin-top:14px}
+@media (max-width:900px){.wv{grid-template-columns:1fr}}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:600}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stage{background:var(--sunk);border-radius:12px;padding:12px;display:grid;gap:12px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media (max-width:700px){.cmp{grid-template-columns:1fr}}
+.canvas{position:relative;background:#fff;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.12);cursor:crosshair;user-select:none;touch-action:manipulation}
+.canvas.ro{cursor:default}.canvas img,.canvas canvas{display:block;width:100%;height:auto;border-radius:6px}
+.canvas .pg{position:absolute;left:8px;top:8px;font-size:12px;background:rgba(16,20,27,.7);color:#fff;border-radius:4px;padding:1px 6px}
+.pin{position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--hazard);color:var(--on-hazard);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);display:grid;place-items:center;font-weight:800;font-size:12px;cursor:pointer;padding:0}
+.pin span{transform:rotate(45deg)}.pin.done,.pin.verified{background:var(--ok);color:#fff}.pin.new{background:var(--cobalt);color:#fff}.pin.hl{outline:3px solid var(--cobalt)}
+.side{position:sticky;top:72px;display:grid;gap:12px;max-height:calc(100vh - 88px);overflow:auto}
+@media (max-width:900px){.side{position:static;max-height:none}}
+.cm{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface);display:grid;gap:6px}.cm.hl{border-color:var(--cobalt)}
+.cm .hd{display:flex;gap:8px;align-items:center;font-size:13px}.cm .n{width:22px;height:22px;border-radius:50%;background:var(--hazard);color:var(--on-hazard);display:grid;place-items:center;font-weight:800;font-size:11px;flex:none}
+.cm .n.g{background:var(--sunk);color:var(--muted)}.cm .body{white-space:pre-wrap;font-size:14px}
+.rep{margin-left:12px;padding-left:10px;border-left:2px solid var(--line);font-size:13px}.rep.staff b{color:var(--hazard)}
+.st{font-size:12px;font-weight:600}.st.open{color:var(--warn)}.st.doing{color:var(--cobalt)}.st.done,.st.verified{color:var(--ok)}
+.pop{position:fixed;z-index:50;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.22);padding:14px;width:min(340px,calc(100vw - 24px));display:grid;gap:10px}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}.seg button{flex:1;border:0;background:transparent;padding:7px 6px;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.foot{display:grid;gap:8px}.note{font-size:13px;background:var(--sunk);border-radius:8px;padding:10px 12px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:60;max-width:calc(100vw - 32px)}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);width:min(460px,calc(100vw - 24px));padding:20px}dialog::backdrop{background:rgba(0,0,0,.45)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.help{font-size:13px;color:var(--muted)}
+@media (max-width:640px){#who{display:none!important}.brand small{display:none}header.top .btn{padding:7px 10px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="#">Webbridge<i>.</i><small data-t="desk">Pult</small></a><span class="sp"></span>
+  <span class="sm mut" id="who" hidden></span>
+  <button class="btn ghost sm" id="langbtn" type="button">EN</button>
+  <button class="btn sm" id="teambtn" type="button" hidden data-t="team">Csapat</button>
+  <button class="btn ghost sm" id="outbtn" type="button" hidden data-t="logout">Kilépés</button>
+</div></header>
+<main class="wrap" id="app" aria-live="polite"></main>
+<div class="toast" id="toast" hidden role="status"></div>
+<dialog id="dlg"><form method="dialog" id="dlgf"></form></dialog>
+<input type="file" id="attfile" hidden>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+"use strict";
+const $=s=>document.querySelector(s),app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let lang=(()=>{try{return localStorage.getItem("wb-lang")||((navigator.language||"").startsWith("hu")?"hu":"en")}catch(e){return "hu"}})();
+const T={hu:{desk:"Pult",team:"Csapat",logout:"Kilépés",
+  loginT:"Belépés a Pultba",loginP:"Itt látod és véleményezed az anyagaidat: logó, arculat, szórólap, weboldal.",email:"E-mail-cím",sendLink:"Belépőlink küldése",or:"vagy",google:"Belépés Google-lel",
+  sent:"Ha ehhez a címhez tartozik fiók, pár percen belül megérkezik a belépőlink. Nézd meg a promóciók és a spam mappát is.",useOrder:"Azzal a címmel lépj be, amellyel rendeltél, vagy amelyre meghívást kaptál.",
+  works:"Anyagaid",worksP:"Bökj rá bármelyik részre, és írd meg, mit változtatnál, adnál hozzá vagy hagynál el.",noWorks:"Még nincs véleményezni való anyag. Ha elkészül az első, e-mailt küldünk.",
+  st_review:"Rád vár",st_changes:"Dolgozunk rajta",st_approved:"Jóváhagyva",open:"nyitott megjegyzés",back:"← Anyagaid",version:"Verzió",
+  tip:"Kattints a képre vagy az oldalra oda, amihez megjegyzést írnál.",tipRo:"Ez egy korábbi verzió, csak megtekinthető.",tipAp:"Ezt a verziót jóváhagytad. Ha mégis változtatnál, írj nekünk.",a_note:"Megjegyzés",general:"Általános megjegyzés",
+  compare:"Összevetés az előzővel",prev:"Előző",cur:"Mostani",
+  a_change:"Változtatás",a_add:"Hozzáadás",a_remove:"Törlés",ph:"Mit szeretnél? Pl. a betű legyen vastagabb, a narancs helyett sötétkék…",
+  attach:"Kép vagy fájl csatolása",link:"Link (nem kötelező)",save:"Mentés",cancel:"Mégse",
+  s_open:"Nyitott",s_doing:"Dolgozunk rajta",s_done:"Kész – nézd meg",s_verified:"Rendben",verify:"Rendben, így jó",reopen:"Mégsem jó",del:"Törlés",reply:"Válasz…",send:"Küldés",
+  comments:"Megjegyzések",noComments:"Még nincs megjegyzés ehhez a verzióhoz.",
+  submit:"Visszajelzés elküldése",submitP:"Ha minden megjegyzésedet leírtad, küldd el egyben; ebből készül a következő verzió.",
+  approve:"Jóváhagyom",approveDir:"Ezt az irányt választom és jóváhagyom",approveP:"A jóváhagyással ezt a verziót elfogadod, és ebből dolgozunk tovább.",
+  reviewerNote:"Véleményezőként megjegyzést írhatsz; a jóváhagyás a fiók gazdájáé.",approved:"Jóváhagyva",by:"jóváhagyta",
+  conf:"Biztosan jóváhagyod ezt a verziót?",confDir:"Biztosan ezt az irányt választod és hagyod jóvá?",sentFb:"Elküldve, köszönjük! Jelentkezünk a következő verzióval.",
+  done:"Kész",teamT:"Csapat",teamP:"Hívd meg az üzlettársadat vagy a kollégádat. Megjegyzést írhat, de jóváhagyni és fizetni csak te tudsz.",
+  invite:"Meghívó küldése",name:"Név (nem kötelező)",owner:"gazda",reviewer:"véleményező",remove:"Eltávolítás",never:"még nem lépett be",lastLogin:"utoljára",
+  invited:"Meghívó elküldve.",err:"Hiba történt. Próbáld újra.",mail:"E-mailben is válaszolhatsz a levelünkre: az is ide kerül.",uploading:"Feltöltés…",file:"Fájl",
+  page:"oldal",dirOf:"irány"},
+ en:{desk:"Desk",team:"Team",logout:"Sign out",
+  loginT:"Sign in to the Desk",loginP:"See and review your materials here: logo, brand, flyer, website.",email:"Email address",sendLink:"Send sign-in link",or:"or",google:"Sign in with Google",
+  sent:"If there's an account for this address, the sign-in link arrives in a few minutes. Check promotions and spam too.",useOrder:"Use the address you ordered with or were invited to.",
+  works:"Your materials",worksP:"Tap any part and tell us what to change, add or remove.",noWorks:"Nothing to review yet. We'll email you when the first one is ready.",
+  st_review:"Waiting for you",st_changes:"We're on it",st_approved:"Approved",open:"open comments",back:"← Your materials",version:"Version",
+  tip:"Click on the image or page where you want to comment.",tipRo:"This is an earlier version, view only.",tipAp:"You approved this version. If you still want a change, write to us.",a_note:"Comment",general:"General comment",
+  compare:"Compare with previous",prev:"Previous",cur:"Current",
+  a_change:"Change",a_add:"Add",a_remove:"Remove",ph:"What would you like? E.g. bolder lettering, dark blue instead of orange…",
+  attach:"Attach image or file",link:"Link (optional)",save:"Save",cancel:"Cancel",
+  s_open:"Open",s_doing:"We're on it",s_done:"Done – take a look",s_verified:"OK",verify:"OK, that's good",reopen:"Not quite",del:"Delete",reply:"Reply…",send:"Send",
+  comments:"Comments",noComments:"No comments on this version yet.",
+  submit:"Send feedback",submitP:"Once you've written all your comments, send them together; the next version is built from them.",
+  approve:"Approve",approveDir:"Choose this direction and approve",approveP:"By approving you accept this version and we continue from it.",
+  reviewerNote:"As a reviewer you can comment; approval belongs to the account owner.",approved:"Approved",by:"approved by",
+  conf:"Approve this version?",confDir:"Choose this direction and approve it?",sentFb:"Sent, thank you! We'll be back with the next version.",
+  done:"Done",teamT:"Team",teamP:"Invite your business partner or colleague. They can comment, but only you can approve and pay.",
+  invite:"Send invite",name:"Name (optional)",owner:"owner",reviewer:"reviewer",remove:"Remove",never:"not signed in yet",lastLogin:"last",
+  invited:"Invite sent.",err:"Something went wrong. Please try again.",mail:"You can also reply to our email: it lands here too.",uploading:"Uploading…",file:"File",
+  page:"page",dirOf:"direction"}};
+const t=k=>T[lang][k]??k;
+const pgLabel=i=>lang==="hu"?`${i}. oldal`:`Page ${i}`;
+function toast(m){const e=$("#toast");e.textContent=m;e.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>e.hidden=true,3200)}
+async function api(path,body,method){const r=await fetch("/api/pult/"+path,body!==undefined?{method:method||"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)}:{credentials:"same-origin"});
+  const j=await r.json().catch(()=>({}));if(r.status===401){ME=null;return {__login:true}}if(!r.ok||j.ok===false)throw new Error(j.error||t("err"));return j}
+const fileUrl=k=>"/api/pult/file?key="+encodeURIComponent(k);
+const dt=s=>s?new Date(s).toLocaleString(lang==="hu"?"hu-HU":"en-GB",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
+let ME=null,CFG={google:false,upload:false};
+
+function applyStatic(){document.documentElement.lang=lang;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));$("#langbtn").textContent=lang==="hu"?"EN":"HU"}
+$("#langbtn").onclick=()=>{lang=lang==="hu"?"en":"hu";try{localStorage.setItem("wb-lang",lang)}catch(e){}applyStatic();route()};
+$("#outbtn").onclick=async()=>{await api("auth/logout",{});ME=null;location.hash="";route()};
+$("#teambtn").onclick=()=>teamDlg();
+
+async function route(){
+  applyStatic();
+  if(!ME){const m=await api("me");if(m.__login){return loginView()}ME=m}
+  $("#who").hidden=false;$("#who").textContent=(ME.customer.business?ME.customer.business+" · ":"")+ME.user.email;$("#outbtn").hidden=false;$("#teambtn").hidden=ME.user.role!=="owner";
+  const h=location.hash.slice(1);
+  try{if(h.startsWith("w/"))await workView(h.slice(2));else await listView()}catch(e){app.innerHTML=`<div class="page"><div class="card empty">${esc(e.message)}</div></div>`}
+}
+window.addEventListener("hashchange",()=>{closePop();route()});
+
+/* ---------- belépés ---------- */
+function loginView(){
+  $("#who").hidden=true;$("#outbtn").hidden=true;$("#teambtn").hidden=true;
+  app.innerHTML=`<div class="login"><div class="card"><h1>${t("loginT")}</h1><p class="mut">${t("loginP")}</p>
+   <form id="lf" style="display:grid;gap:10px;margin-top:14px"><label for="le" class="sm mut">${t("email")}</label><input id="le" type="email" required autocomplete="email" placeholder="nev@ceg.hu"><button class="btn pri" id="lb">${t("sendLink")}</button></form>
+   <p id="lsent" class="note" hidden>${t("sent")}</p>
+   ${CFG.google?`<div class="or">${t("or")}</div><a class="btn gbtn" href="/api/pult/auth/google"><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>${t("google")}</a>`:""}
+   <p class="help" style="margin-top:14px">${t("useOrder")}</p></div></div>`;
+  $("#lf").onsubmit=async e=>{e.preventDefault();const b=$("#lb");b.disabled=true;try{await api("auth/request",{email:$("#le").value,lang});$("#lsent").hidden=false}catch(err){toast(err.message)}b.disabled=false};
+}
+
+/* ---------- munkák ---------- */
+const stTag=s=>`<span class="tag ${s}">${t("st_"+s)}</span>`;
+async function listView(){
+  const d=await api("works");if(d.__login)return loginView();
+  app.innerHTML=`<div class="page"><h1>${t("works")}</h1><p class="mut">${t("worksP")}</p>
+  ${d.works.length?`<div class="grid">${d.works.map(w=>{const f=(JSON.parse(w.last_files||"[]")||[]).find(x=>/^image\//.test(x.type));
+    return `<a class="card wcard" href="#w/${w.id}"><div class="th">${f?`<img src="${fileUrl(f.key)}" alt="" loading="lazy">`:`<span class="mut">PDF</span>`}</div><div class="bd"><div class="row" style="justify-content:space-between"><h3>${esc(w.title)}</h3>${stTag(w.status)}</div><div class="sm mut">${t("version")} ${w.last_n||1}${w.open_comments?` · ${w.open_comments} ${t("open")}`:""}</div></div></a>`}).join("")}</div>`:`<div class="card empty" style="margin-top:18px"><p class="mut">${t("noWorks")}</p></div>`}</div>`;
+}
+
+/* ---------- egy munka ---------- */
+let W=null,VI=0,FI=0,CMP=false,NEWPIN=null,HL=null;
+async function workView(id,keep){
+  const d=await api("works/"+id);if(d.__login)return loginView();
+  const sameWork=W&&W.work.id===id;W=d;
+  if(!sameWork||!keep){VI=0;FI=0;CMP=false}
+  if(VI>=W.versions.length)VI=0;
+  renderWork();
+}
+const curV=()=>W.versions[VI];
+const editable=()=>{const v=curV();return v&&(v.status==="review"||v.status==="changes")};
+function rootComments(v){return W.comments.filter(c=>c.version_id===v.id&&!c.parent_id)}
+function renderWork(){
+  const v=curV(),w=W.work;if(!v){app.innerHTML=`<div class="page"><a href="#">${t("back")}</a><div class="card empty">${t("noWorks")}</div></div>`;return}
+  if(FI>=v.files.length)FI=0;
+  const f=v.files[FI],prev=W.versions[VI+1],pf=prev&&(prev.files[FI]||prev.files[0]);
+  const roots=rootComments(v),num=new Map(roots.map((c,i)=>[c.id,i+1]));
+  const isOwner=W.me.role==="owner",multi=v.files.length>1;
+  const openCount=roots.filter(c=>c.status==="open"&&c.author_kind!=="staff").length;
+  app.innerHTML=`<div class="page"><a href="#" class="sm">${t("back")}</a>
+   <div class="bar" style="margin-top:8px;justify-content:space-between"><div><h1 style="font-size:30px">${esc(w.title)}</h1></div>
+    <div class="bar"><label class="sm mut" for="vsel">${t("version")}</label><select id="vsel" style="width:auto">${W.versions.map((x,i)=>`<option value="${i}" ${i===VI?"selected":""}>v${x.n} · ${dt(x.created_at)}${x.status==="approved"?" ✓":""}</option>`).join("")}</select>${stTag(v.status==="superseded"?"changes":v.status==="approved"?"approved":w.status)}</div></div>
+   ${v.note?`<div class="note" style="margin-top:10px">${esc(v.note)}</div>`:""}
+   <div class="wv"><section class="stage" aria-label="${esc(w.title)}">
+     <div class="bar" style="justify-content:space-between">${multi?`<div class="tabs" role="group">${v.files.map((x,i)=>`<button type="button" data-fi="${i}" aria-pressed="${i===FI}">${esc(x.label||x.name)}${v.chosen===x.key?" ✓":""}</button>`).join("")}</div>`:"<span></span>"}
+      ${pf?`<label class="sm"><input type="checkbox" id="cmpchk" ${CMP?"checked":""}> ${t("compare")}</label>`:""}</div>
+     <p class="help" style="margin:0">${editable()?t("tip"):v.status==="approved"?t("tipAp"):t("tipRo")}</p>
+     ${CMP&&pf?`<div class="cmp"><div><div class="sm mut">${t("prev")} (v${prev.n})</div><div id="vwprev"></div></div><div><div class="sm mut">${t("cur")} (v${v.n})</div><div id="vw"></div></div></div>`:`<div id="vw"></div>`}
+   </section>
+   <aside class="side">
+     <div class="card" style="padding:14px"><div class="row" style="justify-content:space-between"><h2 style="font-size:18px">${t("comments")}</h2>${editable()?`<button class="btn sm" id="gen">+ ${t("general")}</button>`:""}</div>
+      <div id="clist" style="display:grid;gap:8px;margin-top:10px">${roots.length?roots.map(c=>cmHtml(c,num.get(c.id),v)).join(""):`<p class="sm mut">${t("noComments")}</p>`}</div>
+      <p class="help" style="margin:10px 0 0">${t("mail")}</p></div>
+     ${v.status==="approved"?`<div class="card note" style="background:color-mix(in srgb,var(--ok) 12%,transparent)"><b>✓ ${t("approved")}</b> · ${dt(v.approved_at)}${v.approved_by_name||v.approved_by_email?` · ${t("by")}: ${esc(v.approved_by_name||v.approved_by_email)}`:""}${v.chosen?`<br>${esc((v.files.find(x=>x.key===v.chosen)||{}).label||"")}`:""}</div>`:
+      editable()?`<div class="card foot"><button class="btn" id="fb" ${openCount?"":"disabled"}>${t("submit")}${openCount?` (${openCount})`:""}</button><p class="help" style="margin:0">${t("submitP")}</p>
+       ${isOwner?`<button class="btn ok" id="appr">✓ ${multi?t("approveDir"):t("approve")}</button><p class="help" style="margin:0">${t("approveP")}${multi?` <b>${esc(f.label||f.name)}</b>`:""}</p>`:`<p class="note" style="margin:0">${t("reviewerNote")}</p>`}</div>`:""}
+   </aside></div></div>`;
+  $("#vsel").onchange=e=>{VI=+e.target.value;FI=0;CMP=false;renderWork()};
+  app.querySelectorAll("[data-fi]").forEach(b=>b.onclick=()=>{FI=+b.dataset.fi;renderWork()});
+  const cc=$("#cmpchk");if(cc)cc.onchange=()=>{CMP=cc.checked;renderWork()};
+  const gen=$("#gen");if(gen)gen.onclick=e=>openPop({general:true},e.currentTarget.getBoundingClientRect());
+  const fb=$("#fb");if(fb)fb.onclick=async()=>{fb.disabled=true;try{await api("works/"+W.work.id,{action:"feedback",version_id:v.id});toast(t("sentFb"));workView(W.work.id,true)}catch(e){toast(e.message);fb.disabled=false}};
+  const ap=$("#appr");if(ap)ap.onclick=async()=>{if(!confirm(multi?t("confDir"):t("conf")))return;ap.disabled=true;try{await api("works/"+W.work.id,{action:"approve",version_id:v.id,chosen:multi?f.key:null});toast("✓ "+t("approved"));workView(W.work.id,true)}catch(e){toast(e.message);ap.disabled=false}};
+  bindComments(v);
+  renderFile($("#vw"),f,v,num,editable());
+  if(CMP&&pf)renderFile($("#vwprev"),pf,prev,new Map(rootComments(prev).map((c,i)=>[c.id,i+1])),false);
+}
+function cmHtml(c,n,v){
+  const kids=W.comments.filter(x=>x.parent_id===c.id),mine=c.user_id===W.me.id;
+  const fl=c.file_key?v.files.find(x=>x.key===c.file_key):null;
+  const where=[fl&&v.files.length>1?(fl.label||fl.name):"",c.page?pgLabel(c.page):""].filter(Boolean).join(" · ");
+  return `<div class="cm ${HL===c.id?"hl":""}" data-cm="${c.id}"><div class="hd"><span class="n ${c.x==null?"g":""}">${c.x==null?"•":n}</span><b>${c.x==null&&c.action==="change"?t("a_note"):t("a_"+(c.action||"change"))}</b><span class="mut">${esc(c.author||"")}${c.author_kind==="email"?" ✉":""}</span><span class="sp"></span><span class="st ${c.status}">${t("s_"+c.status)}</span></div>
+   ${where?`<div class="sm mut">${esc(where)}</div>`:""}<div class="body">${esc(c.body)}</div>
+   ${c.attachment?(c.attachment.key?`<a class="sm" href="${fileUrl(c.attachment.key)}" target="_blank" rel="noopener">📎 ${esc(c.attachment.name||t("file"))}</a>`:`<a class="sm" href="${esc(c.attachment.url)}" target="_blank" rel="noopener noreferrer">🔗 ${esc(c.attachment.url)}</a>`):""}
+   ${kids.map(k=>`<div class="rep ${k.author_kind==="staff"?"staff":""}"><b>${esc(k.author||"")}</b> <span class="mut">${dt(k.created_at)}</span><div style="white-space:pre-wrap">${esc(k.body)}</div></div>`).join("")}
+   <div class="row">${c.status==="done"?`<button class="btn sm ok" data-act="verify" data-id="${c.id}">${t("verify")}</button><button class="btn sm" data-act="reopen" data-id="${c.id}">${t("reopen")}</button>`:""}${c.status==="verified"?`<button class="btn sm ghost" data-act="reopen" data-id="${c.id}">${t("reopen")}</button>`:""}${mine&&c.status==="open"&&editable()?`<button class="btn sm ghost" data-act="delete" data-id="${c.id}">${t("del")}</button>`:""}</div>
+   ${editable()?`<div class="row"><input type="text" data-rin="${c.id}" placeholder="${t("reply")}" style="flex:1;min-width:0;padding:7px 10px"><button class="btn sm" data-rsend="${c.id}">${t("send")}</button></div>`:""}</div>`;
+}
+function bindComments(v){
+  app.querySelectorAll("[data-act]").forEach(b=>b.onclick=async()=>{try{await api("comments/"+b.dataset.id,{action:b.dataset.act});workView(W.work.id,true)}catch(e){toast(e.message)}});
+  app.querySelectorAll("[data-rsend]").forEach(b=>b.onclick=async()=>{const i=app.querySelector(`[data-rin="${b.dataset.rsend}"]`);const body=i.value.trim();if(!body)return;b.disabled=true;
+    try{await api("comments",{work_id:W.work.id,version_id:v.id,parent_id:b.dataset.rsend,body});workView(W.work.id,true)}catch(e){toast(e.message);b.disabled=false}});
+  app.querySelectorAll("[data-cm]").forEach(el=>el.addEventListener("mouseenter",()=>{document.querySelectorAll(".pin").forEach(p=>p.classList.toggle("hl",p.dataset.pin===el.dataset.cm))}));
+}
+
+/* ---------- fájl megjelenítése: kép vagy PDF, rábökéssel ---------- */
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const pdfCache=new Map();
+async function renderFile(host,f,v,num,canComment){
+  host.innerHTML="";if(!f)return;
+  const pins=W.comments.filter(c=>c.version_id===v.id&&!c.parent_id&&c.file_key===f.key&&c.x!=null);
+  const mk=(page)=>{const box=document.createElement("div");box.className="canvas"+(canComment?"":" ro");box.dataset.page=page||"";
+    if(canComment)box.addEventListener("click",e=>{if(e.target.closest(".pin"))return;const r=box.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;openPop({file_key:f.key,page:page||null,x,y,box},{left:e.clientX,top:e.clientY,bottom:e.clientY,right:e.clientX})});
+    return box};
+  const addPins=(box,page)=>{pins.filter(c=>(c.page||null)===(page||null)).forEach(c=>{const p=document.createElement("button");p.type="button";p.className="pin "+c.status;p.dataset.pin=c.id;
+    p.style.left=(c.x*100)+"%";p.style.top=(c.y*100)+"%";p.innerHTML=`<span>${num.get(c.id)||"•"}</span>`;p.setAttribute("aria-label",`${num.get(c.id)}. ${c.body.slice(0,60)}`);
+    p.onclick=e=>{e.stopPropagation();HL=c.id;const el=document.querySelector(`[data-cm="${c.id}"]`);document.querySelectorAll(".cm").forEach(x=>x.classList.toggle("hl",x===el));if(el)el.scrollIntoView({block:"nearest",behavior:"smooth"})};box.appendChild(p)})};
+  if(/^image\//.test(f.type)){const box=mk(null);const img=new Image();img.alt=f.label||f.name;img.src=fileUrl(f.key);img.draggable=false;box.appendChild(img);addPins(box,null);host.appendChild(box);return}
+  if(f.type==="application/pdf"||/\.pdf$/i.test(f.name)){
+    if(!window.pdfjsLib){host.innerHTML=`<a class="btn" href="${fileUrl(f.key)}" target="_blank">PDF</a>`;return}
+    host.innerHTML=`<p class="sm mut">PDF…</p>`;
+    try{let doc=pdfCache.get(f.key);if(!doc){doc=await pdfjsLib.getDocument({url:fileUrl(f.key),withCredentials:true}).promise;pdfCache.set(f.key,doc)}
+      host.innerHTML="";const wrap=document.createElement("div");wrap.style.cssText="display:grid;gap:12px";host.appendChild(wrap);
+      for(let i=1;i<=Math.min(doc.numPages,40);i++){const pg=await doc.getPage(i);const vp=pg.getViewport({scale:1});const scale=Math.min(2.2,Math.max(1,(host.clientWidth||800)/vp.width)*(window.devicePixelRatio>1?1.6:1));
+        const v2=pg.getViewport({scale});const cv=document.createElement("canvas");cv.width=v2.width;cv.height=v2.height;const box=mk(i);box.appendChild(cv);const tag=document.createElement("span");tag.className="pg";tag.textContent=pgLabel(i);box.appendChild(tag);
+        wrap.appendChild(box);await pg.render({canvasContext:cv.getContext("2d"),viewport:v2}).promise;addPins(box,i)}}
+    catch(e){host.innerHTML=`<a class="btn" href="${fileUrl(f.key)}" target="_blank">PDF</a>`}
+    return}
+  host.innerHTML=`<a class="btn" href="${fileUrl(f.key)}&dl=1">${esc(f.name)}</a>`;
+}
+
+/* ---------- megjegyzés-ablak ---------- */
+let POP=null;
+function closePop(){if(POP){POP.el.remove();if(POP.tmp)POP.tmp.remove();POP=null}}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closePop()});
+function openPop(ctx,rect){
+  closePop();const v=curV();
+  const el=document.createElement("div");el.className="pop";el.setAttribute("role","dialog");
+  el.innerHTML=`<div class="seg" role="group">${["change","add","remove"].map((a,i)=>`<button type="button" data-a="${a}" aria-pressed="${i===0}">${t("a_"+a)}</button>`).join("")}</div>
+   <textarea id="pbody" placeholder="${t("ph")}" aria-label="${t("ph")}"></textarea>
+   <input type="url" id="plink" placeholder="${t("link")}">
+   <div class="row" style="justify-content:space-between"><button type="button" class="btn sm" id="patt" ${CFG.upload?"":"hidden"}>📎 ${t("attach")}</button><span class="sm mut" id="pattn"></span></div>
+   <div class="row" style="justify-content:flex-end"><button type="button" class="btn sm ghost" id="pcan">${t("cancel")}</button><button type="button" class="btn sm pri" id="psave">${t("save")}</button></div>`;
+  document.body.appendChild(el);
+  let tmp=null;if(ctx.box){tmp=document.createElement("div");tmp.className="pin new";tmp.style.left=(ctx.x*100)+"%";tmp.style.top=(ctx.y*100)+"%";tmp.innerHTML="<span>+</span>";ctx.box.appendChild(tmp)}
+  POP={el,tmp,ctx,action:"change",att:null};
+  const w=el.offsetWidth,h=el.offsetHeight;let left=Math.min(window.innerWidth-w-12,Math.max(12,rect.left-w/2)),top=rect.bottom+14;if(top+h>window.innerHeight-12)top=Math.max(12,rect.top-h-14);
+  el.style.left=left+"px";el.style.top=top+"px";$("#pbody").focus();
+  el.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{POP.action=b.dataset.a;el.querySelectorAll("[data-a]").forEach(x=>x.setAttribute("aria-pressed",x===b))});
+  $("#pcan").onclick=closePop;
+  $("#patt").onclick=()=>{const fi=$("#attfile");fi.value="";fi.onchange=async()=>{const f=fi.files[0];if(!f)return;$("#pattn").textContent=t("uploading");
+    try{const r=await fetch("/api/pult/attach",{method:"POST",headers:{"x-filename":encodeURIComponent(f.name),"content-type":f.type||"application/octet-stream"},body:f});const j=await r.json();if(!r.ok||!j.ok)throw new Error(j.error||t("err"));POP.att=j.attachment;$("#pattn").textContent="📎 "+f.name}catch(e){$("#pattn").textContent="";toast(e.message)}};fi.click()};
+  $("#psave").onclick=async()=>{const body=$("#pbody").value.trim();if(!body){$("#pbody").focus();return}const b=$("#psave");b.disabled=true;
+    const link=$("#plink").value.trim();const att=POP.att||(link?{url:/^https?:\/\//i.test(link)?link:"https://"+link}:null);
+    try{await api("comments",{work_id:W.work.id,version_id:v.id,file_key:ctx.general?null:ctx.file_key,page:ctx.page||null,x:ctx.general?null:ctx.x,y:ctx.general?null:ctx.y,action:POP.action,body,attachment:att});
+      closePop();workView(W.work.id,true)}catch(e){toast(e.message);b.disabled=false}};
+}
+
+/* ---------- csapat ---------- */
+async function teamDlg(){
+  const m=await api("me");if(m.__login)return loginView();ME=m;
+  const f=$("#dlgf");f.innerHTML=`<h2 style="font-size:22px">${t("teamT")}</h2><p class="help">${t("teamP")}</p>
+   <div style="display:grid;gap:6px;margin:10px 0">${m.team.filter(u=>!u.disabled).map(u=>`<div class="row" style="justify-content:space-between"><span class="sm"><b>${esc(u.name||u.email)}</b> ${u.name?`<span class="mut">${esc(u.email)}</span>`:""} <span class="tag">${t(u.role)}</span> <span class="mut">${u.last_login?t("lastLogin")+": "+dt(u.last_login):t("never")}</span></span>${u.role==="reviewer"?`<button type="button" class="btn sm ghost" data-rm="${u.id}">${t("remove")}</button>`:""}</div>`).join("")}</div>
+   <div style="display:grid;gap:8px"><input type="email" id="ie" placeholder="${t("email")}" autocomplete="off"><input type="text" id="in" placeholder="${t("name")}"></div>
+   <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn ghost" value="cancel">${t("done")}</button><button type="button" class="btn pri" id="isend">${t("invite")}</button></div>`;
+  const d=$("#dlg");d.showModal();
+  f.querySelectorAll("[data-rm]").forEach(b=>b.onclick=async()=>{try{await api("team",{action:"remove",user_id:b.dataset.rm});d.close();teamDlg()}catch(e){toast(e.message)}});
+  $("#isend").onclick=async()=>{const b=$("#isend");b.disabled=true;try{await api("team",{action:"invite",email:$("#ie").value,name:$("#in").value});toast(t("invited"));d.close();teamDlg()}catch(e){toast(e.message);b.disabled=false}};
+}
+
+(async()=>{try{const r=await fetch("/api/pult/config");CFG=await r.json()}catch(e){}route()})();
+</script>
+</body>
+</html>

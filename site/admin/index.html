@@ -69,7 +69,7 @@ async function api(path,body){const r=await fetch("/api/admin/"+path,body?{metho
 
 async function route(){
   const h=location.hash.slice(1);document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("on",(a.dataset.nav==="list"&&h.startsWith("ugyfelek"))||(a.dataset.nav==="home"&&!h)));
-  try{if(h.startsWith("c/"))await detail(h.slice(2));else if(h.startsWith("ugyfelek"))await list(new URLSearchParams(h.split("?")[1]||""));else await home()}
+  try{if(h.startsWith("w/"))await workPage(h.slice(2));else if(h.startsWith("c/"))await detail(h.slice(2));else if(h.startsWith("ugyfelek"))await list(new URLSearchParams(h.split("?")[1]||""));else await home()}
   catch(e){app.innerHTML=`<div class="card empty">${esc(e.message)}</div>`}
 }
 window.addEventListener("hashchange",route);
@@ -110,6 +110,7 @@ async function detail(id){
     <div class="card"><div class="row" style="justify-content:space-between"><div><h1>${esc(c.business||c.name||c.email||c.phone)}</h1><div class="mut">${esc([c.name,c.email,c.phone].filter(Boolean).join(" · "))}</div></div><button class="btn" id="edit">Szerkesztés</button></div>
      <dl class="dl" style="margin-top:12px"><dt>Forrás</dt><dd>${esc(c.source||"")}${attrTxt(c.attribution)?`<div class="sm mut">${esc(attrTxt(c.attribution))}</div>`:""}</dd><dt>Nyelv</dt><dd>${c.lang==="en"?"Angol":"Magyar"}</dd><dt>Vevő</dt><dd>${c.buyer_type==="b2c"?"Magánszemély":"Cég"} ${esc(c.company||"")}</dd><dt>Adószám</dt><dd>${esc(c.vat_id||"–")}</dd><dt>Számlázási cím</dt><dd>${esc(c.billing_addr||"–")}</dd><dt>Ügyfél óta</dt><dd>${dt(c.created_at)}</dd><dt>Címkék</dt><dd>${esc(c.tags||"–")}</dd></dl></div>
     ${d.projects.map(p=>proj(p)).join("")||`<div class="card empty">Nincs projekt.</div>`}
+    <div class="card" id="pultcard"><h2>Pult</h2><div class="mut sm">Betöltés…</div></div>
     <div class="card"><h2>Jegyzet</h2><textarea id="note" placeholder="Pl. telefonon egyeztettünk: a logó maradjon, csak frissítsük."></textarea><div class="row" style="margin-top:8px"><button class="btn pri" id="addnote">Mentés az idővonalra</button></div></div>
    </div>
    <div class="grid" style="align-content:start">
@@ -117,6 +118,7 @@ async function detail(id){
     <div class="card"><h2>Idővonal</h2><ul class="tl">${d.events.map(e=>`<li class="k-${e.kind}"><time title="${esc(e.at)}">${dt(e.at)}</time><div><b>${esc(e.title)}</b>${e.body?`<p>${esc(e.body)}</p>`:""}${e.kind==="email_out"&&e.meta&&JSON.parse(e.meta).status!=="sent"?`<div class="sm" style="color:var(--warn)">nem ment ki: ${esc(JSON.parse(e.meta).error||JSON.parse(e.meta).status)}</div>`:""}</div></li>`).join("")}</ul></div>
    </div></div>`;
   $("#edit").onclick=()=>editCustomer(c);
+  pultCard(id,d.projects).catch(e=>{$("#pultcard").innerHTML=`<h2>Pult</h2><div class="mut sm">${esc(e.message)}</div>`});
   $("#addnote").onclick=async()=>{const v=$("#note").value.trim();if(!v)return;await api("customers/"+id,{note:v});toast("Mentve");route()};
   app.querySelectorAll("[data-stage]").forEach(s=>s.onchange=async()=>{await api("projects/"+s.dataset.stage,{stage:s.value});toast("Státusz frissítve");route()});
   app.querySelectorAll("[data-next]").forEach(b=>b.onclick=async()=>{const pid=b.dataset.next;await api("projects/"+pid,{next_action:$("#na-"+pid).value,next_action_at:$("#nat-"+pid).value?new Date($("#nat-"+pid).value).toISOString():""});toast("Mentve");route()});
@@ -134,6 +136,50 @@ function siteDl(b){let h="";const st=b.site;
   if(up.length)h+=`<dt>Fájlok (${up.length})</dt><dd>${up.map(f=>`<a href="/api/admin/file?key=${encodeURIComponent(f.key)}">${esc(f.name)}</a> <span class="mut">${Math.round(f.size/1024)} KB</span>`).join("<br>")}</dd>`;
   else if(b.files&&b.files.length)h+=`<dt>Fájlok</dt><dd class="mut">${esc(b.files.join(", "))} (nem töltődtek fel – e-mailben kérd el)</dd>`;
   return h}
+/* ---------- Pult: munkák, verziók, megjegyzések ---------- */
+const WKIND={logo:"Logó",brand:"Arculat",flyer:"Szórólap",design:"Grafika",web:"Weboldal",doc:"Dokumentum",posts:"Posztok",other:"Egyéb"};
+const WST={draft:"Piszkozat (az ügyfél nem látja)",review:"Ügyfél nézi",changes:"Változtatást kért",approved:"Jóváhagyva"};
+const CST={open:"Nyitott",doing:"Dolgozunk rajta",done:"Kész",verified:"Ügyfél ellenőrizte"};
+const ACT={change:"Változtatás",add:"Hozzáadás",remove:"Törlés"};
+const afile=k=>"/api/admin/file?key="+encodeURIComponent(k);
+async function pultCard(cid,projects){
+  const d=await api("works?customer_id="+cid);
+  $("#pultcard").innerHTML=`<div class="row" style="justify-content:space-between"><h2 style="margin:0">Pult</h2><div class="row"><button class="btn sm" id="pinv">Pult-belépő küldése</button><button class="btn pri sm" id="pnew">Új munka</button></div></div>
+  <div class="sm mut" style="margin:6px 0 10px">${d.users.length?d.users.map(u=>`${esc(u.email)} <span class="dot">${u.role==="owner"?"gazda":"véleményező"}</span>${u.disabled?" (letiltva)":""} ${u.last_login?"· belépett: "+ago(u.last_login):"· még nem lépett be"}`).join("<br>"):"Még senki nem lépett be."}</div>
+  ${d.works.length?`<table>${d.works.map(w=>`<tr class="click" data-w="${w.id}"><td><b>${esc(w.title)}</b><div class="mut sm">${WKIND[w.kind]||w.kind}${w.last_n?" · v"+w.last_n:""}</div></td><td class="sm">${WST[w.status]||w.status}</td><td class="sm">${w.open_comments?`<b style="color:var(--warn)">${w.open_comments} nyitott</b>`:""}</td></tr>`).join("")}</table>`:`<div class="mut sm">Még nincs munka. Hozz létre egyet (pl. „Logó – 3 irány”), töltsd fel a fájlokat, és az ügyfél e-mailt kap.</div>`}`;
+  $("#pultcard").querySelectorAll("[data-w]").forEach(r=>r.onclick=()=>location.hash="w/"+r.dataset.w);
+  $("#pnew").onclick=()=>dlg(`<h2>Új Pult-munka</h2><label class="sm mut">Cím<input name="title" required placeholder="Pl. Logó – 3 irány"></label><label class="sm mut">Típus<select name="kind">${Object.entries(WKIND).map(([k,v])=>`<option value="${k}">${v}</option>`).join("")}</select></label><label class="sm mut">Projekt<select name="project_id"><option value="">–</option>${projects.map(p=>`<option value="${p.id}">${esc(p.id)} ${esc(p.title||"")}</option>`).join("")}</select></label>`,async fd=>{const r=await api("works",{customer_id:cid,...Object.fromEntries(fd)});location.hash="w/"+r.id});
+  $("#pinv").onclick=async()=>{if(!confirm("Pult-belépőlink küldése az ügyfélnek e-mailben?"))return;try{const r=await api("works",{action:"invite_owner",customer_id:cid});toast(r.ok?"Elküldve":"Nem ment ki: "+(r.error||""))}catch(e){toast(e.message)}};
+}
+async function workPage(id){
+  const d=await api("works/"+id),w=d.work;
+  const byV={};d.comments.forEach(c=>{(byV[c.version_id]=byV[c.version_id]||[]).push(c)});
+  const thread=c=>{const kids=d.comments.filter(x=>x.parent_id===c.id);return `<div class="card" style="padding:10px;margin:8px 0;${c.status==="open"?"border-left:3px solid var(--warn)":""}">
+    <div class="row" style="justify-content:space-between"><div class="sm"><b>${esc(ACT[c.action]||"Megjegyzés")}</b> · ${esc(c.author||"")}${c.author_kind==="email"?" (e-mail)":""} · ${dt(c.created_at)}${c.page?` · ${c.page}. oldal`:""}${c.x!=null?` · pont: ${Math.round(c.x*100)}%, ${Math.round(c.y*100)}%`:""}${c.file_key?` · ${esc((d.versions.flatMap(v=>v.files).find(f=>f.key===c.file_key)||{}).label||(d.versions.flatMap(v=>v.files).find(f=>f.key===c.file_key)||{}).name||"")}`:""}</div>
+    <select data-cs="${c.id}" style="width:auto">${Object.entries(CST).map(([k,v])=>`<option value="${k}" ${k===c.status?"selected":""} ${k==="verified"?"disabled":""}>${v}</option>`).join("")}</select></div>
+    <div style="white-space:pre-wrap;margin:6px 0">${esc(c.body)}</div>${c.attachment?(c.attachment.key?`<a class="sm" href="${afile(c.attachment.key)}">📎 ${esc(c.attachment.name||"csatolmány")}</a>`:`<a class="sm" href="${esc(c.attachment.url)}" target="_blank" rel="noopener noreferrer">🔗 ${esc(c.attachment.url)}</a>`):""}
+    ${kids.map(k=>`<div class="sm" style="margin:6px 0 0 14px;padding-left:8px;border-left:2px solid var(--line)"><b>${esc(k.author||"")}</b> · ${dt(k.created_at)}<div style="white-space:pre-wrap">${esc(k.body)}</div></div>`).join("")}
+    <div class="row" style="margin-top:6px"><input data-rp="${c.id}" placeholder="Válasz az ügyfélnek" style="flex:1"><button class="btn sm" data-rs="${c.id}">Küldés</button></div></div>`};
+  app.innerHTML=`<div class="row" style="margin-bottom:12px"><a href="#c/${w.customer_id}" class="mut">← Ügyfél</a></div>
+  <div class="card"><div class="row" style="justify-content:space-between"><div><h1>${esc(w.title)}</h1><div class="mut">${WKIND[w.kind]||w.kind} · ${esc(w.id)}</div></div><select id="wst" style="width:auto">${Object.entries(WST).map(([k,v])=>`<option value="${k}" ${k===w.status?"selected":""}>${v}</option>`).join("")}</select></div></div>
+  <div class="card"><h2>Új verzió feltöltése</h2><p class="sm mut">Képek (PNG, JPG, WebP) és PDF-ek. Több irány esetén minden irány külön fájl, saját címkével (pl. „A irány”). Az ügyfél e-mailt kap a Pult-linkkel és egy jóváhagyó gombbal.</p>
+   <input type="file" id="vfiles" multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf"><div id="vlabels" class="grid" style="gap:6px;margin:8px 0"></div>
+   <textarea id="vnote" placeholder="Mi változott / mit kérünk az ügyféltől (megjelenik a levélben és a Pultban)"></textarea>
+   <label class="sm"><input type="checkbox" id="vnotify" checked style="width:auto;margin-right:6px"> E-mail az ügyfélnek</label>
+   <div class="row" style="margin-top:8px"><button class="btn pri" id="vup">Feltöltés és közzététel</button><span class="sm mut" id="vprog"></span></div></div>
+  ${d.versions.map(v=>`<div class="card"><div class="row" style="justify-content:space-between"><h2 style="margin:0">v${v.n} <span class="sm mut">${dt(v.created_at)}</span></h2><span class="sm">${v.status==="approved"?`✅ Jóváhagyva ${dt(v.approved_at)} · ${esc(v.approved_by_email||"")} (${v.approved_via==="email"?"e-mailes link":"Pult"})`:v.status==="superseded"?"lecserélve":v.status==="changes"?"változtatást kért":"ügyfél nézi"}</span></div>
+   ${v.note?`<p class="sm">${esc(v.note)}</p>`:""}
+   <div class="row" style="flex-wrap:wrap;gap:8px;margin:8px 0">${v.files.map(f=>`<a href="${afile(f.key)}" style="display:block;width:140px" title="${esc(f.name)}">${/^image\//.test(f.type)?`<img src="${afile(f.key)}" alt="" style="width:140px;height:100px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:6px">`:`<div style="width:140px;height:100px;display:grid;place-items:center;border:1px solid var(--line);border-radius:6px">PDF</div>`}<div class="sm">${esc(f.label||f.name)}${v.chosen===f.key?" ✅ választott":""}</div></a>`).join("")}</div>
+   ${(byV[v.id]||[]).filter(c=>!c.parent_id).map(thread).join("")||`<div class="sm mut">Nincs megjegyzés.</div>`}</div>`).join("")}`;
+  $("#wst").onchange=async e=>{await api("works/"+id,{action:"status",status:e.target.value});toast("Mentve")};
+  app.querySelectorAll("[data-cs]").forEach(s=>s.onchange=async()=>{await api("works/"+id,{action:"comment_status",comment_id:s.dataset.cs,status:s.value});toast("Mentve")});
+  app.querySelectorAll("[data-rs]").forEach(b=>b.onclick=async()=>{const i=app.querySelector(`[data-rp="${b.dataset.rs}"]`);if(!i.value.trim())return;await api("works/"+id,{action:"reply",parent_id:b.dataset.rs,body:i.value.trim()});toast("Elküldve");route()});
+  const fi=$("#vfiles");fi.onchange=()=>{$("#vlabels").innerHTML=[...fi.files].map((f,i)=>`<div class="row"><span class="sm" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis">${esc(f.name)}</span><input data-lb="${i}" placeholder="Címke (pl. A irány)" style="flex:1"></div>`).join("")};
+  $("#vup").onclick=async()=>{const fs=[...fi.files];if(!fs.length){toast("Válassz fájlt");return}const btn=$("#vup");btn.disabled=true;const out=[];
+    try{for(let i=0;i<fs.length;i++){$("#vprog").textContent=`Feltöltés ${i+1}/${fs.length}…`;const r=await fetch("/api/admin/upload",{method:"POST",headers:{"x-work":id,"x-filename":encodeURIComponent(fs[i].name),"content-type":fs[i].type||"application/octet-stream"},body:fs[i]});const j=await r.json();if(!r.ok||!j.ok)throw new Error(j.error||"Feltöltési hiba");out.push({...j.file,label:(app.querySelector(`[data-lb="${i}"]`)||{}).value||""})}
+      const r=await api("works/"+id,{action:"version",files:out,note:$("#vnote").value,notify:$("#vnotify").checked});toast(`v${r.n} közzétéve${r.mail&&r.mail.ok===false?" – az e-mail nem ment ki: "+(r.mail.error||""):""}`);route()}
+    catch(e){toast(e.message);btn.disabled=false;$("#vprog").textContent=""}};
+}
 function proj(p){
   const items=JSON.parse(p.items||"[]"),brief=JSON.parse(p.brief||"{}");
   return `<div class="card proj"><div class="row" style="justify-content:space-between"><div><b>${esc(p.title||p.id)}</b> <span class="mut sm">${p.id}</span>${["live","care","lost"].includes(p.stage)?"":`<div>${sla(p.sla)}</div>`}</div><select data-stage="${p.id}" style="width:auto">${Object.entries(STAGES).map(([k,v])=>`<option value="${k}" ${k===p.stage?"selected":""}>${v}</option>`).join("")}</select></div>

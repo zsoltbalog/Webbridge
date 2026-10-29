@@ -10,8 +10,25 @@ export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
   return json({ ok: r.ok, reply_domain: env.REPLY_DOMAIN || null, webhooks: (j.webhooks || []).map((w) => ({ id: w.id, domain: w.domain, events: w.events, url: w.url.replace(/k=[^&]+/, "k=…") })) });
 };
 
-export const onRequestPost: PagesFunction<Env> = async ({ env }) => {
+// POST ?step=domain – a REPLY_DOMAIN felvétele Brevo-domainként (a válasz tartalmazza a DNS-rekordokat)
+// POST ?step=authenticate – a domain hitelesítésének indítása, miután a DNS-rekordok élnek
+// POST ?step=status – a domain állapota
+export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
   if (!env.BREVO_API_KEY || !env.CRON_SECRET || !env.REPLY_DOMAIN) return bad("Hiányzik: BREVO_API_KEY, CRON_SECRET vagy REPLY_DOMAIN.", 503);
+  const step = new URL(request.url).searchParams.get("step");
+  const H = { "api-key": env.BREVO_API_KEY, "content-type": "application/json", accept: "application/json" };
+  if (step === "domain") {
+    const r = await fetch("https://api.brevo.com/v3/senders/domains", { method: "POST", headers: H, body: JSON.stringify({ name: env.REPLY_DOMAIN }) });
+    return json({ status: r.status, body: await r.json().catch(() => null) });
+  }
+  if (step === "authenticate") {
+    const r = await fetch(`https://api.brevo.com/v3/senders/domains/${encodeURIComponent(env.REPLY_DOMAIN)}/authenticate`, { method: "PUT", headers: H });
+    return json({ status: r.status, body: await r.json().catch(() => null) });
+  }
+  if (step === "status") {
+    const r = await fetch(`https://api.brevo.com/v3/senders/domains/${encodeURIComponent(env.REPLY_DOMAIN)}`, { headers: H });
+    return json({ status: r.status, body: await r.json().catch(() => null) });
+  }
   const r = await fetch("https://api.brevo.com/v3/webhooks", {
     method: "POST",
     headers: { "api-key": env.BREVO_API_KEY, "content-type": "application/json", accept: "application/json" },

@@ -19,6 +19,6 @@ database_id = "5f8fbcc0-ba37-40de-a7c3-ce935d577582"
 #   ADMIN_PASSWORD, BREVO_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ANTHROPIC_API_KEY
 
 # Ügyfél-feltöltések (R2). A Cloudflare-ben előbb be kell kapcsolni az R2-t, és létrehozni a „webbridge-uploads” tárolót.
-# [[r2_buckets]]
-# binding = "UPLOADS"
-# bucket_name = "webbridge-uploads"
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "webbridge-uploads"

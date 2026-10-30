@@ -1145,6 +1145,11 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
  .hero-prev .pv-cap{display:none}
  .pv-cap-m{display:block}
 }
+
+.guar{display:grid;grid-template-columns:22px minmax(0,1fr);gap:2px 10px;align-items:start;border:1px solid color-mix(in srgb,var(--ok) 55%,transparent);background:color-mix(in srgb,var(--ok) 9%,transparent);border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.45}
+.guar::before{content:"✓";grid-row:1/3;width:22px;height:22px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700}
+.guar b{font-size:15px}
+.ticket .guar{font-size:13px;color:inherit}
 </style>
 
 <div class="scrollbar" id="scrollbar" aria-hidden="true"></div>
@@ -1307,6 +1312,7 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
         <div class="pay" id="tpay" hidden></div>
         <p class="hostnote" id="thost" hidden></p>
         <a class="btn btn-hazard" href="#order" data-t="tcta">Tovább a kérdőívhez</a>
+        <div class="guar" ><b data-t="guarH">Kockázatmentes kezdés</b><span data-t="guarP">Ha 24 órán belül nem kapod meg a 3 vázlatirányt, vagy egyik sem tetszik, minden befizetett összeget visszaadunk. A végösszeg felét csak akkor fizeted, ha valamelyik irány tetszik.</span></div>
         <p class="fine" data-t="tround" style="color:inherit;opacity:.85">Az átadás után 14 napig korlátlan apró módosítás jár.</p>
         <p class="fine" id="tfine"></p>
         <p class="fine" data-t="payNote"></p>
@@ -1453,6 +1459,7 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
       <h2 data-t="b-h">Vagy vidd egyben, olcsóbban.</h2>
     </div>
     <div class="bundles" id="bundlelist"></div>
+    <div class="guar" style="margin-top:18px"><b data-t="guarH">Kockázatmentes kezdés</b><span data-t="guarP">Ha 24 órán belül nem kapod meg a 3 vázlatirányt, vagy egyik sem tetszik, minden befizetett összeget visszaadunk. A végösszeg felét csak akkor fizeted, ha valamelyik irány tetszik.</span></div>
     <p class="lead" style="margin-top:18px;font-size:15px" data-t="b-logo">Nincs még logód? Bármelyik csomaghoz hozzáadhatod a Logótervezést {logo} áron, és a brandbook már az új logóra épül.</p>
   </div>
 </section>
@@ -1550,6 +1557,7 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
           </fieldset>
           <div class="field"><label for="f-extra" data-t="f-extra">Bármi más, amit tudnunk kell</label><button type="button" class="pbtn" data-prompt="f-extra" data-t="pBtn">✦ Prompt a saját AI-odnak</button><textarea id="f-extra" data-tp="f-extra-ph"></textarea></div>
           <div class="f-sum" id="f-sum" aria-live="polite"></div>
+          <div class="guar"><b data-t="guarH">Kockázatmentes kezdés</b><span data-t="guarP">Ha 24 órán belül nem kapod meg a 3 vázlatirányt, vagy egyik sem tetszik, minden befizetett összeget visszaadunk. A végösszeg felét csak akkor fizeted, ha valamelyik irány tetszik.</span></div>
           <label class="consent"><input type="checkbox" id="f-terms" required><span data-t="cTerms"></span></label>
           <label class="consent b2c-only-c" id="f-start-wrap"><input type="checkbox" id="f-start"><span data-t="cStart"></span></label>
           <p class="c-err" id="f-err" hidden data-t="cErr"></p>
@@ -1617,7 +1625,7 @@ brand:"WEBBRIDGE",nav1:"Hogyan működik",nav2:"Szolgáltatások",nav3:"Csomagok
 stamp:"Most is dolgozunk · 24 órás átfutás",
 h1:'Ma kitöltöd.<br>Holnap éles.<span class="thin">Weboldal, logó, arculat és marketing. Rád szabva, nem sablonból.</span>',
 lead:"Elmondod, mit csinálsz: kérdőívben, e-mailben vagy a chatben. 24 órán belül megkapod a weboldalt, a logót, a brandbookot (a márkád szabálykönyvét) és a marketingtervet. Fix áron, meglepetések nélkül.",
-try:"Próbáld ki: a vállalkozásod neve",ind:"Iparág",run:"Mutasd a hangulatot",pvTag:"Gyors ízelítő, nem a kész oldal",pvCap:"Ez csak a hangulat. A valódi oldalt kézzel tervezzük: a te fotóiddal, szövegeiddel, egyedi elrendezéssel. 24 órán belül 3 kidolgozott vázlatot kapsz, és abból választasz.",pvWm:"VÁZLAT",
+try:"Próbáld ki: a vállalkozásod neve",ind:"Iparág",run:"Mutasd a hangulatot",pvTag:"Gyors ízelítő, nem a kész oldal",pvCap:"Ez csak a hangulat. A valódi oldalt kézzel tervezzük: a te fotóiddal, szövegeiddel, egyedi elrendezéssel. 24 órán belül 3 kidolgozott vázlatot kapsz, és abból választasz.",pvWm:"VÁZLAT",guarH:"Kockázatmentes kezdés",guarP:"Ha 24 órán belül nem kapod meg a 3 vázlatirányt, vagy egyik sem tetszik, minden befizetett összeget visszaadunk. A végösszeg felét csak akkor fizeted, ha valamelyik irány tetszik.",
 "how-e":"A folyamat","how-h":"Négy lépés. Egy nap.","ps-e":"Fizetés","ps-h":"Kicsiben kezdesz, a nagyobb részt a végén fizeted.",
 "menu-e":"Étlap, fix árakkal","menu-h":"Válaszd ki, mit készítsünk.","menu-l":"Pipáld be, amire szükséged van, vagy <a href=\"#guide\">kérd a tanácsadónkat</a>. Ha a választásod lefed egy csomagot, a kedvezményes csomagárat automatikusan alkalmazzuk.",
 ticket:"Rendelési lap",once:"Egyszeri díj",monthly:"Havi díj",tcta:"Tovább a kérdőívhez",fineB2c:"Végső árak: korlátozott ÁFA-alany vagyunk, ÁFÁ-t nem számítunk fel. A vázlatdíjat beszámítjuk. A fájlokat és a felhasználási jogot a teljes kifizetéskor adjuk át.",fine:"ÁFA: ha van közösségi (EU-s) adószámod, nettó számlát kapsz fordított adózással, az ÁFÁ-t te vallod be. Ha nincs közösségi adószámod, a rendelés előtt kérdezd meg a könyvelődet, hogyan kezeld az ÁFÁ-t. A vázlatdíjat beszámítjuk. A fájlokat és a felhasználási jogot a teljes kifizetéskor adjuk át.",pay:["Fizetés 3 lépésben","Vázlat, most","Választás, 50%","Átadás, 50%","Havidíj az oldal indulásától"],hostSelf:"A domain és a tárhely beállítása a Pro technikai csomagban van. A folyamatos díjukat közvetlenül a szolgáltatónak fizeted, vagy kérd a Gondtalan üzemeltetést ({care}), és mi intézzük.",
@@ -1646,7 +1654,7 @@ brand:"WEBBRIDGE",nav1:"How it works",nav2:"Services",nav3:"Bundles",nav4:"FAQ",
 stamp:"Open now · 24-hour turnaround",
 h1:'Brief today.<br>Live tomorrow.<span class="thin">Website, logo, brand and marketing. Made for you, not from a template.</span>',
 lead:"Tell us what you do: by questionnaire, email or chat. Within 24 hours you get your website, logo, brandbook (your brand rulebook) and marketing plan. Fixed prices, no surprises.",
-try:"Try it: your business name",ind:"Industry",run:"Show me the vibe",pvTag:"Quick taste, not the final site",pvCap:"This only shows the mood. We design your real site by hand: your photos, your copy, a custom layout. Within 24 hours you get 3 worked-out sketches and pick one.",pvWm:"SKETCH",
+try:"Try it: your business name",ind:"Industry",run:"Show me the vibe",pvTag:"Quick taste, not the final site",pvCap:"This only shows the mood. We design your real site by hand: your photos, your copy, a custom layout. Within 24 hours you get 3 worked-out sketches and pick one.",pvWm:"SKETCH",guarH:"Risk-free start",guarP:"If you don't get the 3 sketch directions within 24 hours, or you like none of them, we refund everything you have paid. You only pay half of the total once you like a direction.",
 "how-e":"The process","how-h":"Four steps. One day.","ps-e":"Payment","ps-h":"Start small, pay the most at the end.",
 "menu-e":"The menu, fixed prices","menu-h":"Pick what we build.","menu-l":"Tick what you need, or <a href=\"#guide\">use our advisor</a>. If your selection covers a bundle, the discounted bundle price applies automatically.",
 ticket:"Work order",once:"One-off",monthly:"Monthly",tcta:"Continue to questionnaire",fineB2c:"Final prices: we are a limited VAT liable person and charge no VAT. The sketch fee is credited. Files and usage rights are handed over on full payment.",fine:"VAT: with an EU VAT number you get a net invoice under reverse charge and account for the VAT yourself. Without one, ask your accountant how to handle VAT before you order. The sketch fee is credited. Files and usage rights are handed over on full payment.",pay:["Pay in 3 steps","Sketch, now","Choice, 50%","Handover, 50%","Monthly from launch"],hostSelf:"Domain and hosting setup is in the Pro technical package. You pay their ongoing fees to the providers directly, or choose Worry-free hosting ({care}) and we handle it.",

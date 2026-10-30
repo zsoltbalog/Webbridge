@@ -1125,6 +1125,26 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
 .dm-pos{font-family:"Fraunces",Georgia,serif;font-size:15px;line-height:1.35;font-weight:600;border-left:3px solid var(--hazard);padding-left:10px}
 @media (max-width:420px){.dm-prod{grid-template-columns:96px minmax(0,1fr)}.dm-mug{height:110px}.dm-logos>div{height:112px}.dm-sw button span{height:36px}.dm-tone{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.dm-msg,.dm-lead,.dm-mail{animation:none}.dm-typing i{animation:none}.dm-frame{transition:none}}
+
+/* live preview: honest label + visible while clicking */
+.hero-prev{position:sticky;top:84px;align-self:start}
+.pv-tag{position:absolute;z-index:12;bottom:12px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:5px 10px;border-radius:999px;white-space:nowrap;pointer-events:none}
+.hero-prev .site::after{content:attr(data-wm);position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display,inherit);font-weight:900;font-size:clamp(48px,9vw,110px);letter-spacing:.12em;color:currentColor;opacity:.06;transform:rotate(-14deg);pointer-events:none;z-index:8}
+.hero-prev .site{filter:saturate(.85)}
+.pv-cap-m{display:none;margin:0;font-size:13px;line-height:1.45;color:var(--muted)}
+.pv-cap{margin:12px 2px 0;font-size:14px;line-height:1.45;color:var(--muted)}
+@media (max-width:960px){
+ .hero-copy{display:contents}
+ .hero-grid{gap:18px}
+ .hero-prev{order:1;top:62px;z-index:6}
+ .hero-copy .composer{order:2;margin-top:0}
+ .hero-prev .browser{max-height:min(40vh,290px)}
+ .hero-prev .site{min-height:0}
+ .hero-prev .post{display:none}
+ .pv-tag{bottom:8px;font-size:10px}
+ .hero-prev .pv-cap{display:none}
+ .pv-cap-m{display:block}
+}
 </style>
 
 <div class="scrollbar" id="scrollbar" aria-hidden="true"></div>
@@ -1160,7 +1180,7 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
 <main id="top">
 <section class="hero">
   <div class="wrap hero-grid">
-    <div>
+    <div class="hero-copy">
       <span class="stamp"><i aria-hidden="true"></i><span data-t="stamp">Most is dolgozunk · 24 órás átfutás</span></span>
       <h1 data-t="h1">Ma kitöltöd.<br>Holnap éles.<span class="thin">Weboldal, logó, arculat és marketing. Rád szabva, nem sablonból.</span></h1>
       <p class="lead" data-t="lead">Elmondod, mit csinálsz: kérdőívben, e-mailben vagy telefonon. 24 órán belül megkapod a weboldalt, a logót, a brandbookot és a marketingtervet. Fix áron, meglepetések nélkül.</p>
@@ -1179,14 +1199,16 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
         <div><label id="goal-l">Mit csináljon a látogató?</label><div class="chips" id="goals"></div></div>
         </div>
         <div class="composer-foot">
-          <button class="btn btn-hazard" type="button" id="run"><span data-t="run">Mutasd, mit kapok</span> →</button>
+          <button class="btn btn-hazard" type="button" id="run"><span data-t="run">Mutasd a hangulatot</span> →</button>
           <span class="eta" data-t-eta="1"></span>
+          <p class="pv-cap pv-cap-m" data-t="pvCap"></p>
         </div>
       </div>
     </div>
 
-    <div style="position:relative">
+    <div class="hero-prev">
       <div class="browser">
+        <span class="pv-tag" data-t="pvTag">Gyors ízelítő, nem a kész oldal</span>
         <div class="chrome"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="url"><span class="lock">●</span> <span id="url">masalakantin.hu</span></span></div>
         <div class="site" id="site" data-stage="5" aria-live="polite">
           <div class="site-nav" data-s="1">
@@ -1209,6 +1231,7 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
           <p id="posttxt"></p>
         </div>
       </div>
+      <p class="pv-cap" data-t="pvCap">Ez csak a hangulat. A valódi oldalt kézzel tervezzük: a te fotóiddal, szövegeiddel, egyedi elrendezéssel. 24 órán belül 3 kidolgozott vázlatot kapsz, és abból választasz.</p>
     </div>
   </div>
 
@@ -1594,7 +1617,7 @@ brand:"WEBBRIDGE",nav1:"Hogyan működik",nav2:"Szolgáltatások",nav3:"Csomagok
 stamp:"Most is dolgozunk · 24 órás átfutás",
 h1:'Ma kitöltöd.<br>Holnap éles.<span class="thin">Weboldal, logó, arculat és marketing. Rád szabva, nem sablonból.</span>',
 lead:"Elmondod, mit csinálsz: kérdőívben, e-mailben vagy a chatben. 24 órán belül megkapod a weboldalt, a logót, a brandbookot (a márkád szabálykönyvét) és a marketingtervet. Fix áron, meglepetések nélkül.",
-try:"Próbáld ki: a vállalkozásod neve",ind:"Iparág",run:"Mutasd, mit kapok",
+try:"Próbáld ki: a vállalkozásod neve",ind:"Iparág",run:"Mutasd a hangulatot",pvTag:"Gyors ízelítő, nem a kész oldal",pvCap:"Ez csak a hangulat. A valódi oldalt kézzel tervezzük: a te fotóiddal, szövegeiddel, egyedi elrendezéssel. 24 órán belül 3 kidolgozott vázlatot kapsz, és abból választasz.",pvWm:"VÁZLAT",
 "how-e":"A folyamat","how-h":"Négy lépés. Egy nap.","ps-e":"Fizetés","ps-h":"Kicsiben kezdesz, a nagyobb részt a végén fizeted.",
 "menu-e":"Étlap, fix árakkal","menu-h":"Válaszd ki, mit készítsünk.","menu-l":"Pipáld be, amire szükséged van, vagy <a href=\"#guide\">kérd a tanácsadónkat</a>. Ha a választásod lefed egy csomagot, a kedvezményes csomagárat automatikusan alkalmazzuk.",
 ticket:"Rendelési lap",once:"Egyszeri díj",monthly:"Havi díj",tcta:"Tovább a kérdőívhez",fineB2c:"Végső árak: korlátozott ÁFA-alany vagyunk, ÁFÁ-t nem számítunk fel. A vázlatdíjat beszámítjuk. A fájlokat és a felhasználási jogot a teljes kifizetéskor adjuk át.",fine:"ÁFA: ha van közösségi (EU-s) adószámod, nettó számlát kapsz fordított adózással, az ÁFÁ-t te vallod be. Ha nincs közösségi adószámod, a rendelés előtt kérdezd meg a könyvelődet, hogyan kezeld az ÁFÁ-t. A vázlatdíjat beszámítjuk. A fájlokat és a felhasználási jogot a teljes kifizetéskor adjuk át.",pay:["Fizetés 3 lépésben","Vázlat, most","Választás, 50%","Átadás, 50%","Havidíj az oldal indulásától"],hostSelf:"A domain és a tárhely beállítása a Pro technikai csomagban van. A folyamatos díjukat közvetlenül a szolgáltatónak fizeted, vagy kérd a Gondtalan üzemeltetést ({care}), és mi intézzük.",
@@ -1623,7 +1646,7 @@ brand:"WEBBRIDGE",nav1:"How it works",nav2:"Services",nav3:"Bundles",nav4:"FAQ",
 stamp:"Open now · 24-hour turnaround",
 h1:'Brief today.<br>Live tomorrow.<span class="thin">Website, logo, brand and marketing. Made for you, not from a template.</span>',
 lead:"Tell us what you do: by questionnaire, email or chat. Within 24 hours you get your website, logo, brandbook (your brand rulebook) and marketing plan. Fixed prices, no surprises.",
-try:"Try it: your business name",ind:"Industry",run:"Show me mine",
+try:"Try it: your business name",ind:"Industry",run:"Show me the vibe",pvTag:"Quick taste, not the final site",pvCap:"This only shows the mood. We design your real site by hand: your photos, your copy, a custom layout. Within 24 hours you get 3 worked-out sketches and pick one.",pvWm:"SKETCH",
 "how-e":"The process","how-h":"Four steps. One day.","ps-e":"Payment","ps-h":"Start small, pay the most at the end.",
 "menu-e":"The menu, fixed prices","menu-h":"Pick what we build.","menu-l":"Tick what you need, or <a href=\"#guide\">use our advisor</a>. If your selection covers a bundle, the discounted bundle price applies automatically.",
 ticket:"Work order",once:"One-off",monthly:"Monthly",tcta:"Continue to questionnaire",fineB2c:"Final prices: we are a limited VAT liable person and charge no VAT. The sketch fee is credited. Files and usage rights are handed over on full payment.",fine:"VAT: with an EU VAT number you get a net invoice under reverse charge and account for the VAT yourself. Without one, ask your accountant how to handle VAT before you order. The sketch fee is credited. Files and usage rights are handed over on full payment.",pay:["Pay in 3 steps","Sketch, now","Choice, 50%","Handover, 50%","Monthly from launch"],hostSelf:"Domain and hosting setup is in the Pro technical package. You pay their ongoing fees to the providers directly, or choose Worry-free hosting ({care}) and we handle it.",
@@ -1763,7 +1786,7 @@ const P=s=>gross((cur==="HUF"?s.huf:s.eur)*(s.id==="extra"?Math.max(1,typeof mkt
 function slug(n){return (n||"cegem").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"").slice(0,24)||"cegem"}
 function etaStr(){const d=new Date(Date.now()+864e5);const loc=lang==="hu"?"hu-HU":"en-GB";return d.toLocaleDateString(loc,{weekday:"long",month:"long",day:"numeric"})+" "+d.toLocaleTimeString(loc,{hour:"2-digit",minute:"2-digit"})}
 
-function applyStatic(){
+function applyStatic(){const _s=document.getElementById("site");if(_s)_s.dataset.wm=T[lang].pvWm;
   document.documentElement.lang=lang;try{localStorage.setItem("wb-lang",lang)}catch(e){}
   document.querySelectorAll('a[href^="/pult/"]').forEach(a=>a.href="/pult/?lang="+lang);{const ll=document.querySelector(".login-link");if(ll){const t=lang==="hu"?"Belépés a Pultba":"Sign in to your Desk";ll.setAttribute("aria-label",t);ll.title=t}}
   document.querySelectorAll("[data-t]").forEach(el=>{const v=T[lang][el.dataset.t];if(v!=null)el.innerHTML=fmtT(v)});
@@ -1850,16 +1873,16 @@ function run(){
   const site=$("#site"),line=$("#line");site.classList.add("building");site.dataset.stage="0";line.classList.add("running");
   const n=($("#biz").value||"").trim()||"—";const p=palette();
   const msgs=lang==="hu"?[
-    `<b>ST-01</b> Kérések: ${esc(n)} · ${ind.hu.toLowerCase()} · ${TONES.hu[$("#f-tone").selectedIndex||0].toLowerCase()} hangnem`,
-    `<b>ST-02</b> Paletta: ${p.slice(0,2).join(" / ")} · betűpár kiválasztva`,
-    `<b>ST-03</b> Főcím megírva: „${esc(ind.hu_h(n))}”`,
-    `<b>ST-04</b> Build kész · élesben: ${slug(n)}.hu · SSL rendben`,
-    `<b>ST-05</b> 12 social poszt és 90 napos naptár ütemezve ✓`]:[
-    `<b>ST-01</b> Brief: ${esc(n)} · ${ind.en.toLowerCase()} · ${TONES.en[$("#f-tone").selectedIndex||0].toLowerCase()} tone`,
-    `<b>ST-02</b> Palette: ${p.slice(0,2).join(" / ")} · type pair selected`,
-    `<b>ST-03</b> Headline written: “${esc(ind.en_h(n))}”`,
-    `<b>ST-04</b> Build complete · deployed: ${slug(n)}.com · SSL OK`,
-    `<b>ST-05</b> 12 social posts and 90-day calendar scheduled ✓`];
+    `<b>1</b> Ebből dolgozunk: ${esc(n)} · ${ind.hu.toLowerCase()} · ${TONES.hu[$("#f-tone").selectedIndex||0].toLowerCase()} hangnem`,
+    `<b>2</b> Színek, betűk: a valódi arculatot a logódhoz és az ízlésedhez tervezzük`,
+    `<b>3</b> Főcím-ötlet: „${esc(ind.hu_h(n))}” · a végleges szövegeket veled egyeztetjük`,
+    `<b>4</b> 24 órán belül 3 vázlatirány · élesre csak a jóváhagyásod után megy`,
+    `<b>5</b> Marketing, ha kéred: posztok és 90 napos terv, szintén a jóváhagyásoddal`]:[
+    `<b>1</b> What we work from: ${esc(n)} · ${ind.en.toLowerCase()} · ${TONES.en[$("#f-tone").selectedIndex||0].toLowerCase()} tone`,
+    `<b>2</b> Colours, fonts: your real brand is designed around your logo and taste`,
+    `<b>3</b> Headline idea: “${esc(ind.en_h(n))}” · final copy is agreed with you`,
+    `<b>4</b> 3 sketch directions within 24 hours · nothing goes live without your approval`,
+    `<b>5</b> Marketing if you want it: posts and a 90-day plan, also with your approval`];
   const state=["wait","wait","wait","wait","wait"];renderStations(state);
   let i=0;
   (function next(){

@@ -1,0 +1,22 @@
+# Webbridge
+
+> Webbridge (https://webbridge.hu) designs websites, logos, brand identity and marketing for small businesses, sole traders and individuals, mostly in Hungary. Three sketch directions within 24 hours of an approved brief, fixed prices, service in Hungarian and English. Operated by Tactical Edge Systems OÜ (Tallinn, Estonia; reg. 17541898; VAT EE103014676). Contact: hello@webbridge.hu.
+
+## How it works
+- The customer describes the business (questionnaire, email or chat) and approves a written summary (brief). The 24 hours start then.
+- Within 24 hours: 3 sketch directions as an online preview. Sketch fee: none under 200 000 Ft (≈ €520) one-off total, otherwise 19 900 Ft / €49, credited to the total.
+- 50% when a direction is chosen, 50% on final approval. Unlimited small changes in the client Desk ("Pult") for 14 days after handover (30 days in the Growth bundle).
+- Risk-free start: if the 3 directions don't arrive within 24 hours, or none is liked, everything paid is refunded.
+- First-client programme: the first 5 clients get 30% off one-off fees in exchange for showing the work as a reference.
+
+## Prices (net, HUF; EUR in brackets)
+- One-page website 99 900 Ft (€259) · Business website up to 5 pages 199 900 Ft (€519) · Starter web shop up to 30 products 399 900 Ft (€1039). Go-live (domain, hosting, SSL setup) is included in every website.
+- Website on a monthly plan instead (12-month contract): 19 900 / 29 900 / 49 900 Ft per month (€52 / €78 / €129), including hosting and care; from month 13 only hosting (9 900 Ft, web shop 29 900 Ft per month) and the site is the customer's.
+- Logo design 59 900 Ft · Brandbook 89 900 Ft · Marketing strategy 129 900 Ft · 90-day marketing plan 59 900 Ft · Pro technical package (Google Analytics, Search Console, Google Business Profile, cookie banner) 39 900 Ft · Migration from Wix/WordPress/Squarespace 29 900 Ft · +1 language 49 900 Ft · Extra page 19 900 Ft.
+- Monthly: Worry-free hosting 9 900 Ft · Marketing Minimum 39 900 Ft · Medium 79 900 Ft · Maximum 149 900 Ft (+ ad budget) · Web shop care 29 900 Ft · Business email (Google Workspace) 3 490 Ft per mailbox · Website assistant 19 900 Ft · Virtual receptionist 29 900 Ft.
+- Bundles: Start (one-page site + logo + Pro technical) 149 900 Ft · Business (business site + brandbook + strategy + Pro technical) 399 900 Ft · Growth (Business + 90-day plan + Marketing Medium) 449 900 Ft + 69 900 Ft/month.
+- VAT: private individuals pay the listed price (no VAT added). Businesses get invoices without VAT (reverse charge with an EU VAT number).
+
+## Links
+- [Home and order form](https://webbridge.hu/)
+- [Client Desk (Pult)](https://webbridge.hu/pult/)

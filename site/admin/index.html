@@ -75,7 +75,8 @@ async function route(){
 window.addEventListener("hashchange",route);
 
 async function home(){
-  const [d,ex,ins]=await Promise.all([api("overview"),api("escalations").catch(()=>({items:[]})),api("instructions").catch(()=>({items:[]}))]);
+  const [d,ex,ins,vl]=await Promise.all([api("overview"),api("escalations").catch(()=>({items:[]})),api("instructions").catch(()=>({items:[]})),api("vat-limit").catch(()=>null)]);
+  const vatBox=vl&&vl.ok?`<div class="card" style="margin-bottom:14px${vl.pct>=75?";border:2px solid var(--warn)":""}"><h2>Észt ÁFA-határ ${vl.year} <span class="mut sm">– adószám nélküli cégek + magánszemélyek, idei befizetések</span></h2><p style="margin:6px 0"><b>${vl.eur_equiv.toLocaleString("hu-HU")} €</b> / ${vl.limit.toLocaleString("hu-HU")} € (${vl.pct}%) <span class="mut sm">· ${vl.huf.toLocaleString("hu-HU")} Ft + ${vl.eur.toLocaleString("hu-HU")} €, ${vl.rate} Ft/€ tájékoztató árfolyam</span></p><div style="height:8px;background:var(--line);border-radius:4px;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100,vl.pct)}%;background:${vl.pct>=75?"var(--warn)":"var(--ok)"}"></i></div></div>`:"";
   const IS={unconfirmed:"Visszaigazolásra vár",queued:"Sorban",in_progress:"Folyamatban",needs_ok:"Jóváhagyásodra vár",approved:"Jóváhagyva, sorban",failed:"Nem sikerült"};
   const insBox=ins.items.length?`<div class="card" id="utasitasok" style="margin-bottom:14px"><h2>Utasítások e-mailben <span class="mut sm">– utasitas@reply.webbridge.hu (${ins.items.length})</span></h2><table>${ins.items.map(x=>`<tr><td style="width:170px"><b>${esc(IS[x.status]||x.status)}</b><div class="mut sm">${ago(x.at)} · ${esc(x.id)}</div></td><td><b>${esc(x.subject||"(nincs tárgy)")}</b><div style="white-space:pre-wrap" class="sm">${esc((x.body||"").slice(0,400))}</div>${x.proposal?`<div class="sm mut">Javaslat: ${esc(x.proposal.slice(0,300))}</div>`:""}${x.result?`<div class="sm mut">Eredmény: ${esc(x.result.slice(0,300))}</div>`:""}</td><td style="width:90px;text-align:right"><button class="btn" data-ins="${x.id}">Lezár</button></td></tr>`).join("")}</table></div>`:"";
   const RS={price:"Árat alkudna / egyedi ajánlat",complaint:"Panasz",urgent:"Sürgős",human:"Emberrel beszélne",unknown:"Nem tudott válaszolni",other:"Egyéb"};
@@ -85,7 +86,7 @@ async function home(){
   const open=Object.entries(by).filter(([k])=>!["live","care","lost"].includes(k)).reduce((a,[,n])=>a+n,0);
   const rev=d.revenue30.map(r=>money(r.total,r.currency)).join(" + ")||"0 Ft";
   const late=d.todo.filter(p=>p.sla&&p.sla.stuck).length;
-  app.innerHTML=escBox+insBox+`<div class="grid g4" style="margin-bottom:14px">
+  app.innerHTML=escBox+insBox+vatBox+`<div class="grid g4" style="margin-bottom:14px">
     <div class="card kpi"><small>Nyitott projektek</small><b>${open}</b></div>
     <div class="card kpi"><small>Elakadt</small><b style="${late?"color:var(--warn)":""}">${late}</b></div>
     <div class="card kpi"><small>Készül / ügyfél nézi</small><b>${(by.building||0)+(by.review||0)+(by.sketches||0)}</b></div>

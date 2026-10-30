@@ -24,20 +24,28 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
 
   const cur = clean(b.currency, 3) === "EUR" ? "EUR" : "HUF";
   const items = (Array.isArray(b.items) ? b.items : []).map((x) => clean(x, 20)).filter((x) => itemById(x));
-  const { once, monthly } = priceOf(items, cur);
+  const pr = priceOf(items, cur);
+  const firstClient = b.first_client === true;
+  // Első ügyfél program: −30% az egyszeri díjakból (a havidíjakra nem vonatkozik)
+  const once = firstClient ? Math.round(pr.once * 0.7) : pr.once;
+  const monthly = pr.monthly;
+  const buyerType = clean(b.buyer_type, 4) === "b2c" ? "b2c" : "b2b";
+  const vatId = clean(b.vat_id, 40).toUpperCase().replace(/[\s.-]/g, "");
+  // Számlatípus: fogyasztó | fordított adózás (közösségi adószámmal) | adószám nélküli vállalkozás (ÁFA nélkül, reverse charge szöveg nélkül)
+  const invoiceType = buyerType === "b2c" ? "consumer" : vatId ? "reverse_charge" : "no_vat_id";
   const onceHuf = priceOf(items, "HUF").once;
   const business = clean(b.business, 200);
 
   const cust = await upsertCustomer(env, {
     email, business, name: clean(b.name, 200), phone: clean(b.phone, 40), lang,
-    buyer_type: clean(b.buyer_type, 4) === "b2c" ? "b2c" : "b2b", company: clean(b.company, 200),
-    vat_id: clean(b.vat_id, 40).toUpperCase(), billing_addr: clean(b.billing_addr, 400), currency: cur, source: "form",
+    buyer_type: buyerType, company: clean(b.company, 200),
+    vat_id: vatId, billing_addr: clean(b.billing_addr, 400), currency: cur, source: "form",
   });
 
   const brief = {
     what: clean(b.what, 600), who: clean(b.who, 600), tone: clean(b.tone, 100), industry: clean(b.industry, 60),
     extra: clean(b.extra, 3000), files: (Array.isArray(b.files) ? b.files : []).slice(0, 20).map((x) => clean(x, 200)),
-    start_now: b.start_now === true, invoice_lang: clean(b.invoice_lang, 2),
+    start_now: b.start_now === true, invoice_lang: clean(b.invoice_lang, 2), invoice_type: invoiceType, first_client: firstClient,
     site: siteFrom(b.site), upload_token: rid("up_", 24), uploads: [] as unknown[],
   };
   const id = orderNo();
@@ -55,7 +63,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
     customer_id: cust.id, project_id: id, kind: "lead", actor: "customer",
     title: hu ? `Új rendelés: ${business || email}` : `New order: ${business || email}`,
     body: `${itemNames}\n${money(once, cur, lang)}${monthly ? ` + ${money(monthly, cur, lang)}/hó` : ""}`,
-    meta: { items, once, monthly, currency: cur, source: src },
+    meta: { items, once, monthly, currency: cur, source: src, invoice_type: invoiceType, first_client: firstClient },
   });
 
   // Visszaigazolás az ügyfélnek
@@ -64,7 +72,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   const body = hu
     ? `<p>Köszönjük! Megkaptuk a kérésedet, a rendelésszámod: <b>${id}</b>.</p>
 <p>Egy órán belül (munkaidőben) visszaküldjük írásban, amit megértettünk, és ha valami hiányzik, rákérdezünk. A 24 óra akkor indul, amikor ezt jóváhagyod.</p>
-${rows([["Vállalkozás", business], ["Tételek", itemNames], ["Egyszeri díj (nettó)", money(once, cur, "hu")], ["Havidíj (nettó)", monthly ? money(monthly, cur, "hu") + "/hó" : ""], ["Vázlatdíj", sketchFee ? money(sketchFee, cur, "hu") + " (beszámítjuk)" : "nincs"]])}
+${rows([["Vállalkozás", business], ["Tételek", itemNames], ["Egyszeri díj (nettó)", money(once, cur, "hu") + (firstClient ? " (Első ügyfél kedvezménnyel, −30%)" : "")], ["Havidíj (nettó)", monthly ? money(monthly, cur, "hu") + "/hó" : ""], ["Vázlatdíj", sketchFee ? money(sketchFee, cur, "hu") + " (beszámítjuk)" : "nincs"]])}
 <p>Csatolnál még valamit (logó, étlap, fotók)? Válaszolj erre a levélre, és tedd mellé.</p>`
     : `<p>Thank you! We've received your request. Your order number is <b>${id}</b>.</p>
 <p>Within an hour (business hours) we'll send back in writing what we understood, and ask about anything missing. The 24 hours start when you approve it.</p>

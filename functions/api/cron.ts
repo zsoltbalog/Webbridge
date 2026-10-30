@@ -4,6 +4,7 @@
 import { Env, json, money, logEvent, once, stuckInfo, STAGE_HU, esc } from "../../lib/core";
 import { sendMail, layout } from "../../lib/mail";
 import { instrNotify } from "../../lib/instructions";
+import { vatAlert } from "../../lib/vatlimit";
 
 type P = { id: string; customer_id: string; stage: string; stage_at: string; title: string; amount: number; currency: string; email: string; name: string; lang: string; next_action: string };
 
@@ -31,8 +32,9 @@ const NUDGE: Record<string, { after: number; hu: [string, string]; en: [string, 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!env.CRON_SECRET || request.headers.get("x-cron-secret") !== env.CRON_SECRET) return json({ ok: false }, 401);
   const now = Date.now();
-  const out = { nudges: 0, reviews: 0, digest: 0, instr: 0 };
+  const out = { nudges: 0, reviews: 0, digest: 0, instr: 0, vat: 0 };
   out.instr = await instrNotify(env);
+  out.vat = await vatAlert(env).catch(() => 0);
 
   const open = (await env.DB.prepare(
     "SELECT p.id, p.customer_id, p.stage, COALESCE(p.stage_at,p.updated_at) stage_at, p.title, p.amount, p.currency, p.next_action, c.email, c.name, c.lang FROM projects p JOIN customers c ON c.id=p.customer_id WHERE p.stage NOT IN ('lost')"

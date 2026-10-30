@@ -3,6 +3,7 @@
 import { Env, json, nowIso } from "../../../lib/core";
 import { addComment, Work } from "../../../lib/works";
 import { sha256 } from "../../../lib/portal";
+import { createInstruction, isOwner, instrAddress } from "../../../lib/instructions";
 
 type Item = { MessageId?: string; SentAtDate?: string; Uuid?: string[]; From?: { Address?: string; Name?: string }; To?: { Address?: string }[]; Recipients?: string[]; Subject?: string; ExtractedMarkdownMessage?: string; RawTextBody?: string; Attachments?: { Name: string; ContentType: string; DownloadToken?: string; ContentLength?: number }[] };
 
@@ -13,6 +14,18 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   let added = 0;
   for (const it of b.items || []) {
     const to = [...(it.To || []).map((x) => x.Address || ""), ...(it.Recipients || [])].join(" ");
+    // Utasítás-csatorna: utasitas@REPLY_DOMAIN, csak a tulajdonos címeiről
+    if (env.REPLY_DOMAIN && to.toLowerCase().includes(instrAddress(env))) {
+      const fromI = (it.From?.Address || "").toLowerCase();
+      const textI = (it.ExtractedMarkdownMessage || it.RawTextBody || "").trim().slice(0, 8000);
+      if (!isOwner(env, fromI) || !textI) continue;
+      const keyI = it.MessageId ? `mid:${it.MessageId}` : `h:${await sha256(`instr|${fromI}|${it.SentAtDate || ""}|${textI}`)}`;
+      const insI = await env.DB.prepare("INSERT OR IGNORE INTO inbound_seen (key,at) VALUES (?1,?2)").bind(keyI, nowIso()).run();
+      if (!insI.meta.changes) continue;
+      await createInstruction(env, { from: fromI, subject: (it.Subject || "").slice(0, 200), body: textI, attachments: (it.Attachments || []).map((a) => a.Name).filter(Boolean) });
+      added++;
+      continue;
+    }
     const m = to.match(/pult\+(wrk_[a-z0-9]+)@/i);
     if (!m) continue;
     const w = await env.DB.prepare("SELECT * FROM works WHERE id=?1").bind(m[1]).first<Work>();

@@ -1881,7 +1881,7 @@ $("#run").onclick=run;
 $("#biz").addEventListener("input",()=>{renderSite();renderLoop();$("#f-name").value=$("#biz").value});
 $("#biz").addEventListener("keydown",e=>{if(e.key==="Enter")run()});
 function tierExcl(set,id){if(/^mkt[123]$/.test(id))["mkt1","mkt2","mkt3"].forEach(x=>{if(x!==id)set.delete(x)})}
-$("#groups").addEventListener("change",e=>{const c=e.target;if(c.type!=="checkbox")return;if(c.checked){tierExcl(sel,c.value);sel.add(c.value)}else sel.delete(c.value);if(/^mkt/.test(c.value))renderMenu();renderTicket()});
+$("#groups").addEventListener("change",e=>{const c=e.target;if(c.type!=="checkbox")return;window.wbEv&&wbEv(c.checked?"service_add":"service_remove",{service:c.value});if(c.checked){tierExcl(sel,c.value);sel.add(c.value)}else sel.delete(c.value);if(/^mkt/.test(c.value))renderMenu();renderTicket()});
 $("#bundlelist").addEventListener("click",e=>{const b=e.target.closest("[data-bundle]");if(!b)return;const bd=B.find(x=>x.id===b.dataset.bundle);sel.clear();bd.items.forEach(i=>sel.add(i));renderMenu();renderTicket();$("#menu").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})});
 const drop=$("#drop"),fi=$("#f-files");
 ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("over")}));
@@ -1889,7 +1889,7 @@ const drop=$("#drop"),fi=$("#f-files");
 drop.addEventListener("drop",e=>handleFiles(e.dataTransfer.files));
 fi.addEventListener("change",()=>{handleFiles(fi.files);fi.value=""});
 $("#f-name").addEventListener("input",()=>{$("#biz").value=$("#f-name").value;renderSite()});
-function showStep(){["p1","p2","p3"].forEach((id,i)=>{$("#"+id).hidden=i+1!==step});document.querySelectorAll("#prog i").forEach((el,i)=>el.classList.toggle("on",i<step));$("#back").style.visibility=step>1?"visible":"hidden";$("#next").textContent=step===3?T[lang].submit:T[lang].next}
+function showStep(){window.wbEv&&wbEv("order_step",{step});["p1","p2","p3"].forEach((id,i)=>{$("#"+id).hidden=i+1!==step});document.querySelectorAll("#prog i").forEach((el,i)=>el.classList.toggle("on",i<step));$("#back").style.visibility=step>1?"visible":"hidden";$("#next").textContent=step===3?T[lang].submit:T[lang].next}
 $("#back").onclick=()=>{if(step>1){step--;showStep()}};
 const LIVE=/(^|\.)webbridge\.(hu|studio)$|\.pages\.dev$/.test(location.hostname);
 /* lead-forrás: csak az aktuális látogatásból (URL-paraméterek + hivatkozó oldal), tárolás nélkül */
@@ -2003,7 +2003,7 @@ function renderChannels(){$("#callsteps").innerHTML=T[lang].phSteps.map((x,i)=>`
 const CH={"ch-form":"form","ch-mail":"mailpanel","ch-call":"callpanel"};
 $("#chan").addEventListener("click",e=>{const b=e.target.closest("[role=tab]");if(!b)return;Object.keys(CH).forEach(id=>{const on=id===b.id;$("#"+id).setAttribute("aria-selected",on);$("#"+CH[id]).hidden=!on})});
 $("#copy").onclick=async()=>{const a=$("#addr").textContent;try{await navigator.clipboard.writeText(a);$("#copy").textContent=T[lang].copied}catch(e){const r=document.createRange();r.selectNodeContents($("#addr"));const s=getSelection();s.removeAllRanges();s.addRange(r)}};
-$("#callpanel").addEventListener("submit",async e=>{e.preventDefault();if(!$("#cb-consent").checked){$("#cb-err").hidden=false;return}$("#cb-err").hidden=true;const d=$("#cb-done");
+$("#callpanel").addEventListener("submit",async e=>{e.preventDefault();if(!$("#cb-consent").checked){$("#cb-err").hidden=false;return}window.wbEv&&wbEv("callback_request");$("#cb-err").hidden=true;const d=$("#cb-done");
   if(LIVE){try{await postIntake({kind:"callback",name:$("#cb-name").value,phone:$("#cb-phone").value,slot:$("#cb-slot").value,consent:true})}catch(err){$("#cb-err").hidden=false;$("#cb-err").textContent=err.message;return}
     d.hidden=false;d.textContent=(lang==="hu"?"Rögzítettük: {s}. Hamarosan hívunk.":"Booked: {s}. We'll call you soon.").replace("{s}",$("#cb-slot").value);return}
   d.hidden=false;d.textContent=T[lang].cbDone.replace("{s}",$("#cb-slot").value)});
@@ -2160,7 +2160,7 @@ function gCalc(){
   if(gA.stage==="old"&&!add.setup&&gA.host==null)add.setup={hu:"Az új oldalt élesíteni kell.",en:"The new site needs to go live."};
   return{add,no};
 }
-function gCompute(){const r=gCalc();gWhy=r.add;gNo=r.no;gPick=new Set(Object.keys(r.add))}
+function gCompute(){window.wbEv&&wbEv("guide_complete");const r=gCalc();gWhy=r.add;gNo=r.no;gPick=new Set(Object.keys(r.add))}
 const GIC={shopcare:"M5 8h14l-1 11H6zM9 12h6M12 9v6",email:"M3 6h18v12H3zM3 6l9 7 9-7",chat:"M4 5h16v11H9l-5 4z M8 10h8",phone:"M5 4h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 6a2 2 0 0 1 2-2",landing:"M4 6h16v12H4zM4 9h16",site:"M3 5h18v14H3zM3 8h18M8 8v11",shop:"M5 8h14l-1 11H6zM9 8V6a3 3 0 0 1 6 0v2",logo:"M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z",brand:"M5 4h11l3 3v13H5zM9 9h6M9 13h6M9 17h3",strategy:"M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 4a1 1 0 1 0 0 2 1 1 0 0 0 0-2",plan:"M4 6h16v14H4zM4 10h16M8 3v5M16 3v5",setup:"M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v3M12 19v3M2 12h3M19 12h3",lang:"M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18",mkt2:"M4 12a8 8 0 0 1 14-5l2-2v6h-6l2-2a5 5 0 1 0 1 6",care:"M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z",move:"M3 7h11v9H3zM14 10h4l3 3v3h-7M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4"};
 const gIcon=id=>`<svg class="g-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="${GIC[id]||""}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 function gPanel(){const L=GT[lang];const {add}=gCalc();const ids=S.filter(s=>add[s.id]);let o=0,m=0;ids.forEach(s=>{if(s.m)m+=P(s);else o+=P(s)});
@@ -2194,13 +2194,13 @@ function gNotes(){return gVisible().filter(q=>gA[q.id]==="x"&&gOther[q.id]).map(
 function gCoolLang(){document.querySelectorAll("[data-gt]").forEach(el=>{const v=GT[lang][el.dataset.gt];if(v!=null)el.textContent=v});gRender()}
 $("#g-body").addEventListener("click",e=>{
   const o=e.target.closest(".g-opt:not(.g-other)");const vis=gVisible();
-  if(o){gA[vis[gI].id]=+o.dataset.i;gI++;if(gI>=gVisible().length)gCompute();gRender();return}
+  if(o){if(gI===0)window.wbEv&&wbEv("guide_start");gA[vis[gI].id]=+o.dataset.i;gI++;if(gI>=gVisible().length)gCompute();gRender();return}
   if(e.target.closest("#g-other")){const b=$("#g-otherbox");b.hidden=false;$("#g-other").setAttribute("aria-expanded","true");$("#g-other-t").focus();return}
-  if(e.target.id==="g-other-go"){const t=$("#g-other-t").value.trim();if(!t){$("#g-other-t").focus();return}const q=vis[gI];gOther[q.id]=t;gA[q.id]="x";gI++;if(gI>=gVisible().length)gCompute();gRender();return}
+  if(e.target.id==="g-other-go"){const t=$("#g-other-t").value.trim();if(!t){$("#g-other-t").focus();return}window.wbEv&&wbEv("guide_other",{question:vis[gI].id});const q=vis[gI];gOther[q.id]=t;gA[q.id]="x";gI++;if(gI>=gVisible().length)gCompute();gRender();return}
   if(e.target.id==="g-back"){gI=Math.max(0,gI-1);gRender();return}
   if(e.target.id==="g-skip"){const q=vis[gI];gA[q.id]=q.o.findIndex(x=>x.tag)>=0?q.o.findIndex(x=>x.tag):0;gI++;if(gI>=gVisible().length)gCompute();gRender();return}
   if(e.target.id==="g-again"){gA={};gOther={};gI=0;gRender();return}
-  if(e.target.id==="g-add"){const nt=gNotes();if(nt.length){const fx=$("#f-extra");if(fx){const add=nt.map(n=>`${n.q} ${n.t}`).join("\n");if(!fx.value.includes(add))fx.value=(fx.value?fx.value+"\n":"")+add}}sel.clear();gPick.forEach(id=>sel.add(id));renderMenu();renderTicket();$("#menu").scrollIntoView({behavior:still?"auto":"smooth"});return}
+  if(e.target.id==="g-add"){window.wbEv&&wbEv("guide_add_to_cart",{items:gPick.size});const nt=gNotes();if(nt.length){const fx=$("#f-extra");if(fx){const add=nt.map(n=>`${n.q} ${n.t}`).join("\n");if(!fx.value.includes(add))fx.value=(fx.value?fx.value+"\n":"")+add}}sel.clear();gPick.forEach(id=>sel.add(id));renderMenu();renderTicket();$("#menu").scrollIntoView({behavior:still?"auto":"smooth"});return}
 });
 $("#g-body").addEventListener("change",e=>{const c=e.target.closest("[data-g]");if(!c)return;if(c.checked){tierExcl(gPick,c.dataset.g);gPick.add(c.dataset.g)}else gPick.delete(c.dataset.g);gRender()});
 
@@ -2588,7 +2588,7 @@ function qxRender(){if(!qxId)return;const s=S.find(x=>x.id===qxId),C=QX[qxId],L=
     </div>
     <div class="qx-foot"><div><small>${s.m?X.monthly:X.once}</small><span class="qx-price tnum">${money(P(s),s.m)}</span></div><button type="button" class="btn btn-hazard" id="qx-want" ${have?"data-have":""}>${have?X.have:X.want}</button></div>`;
   p.setAttribute("aria-labelledby","qx-title");qxRenderDemo()}
-function qxOpen(id,ret){if(!QX[id])return;const box=$("#qx");qxId=id;qxRet=id;qxSt={};if(/^mkt/.test(id))qxSt.tier=id;
+function qxOpen(id,ret){if(!QX[id])return;window.wbEv&&wbEv("service_info_open",{service:id});const box=$("#qx");qxId=id;qxRet=id;qxSt={};if(/^mkt/.test(id))qxSt.tier=id;
   qxRender();box.hidden=false;document.body.style.overflow="hidden";
   const go=()=>{box.classList.add("open");$("#qx-close").focus({preventScroll:true})};
   if(qxStill())go();else{void box.offsetWidth;requestAnimationFrame(go)}}
@@ -2596,7 +2596,7 @@ function qxClose(){const box=$("#qx");if(box.hidden)return;qxClear();box.classLi
   const fin=()=>{box.hidden=true;const b=document.querySelector(`.qbtn[data-qx="${id}"]`);if(b)b.focus({preventScroll:false})};
   if(qxStill())fin();else setTimeout(fin,300)}
 function qxLang(){if(qxId){const st=qxSt;qxRender();qxSt=st;qxRenderDemo()}}
-function qxWant(){const id=qxId;if(!id)return;if(!sel.has(id)){tierExcl(sel,id);sel.add(id);renderMenu();renderTicket()}qxClose()}
+function qxWant(){const id=qxId;if(!id)return;window.wbEv&&wbEv("service_info_want",{service:id});if(!sel.has(id)){tierExcl(sel,id);sel.add(id);renderMenu();renderTicket()}qxClose()}
 (function(){const box=document.createElement("div");box.className="qx";box.id="qx";box.hidden=true;
   box.innerHTML='<div class="qx-bd" data-qx-close></div><div class="qx-panel" id="qx-panel" role="dialog" aria-modal="true" tabindex="-1"></div>';document.body.appendChild(box);
   box.addEventListener("click",e=>{if(e.target.closest("[data-qx-close]")||e.target.closest("#qx-close")){qxClose();return}
@@ -3054,7 +3054,7 @@ function cbAdd(role,text){const d=document.createElement("div");d.className="cb-
 function cbSys(text){const d=cbAdd("sys",text);return d}
 function cbRender(){const L=CB[lang];$("#cb-fab-t").textContent=L.fab;$("#cb-title").textContent=L.title;$("#cb-sub").textContent=L.sub;$("#cb-in").placeholder=L.ph;$("#cb-send").textContent=cbBusy?L.stop:L.send;$("#cb-note").textContent=L.note;
  $("#cb-chips").innerHTML=L.chips.map(c=>`<button type="button" class="cb-chip">${esc(c)}</button>`).join("");$("#cb-chips").hidden=cbTurns.length>0||cbStep>0}
-function cbOpen(){const p=$("#cb-panel");p.hidden=false;$("#cb-fab").setAttribute("aria-expanded","true");if(!cbEl().children.length){cbAdd("bot",CB[lang].hello);if(cbMode!=="live"){cbAdd("bot",CB[lang].s[0][1])}}cbRender();setTimeout(()=>$("#cb-in").focus(),50)}
+function cbOpen(){window.wbEv&&wbEv("chat_open");const p=$("#cb-panel");p.hidden=false;$("#cb-fab").setAttribute("aria-expanded","true");if(!cbEl().children.length){cbAdd("bot",CB[lang].hello);if(cbMode!=="live"){cbAdd("bot",CB[lang].s[0][1])}}cbRender();setTimeout(()=>$("#cb-in").focus(),50)}
 function cbClose(){$("#cb-panel").hidden=true;$("#cb-fab").setAttribute("aria-expanded","false");$("#cb-fab").focus()}
 async function cbSend(text){text=String(text||"").trim();if(!text||cbBusy)return;$("#cb-in").value="";cbAdd("user",text);$("#cb-chips").hidden=true;
  if(cbMode!=="live"){cbScript(text);return}
@@ -3097,7 +3097,7 @@ $("#vt-b2b").onclick=$("#fb-b2b").onclick=()=>setVat("b2b");$("#vt-b2c").onclick
 $("#f-cur").addEventListener("change",e=>setCur(e.target.value));
 
 $("#o-chat-b").addEventListener("click",()=>cbOpen());
-$("#quick-f").addEventListener("submit",e=>{e.preventDefault();const t=$("#quick-in").value.trim();if(!t){$("#quick-in").focus();return}cbOpen();setTimeout(()=>cbSend(t),120);$("#quick-in").value=""});
+$("#quick-f").addEventListener("submit",e=>{e.preventDefault();const t=$("#quick-in").value.trim();if(!t){$("#quick-in").focus();return}window.wbEv&&wbEv("quick_ask");cbOpen();setTimeout(()=>cbSend(t),120);$("#quick-in").value=""});
 /* ---------- prompt helper ---------- */
 function promptFor(f){const hu=lang==="hu";const n=($("#f-name").value||$("#biz").value||"").trim();const w=$("#f-what").value.trim();const who=$("#f-who").value.trim();const indus=ind[lang];
  const ctx=hu?`Vállalkozás neve: ${n||"(még nincs megadva)"}\nIparág: ${indus}\n${w?"Amit eddig leírtam a tevékenységemről: "+w+"\n":""}${who?"A vevőimről eddig: "+who+"\n":""}`:`Business name: ${n||"(not given yet)"}\nIndustry: ${indus}\n${w?"What I wrote so far about my business: "+w+"\n":""}${who?"About my customers so far: "+who+"\n":""}`;
@@ -3349,6 +3349,8 @@ try{$("#f-ilang").value=lang}catch(e){}
   function load(){if(loaded||!LIVE)return;loaded=true;window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};
     gtag("consent","default",{ad_storage:"granted",ad_user_data:"granted",ad_personalization:"denied",analytics_storage:"granted"});
     gtag("js",new Date());gtag("config",AW);if(/(^|\.)webbridge\.(hu|studio)$/.test(location.hostname))gtag("config",GA,{allow_google_signals:false,allow_ad_personalization_signals:false,cookie_expires:33696000});var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id="+AW;document.head.appendChild(s)}
+  window.wbEv=function(name,p){var c=get();if(!c||c.v!=="granted"||!loaded||!/(^|\.)webbridge\.(hu|studio)$/.test(location.hostname))return;try{gtag("event",name,Object.assign({send_to:GA},p||{}))}catch(e){}};
+  document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('a[href^="/pult/"]');if(a)window.wbEv("desk_login_click")},true);
   window.wbConv=function(value,currency,orderId,email){var c=get();if(!c||c.v!=="granted")return;load();
     if(email)gtag("set","user_data",{email:String(email).trim().toLowerCase()});
     gtag("event","conversion",{send_to:LEAD,value:Number(value)||0,currency:currency||"HUF",transaction_id:orderId||""});

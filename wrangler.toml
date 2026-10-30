@@ -11,6 +11,8 @@ MAIL_FROM_NAME = "Webbridge"
 NOTIFY_TO = "hello@webbridge.hu"
 # Bejövő válaszlevelek (Brevo inbound, MX: reply.webbridge.hu → inbound1/2.sendinblue.com): pult+<munka>@REPLY_DOMAIN
 REPLY_DOMAIN = "reply.webbridge.hu"
+# Utasítás-csatorna: utasitas@REPLY_DOMAIN – csak ezekről a címekről fogadunk utasítást (vesszővel elválasztva)
+OWNER_EMAILS = "z.balog@gmail.com,zbalog@gmail.com,zsolt.balog@amemesh.net,hello@webbridge.hu"
 # Pult Google-belépés: OAuth-kliens a TES "webbridge-tes" Google Cloud projektjében (nyilvános azonosító; a titok: GOOGLE_CLIENT_SECRET)
 GOOGLE_CLIENT_ID = "207155811762-00k17ir827op41veah28o179jlvn3lbb.apps.googleusercontent.com"
 # REVIEW_URL = "https://g.page/r/…/review"   # Google-értékelés link: ha megvan a Cégprofil, ide kerül

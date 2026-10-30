@@ -236,7 +236,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:co
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}.seg button{border:0;background:transparent;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--ink,#111);color:var(--bg,#fff)}
 .files .rm{border:0;background:none;cursor:pointer;color:var(--muted);font-size:15px;line-height:1;padding:0 2px}
-.login-link{font-weight:600;font-size:14px;color:var(--ink);text-decoration:none;white-space:nowrap;padding:6px 4px}.login-link:hover{color:var(--hazard)}@media (max-width:1180px){.login-link{display:none}}
+.nav-links a{white-space:nowrap}.login-link{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:14px;color:var(--ink);text-decoration:none;white-space:nowrap;padding:7px 14px 7px 11px;border:1.5px solid var(--ink);border-radius:999px;flex:none;transition:background .15s,color .15s}.login-link svg{width:17px;height:17px;flex:none}.login-link:hover{background:var(--ink);color:var(--bg)}.login-link .ll-short{display:none}@media (max-width:1560px){.login-link .ll-full{display:none}.login-link .ll-short{display:inline}}@media (max-width:1100px){.login-link{padding:7px}.login-link .ll-short{display:none}}
 .extract{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
 .extract .sw{display:flex;gap:4px}.extract .sw i{width:22px;height:22px;border-radius:4px;border:1px solid var(--line)}
 .form-nav{display:flex;justify-content:space-between;gap:10px}
@@ -860,7 +860,7 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
       <a href="#bundles" data-t="nav3">Csomagok</a>
       <a href="#faq" data-t="nav4">GYIK</a>
     </nav>
-    <a class="login-link" href="/pult/" data-t="navlogin">Belépés</a>
+    <a class="login-link" href="/pult/" aria-label="Belépés a Pultba" title="Belépés a Pultba"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="ll-full" data-t="navlogin">Belépés</span><span class="ll-short" data-t="navlogin3">Pult</span></a>
     <div class="lang" role="group" aria-label="Nyelv / Language">
       <button type="button" id="lang-hu" aria-pressed="true">HU</button>
       <button type="button" id="lang-en" aria-pressed="false">EN</button>
@@ -1304,7 +1304,7 @@ hu:{nav5:"A Pult",nav6:"Segítünk választani",nav7:"Marketing",roundsInc:"Korl
 ch1:"Kérdőív",ch1s:"10 perc, online",ch2:"E-mail",ch2s:"Írd meg a saját szavaiddal",ch3:"Telefon",ch3s:"0–24, azonnal felvesszük",
 "m-e":"Brief e-mailben",copy:"Másolás",copied:"Kimásolva","m-p":"Írd meg pár mondatban, és csatold, ami van. Ezekre lesz szükségünk:","m-n":"Egy órán belül visszaküldjük egyetlen levélben az összefoglalót és a hiányzó kérdéseket. A 24 óra a visszaigazolásoddal indul.",
 "c-e":"Telefon","c-e2":"Vagy kérj visszahívást","ph-live":"0–24, azonnal felvesszük","ph-note":"A hívást virtuális asszisztensünk fogadja. A beszélgetést a hívás elején kért hozzájárulásoddal rögzítjük.",phSteps:[["Felvesszük","Bármikor hívsz, első csengésre."],["Végigkérdezünk","Kb. 10 perc: mit csinálsz, kiknek, mit kérsz. Ha elakadsz, segítünk."],["Írásban megkapod","Az összefoglalót e-mailben küldjük jóváhagyásra. Utána indul a 24 óra."]],"cb-name":"Neved","cb-phone":"Telefonszám","cb-slot":"Mikor hívjunk?","cb-n":"A beszélgetést a hozzájárulásoddal rögzítjük, és ebből írjuk meg a briefet. Utána írásban visszaküldjük jóváhagyásra.","cb-go":"Visszahívást kérek",cbDone:"Rögzítettük: {s}. (Prototípus: a kérés még nincs bekötve.)",
-brand:"WEBBRIDGE",nav1:"Hogyan működik",nav2:"Szolgáltatások",nav3:"Csomagok",nav4:"GYIK",navcta:"Megrendelem",navlogin:"Belépés",navlogin2:"Ügyfél-belépés (Pult)",
+brand:"WEBBRIDGE",nav1:"Hogyan működik",nav2:"Szolgáltatások",nav3:"Csomagok",nav4:"GYIK",navcta:"Megrendelem",navlogin:"Belépés",navlogin3:"Pult",navlogin2:"Ügyfél-belépés (Pult)",
 stamp:"Most is dolgozunk · 24 órás átfutás",
 h1:'Ma kitöltöd.<br>Holnap éles.<span class="thin">Weboldal, logó, arculat és marketing. Rád szabva, nem sablonból.</span>',
 lead:"Elmondod, mit csinálsz: kérdőívben, e-mailben vagy telefonon. 24 órán belül megkapod a weboldalt, a logót, a brandbookot és a marketingtervet. Fix áron, meglepetések nélkül.",
@@ -1333,7 +1333,7 @@ en:{nav5:"The Desk",nav6:"Help me choose",nav7:"Marketing",roundsInc:"Unlimited 
 ch1:"Questionnaire",ch1s:"10 minutes, online",ch2:"Email",ch2s:"Write it in your own words",ch3:"Phone",ch3s:"24/7, answered instantly",
 "m-e":"Brief by email",copy:"Copy",copied:"Copied","m-p":"Write a few sentences and attach whatever you have. Here is what we need:","m-n":"Within an hour we reply with a summary and any missing questions, in a single email. The 24 hours start when you confirm.",
 "c-e":"Phone","c-e2":"Or request a callback","ph-live":"24/7, answered instantly","ph-note":"Calls are answered by our virtual assistant. With the consent requested at the start of the call, we record it.",phSteps:[["We pick up","Call any time, first ring."],["We ask the questions","About 10 minutes: what you do, for whom, what you need. We help if you get stuck."],["You get it in writing","We email the summary for approval. Then the 24 hours start."]],"cb-name":"Your name","cb-phone":"Phone number","cb-slot":"When should we call?","cb-n":"With your consent we record the call and write your brief from it. We then send it to you in writing for approval.","cb-go":"Request a callback",cbDone:"Booked: {s}. (Prototype: the request is not connected yet.)",
-brand:"WEBBRIDGE",nav1:"How it works",nav2:"Services",nav3:"Bundles",nav4:"FAQ",navcta:"Order now",navlogin:"Sign in",navlogin2:"Client sign-in (Desk)",
+brand:"WEBBRIDGE",nav1:"How it works",nav2:"Services",nav3:"Bundles",nav4:"FAQ",navcta:"Order now",navlogin:"Sign in",navlogin3:"Desk",navlogin2:"Client sign-in (Desk)",
 stamp:"Open now · 24-hour turnaround",
 h1:'Brief today.<br>Live tomorrow.<span class="thin">Website, logo, brand and marketing. Made for you, not from a template.</span>',
 lead:"Tell us what you do: by questionnaire, email or phone. Within 24 hours you get your website, logo, brandbook and marketing plan. Fixed prices, no surprises.",
@@ -1465,7 +1465,7 @@ const IND=[
 const STA={hu:[["Brief elemzés","Célcsoport, ajánlat, hangnem"],["Arculat","Paletta, betűpár, logóhasználat"],["Szövegírás","Címek, szekciók, SEO"],["Weboldal","Elrendezés, build, élesítés"],["Marketing","Első posztok, 90 napos naptár"]],
 en:[["Brief analysis","Audience, offer, tone"],["Brand","Palette, type pair, logo usage"],["Copywriting","Headlines, sections, SEO"],["Website","Layout, build, deploy"],["Marketing","First posts, 90-day calendar"]]};
 
-let lang="hu", ind=IND[0], logoColors=null, logoURL=null, step=1;
+let lang=(()=>{try{const q=new URLSearchParams(location.search).get("lang");if(q==="hu"||q==="en")return q;const v=localStorage.getItem("wb-lang");return v==="en"?"en":"hu"}catch(e){return "hu"}})(), ind=IND[0], logoColors=null, logoURL=null, step=1;
 const sel=new Set(["site","brand","strategy","setup"]);
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -1478,7 +1478,8 @@ function slug(n){return (n||"cegem").toLowerCase().normalize("NFD").replace(/[̀
 function etaStr(){const d=new Date(Date.now()+864e5);const loc=lang==="hu"?"hu-HU":"en-GB";return d.toLocaleDateString(loc,{weekday:"long",month:"long",day:"numeric"})+" "+d.toLocaleTimeString(loc,{hour:"2-digit",minute:"2-digit"})}
 
 function applyStatic(){
-  document.documentElement.lang=lang;
+  document.documentElement.lang=lang;try{localStorage.setItem("wb-lang",lang)}catch(e){}
+  document.querySelectorAll('a[href^="/pult/"]').forEach(a=>a.href="/pult/?lang="+lang);{const ll=document.querySelector(".login-link");if(ll){const t=lang==="hu"?"Belépés a Pultba":"Sign in to your Desk";ll.setAttribute("aria-label",t);ll.title=t}}
   document.querySelectorAll("[data-t]").forEach(el=>{const v=T[lang][el.dataset.t];if(v!=null)el.innerHTML=fmtT(v)});
   document.querySelectorAll("[data-tp]").forEach(el=>{el.placeholder=T[lang][el.dataset.tp]||""});
   $("#lang-hu").setAttribute("aria-pressed",lang==="hu");$("#lang-en").setAttribute("aria-pressed",lang==="en");

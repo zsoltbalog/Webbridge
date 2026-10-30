@@ -129,7 +129,7 @@ mark.qm{background:color-mix(in srgb,var(--hazard) 32%,transparent);color:inheri
 "use strict";
 const $=s=>document.querySelector(s),app=$("#app");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let lang=(()=>{try{return localStorage.getItem("wb-lang")||((navigator.language||"").startsWith("hu")?"hu":"en")}catch(e){return "hu"}})();
+let lang=(()=>{try{const q=new URLSearchParams(location.search).get("lang");if(q==="hu"||q==="en"){localStorage.setItem("wb-lang",q);return q}return localStorage.getItem("wb-lang")==="en"?"en":"hu"}catch(e){return "hu"}})();
 const T={hu:{desk:"Pult",team:"Csapat",logout:"Kilépés",
   loginT:"Belépés a Pultba",loginP:"Itt látod és véleményezed az anyagaidat: logó, arculat, szórólap, weboldal.",email:"E-mail-cím",sendLink:"Belépőlink küldése",or:"vagy",google:"Belépés Google-lel",
   sent:"Ha ehhez a címhez tartozik fiók, pár percen belül megérkezik a belépőlink. Nézd meg a promóciók és a spam mappát is.",useOrder:"Azzal a címmel lépj be, amellyel rendeltél, vagy amelyre meghívást kaptál.",

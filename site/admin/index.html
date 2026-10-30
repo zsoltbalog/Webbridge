@@ -75,13 +75,15 @@ async function route(){
 window.addEventListener("hashchange",route);
 
 async function home(){
-  const d=await api("overview");
+  const [d,ex]=await Promise.all([api("overview"),api("escalations").catch(()=>({items:[]}))]);
+  const RS={price:"Árat alkudna / egyedi ajánlat",complaint:"Panasz",urgent:"Sürgős",human:"Emberrel beszélne",unknown:"Nem tudott válaszolni",other:"Egyéb"};
+  const escBox=ex.items.length?`<div class="card esc-box" id="rad-var" style="margin-bottom:14px;border:2px solid var(--warn)"><h2>Rád vár <span class="mut sm">– amit a virtuális asszisztens nem tudott elintézni (${ex.items.length})</span></h2><table>${ex.items.map(x=>`<tr><td style="width:150px"><b style="${x.urgency==="urgent"?"color:var(--bad)":""}">${x.urgency==="urgent"?"SÜRGŐS · ":""}${RS[x.reason]||x.reason}</b><div class="mut sm">${x.source==="phone"?"Telefon":"Chat"} · ${ago(x.at)}</div></td><td><b>${esc(x.caller_name||"Ismeretlen")}</b> ${x.phone?`<a href="tel:${esc(x.phone)}">${esc(x.phone)}</a>`:""} ${x.email?`<a href="mailto:${esc(x.email)}">${esc(x.email)}</a>`:""}<div style="white-space:pre-wrap;margin-top:4px">${esc(x.summary)}</div>${x.callback?`<div class="mut sm">Válasz: ${esc(x.callback)}</div>`:""}${x.customer_id?`<div class="sm"><a href="#c/${x.customer_id}">Ügyfél megnyitása →</a></div>`:""}</td><td style="width:90px;text-align:right"><button class="btn" data-esc="${x.id}">Kész</button></td></tr>`).join("")}</table></div>`:"";
   $("#cfg").innerHTML=[["brevo","E-mail"],["stripe","Stripe"],["stripe_webhook","Webhook"],["cron","Időzítő"],["review","Értékelés-link"],["anthropic","AI"]].map(([k,l])=>`<span class="dot ${d.config[k]?"on":"off"}" title="${d.config[k]?"Beállítva":"Hiányzik a kulcs"}">● ${l}</span>`).join("");
   const by=Object.fromEntries(d.stages.map(s=>[s.stage,s.n]));
   const open=Object.entries(by).filter(([k])=>!["live","care","lost"].includes(k)).reduce((a,[,n])=>a+n,0);
   const rev=d.revenue30.map(r=>money(r.total,r.currency)).join(" + ")||"0 Ft";
   const late=d.todo.filter(p=>p.sla&&p.sla.stuck).length;
-  app.innerHTML=`<div class="grid g4" style="margin-bottom:14px">
+  app.innerHTML=escBox+`<div class="grid g4" style="margin-bottom:14px">
     <div class="card kpi"><small>Nyitott projektek</small><b>${open}</b></div>
     <div class="card kpi"><small>Elakadt</small><b style="${late?"color:var(--warn)":""}">${late}</b></div>
     <div class="card kpi"><small>Készül / ügyfél nézi</small><b>${(by.building||0)+(by.review||0)+(by.sketches||0)}</b></div>
@@ -90,6 +92,8 @@ async function home(){
   <div class="card"><h2>Legutóbb történt</h2><ul class="tl">${d.events.map(e=>`<li class="k-${e.kind}"><time>${ago(e.at)}</time><div><b>${esc(e.title)}</b><div class="sm mut">${e.customer_id?`<a href="#c/${e.customer_id}">${esc(e.business||e.name||e.email||e.customer_id)}</a>`:""}</div></div></li>`).join("")||`<div class="empty">Még nincs esemény.</div>`}</ul></div></div>
   <div class="card" style="margin-top:14px"><h2>Honnan jönnek? <span class="mut sm">(utolsó 90 nap)</span></h2>${d.sources&&d.sources.length?`<table><tr><th>Forrás</th><th>Érdeklődő</th><th>Megnyert</th><th>Konverzió</th><th>Befizetve</th></tr>${d.sources.map(s=>`<tr><td><b>${esc(s.source)}</b></td><td>${s.leads}</td><td>${s.won}</td><td>${s.leads?Math.round(s.won/s.leads*100):0}%</td><td>${[s.paid_huf?money(s.paid_huf,"HUF"):"",s.paid_eur?money(s.paid_eur,"EUR"):""].filter(Boolean).join(" + ")||"–"}</td></tr>`).join("")}</table>`:`<div class="empty">Még nincs adat. Az új rendeléseknél a weboldal automatikusan rögzíti a forrást (Google, Meta, ajánlás, UTM-kampány).</div>`}</div>`;
   app.querySelectorAll("tr[data-c]").forEach(r=>r.onclick=()=>location.hash="c/"+r.dataset.c);
+  app.querySelectorAll("[data-esc]").forEach(b=>b.onclick=async()=>{b.disabled=true;await api("escalations",{id:b.dataset.esc,status:"done"});home()});
+  if(location.hash==="#rad-var"){const el=$("#rad-var");if(el)el.scrollIntoView()}
 }
 
 async function list(qs){

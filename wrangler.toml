@@ -5,7 +5,7 @@ compatibility_date = "2026-10-01"
 
 [vars]
 # E-mailes linkek és a Pult saját domainen; a webbridge.hu élesítése után erre váltunk.
-SITE_URL = "https://webbridge.studio"
+SITE_URL = "https://webbridge.hu"
 MAIL_FROM = "hello@webbridge.hu"
 MAIL_FROM_NAME = "Webbridge"
 NOTIFY_TO = "hello@webbridge.hu"

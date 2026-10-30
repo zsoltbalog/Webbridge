@@ -430,6 +430,12 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}
 .g-opt b{font-size:16px}
 .g-opt small{color:var(--muted);font-size:13px;line-height:1.4}
 .g-opt .tag{justify-self:start;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--hazard);color:var(--on-hazard);border-radius:3px;padding:2px 6px}
+.g-other{border-style:dashed}
+.g-otherbox{display:grid;gap:10px}
+.g-otherbox textarea{width:100%;font:inherit;font-size:15px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);color:var(--ink);resize:vertical}
+.g-otherbox .btn{justify-self:start}
+.g-notes{display:grid;gap:8px;border:1px dashed var(--line);border-radius:10px;padding:12px 14px}
+.g-notes p{margin:0;font-size:14px}
 .g-nav{display:flex;justify-content:space-between;gap:10px;align-items:center}
 .g-link{background:none;border:0;color:var(--muted);cursor:pointer;font-size:14px;text-decoration:underline;text-underline-offset:3px;padding:6px 0}
 .g-res{display:grid;gap:14px}
@@ -1832,11 +1838,13 @@ addEventListener("scroll",()=>{},{passive:true});
 const GT={hu:{e:"Segítünk választani",h:"Nem tudod, mi kell? Kérdezünk.",l:"8 egyszerű kérdés, 2 perc. Minden tételt elmagyarázunk, a végén pedig megmondjuk, mit javaslunk és miért. Azt is, amire most nincs szükséged.",
  step:"{i}. kérdés / {n}",back:"← Vissza",skip:"Nem tudom, döntsétek el",what:"Mit jelent ez?",res:"A javaslatunk",resl:"Ezt javasoljuk neked. Bármit ki- vagy bekapcsolhatsz, az ár azonnal frissül.",
  rec:"Javasoljuk",later:"Most nem kell",once:"Egyszeri",mo:"Havonta",add:"Ezt kérem, kosárba",again:"Újrakezdem",rest:"Ha később kell, bármikor hozzárendelheted.",sofar:"Eddig ez állt össze",sofarEmpty:"Válaszolj, és itt épül fel a javaslat.",notNeeded:"nem kell",
- bundleHint:"A kosárban automatikusan a kedvezményes csomagárat számoljuk, ha a választásod lefed egy csomagot."},
+ bundleHint:"A kosárban automatikusan a kedvezményes csomagárat számoljuk, ha a választásod lefed egy csomagot.",
+ other:"Egyéb, leírom",otherS:"Egyik sem illik rám, saját szavaimmal írom le.",otherPh:"Írd le pár szóban, mi a helyzet vagy mit szeretnél…",otherGo:"Tovább →",notes:"Amit még írtál nekünk",notesL:"A megrendelésnél a „Bármi más” mezőbe tesszük, és figyelembe vesszük."},
 en:{e:"Help me choose",h:"Not sure what you need? We'll ask.",l:"8 simple questions, 2 minutes. We explain every item, then tell you what we recommend and why. Including what you don't need right now.",
  step:"Question {i} / {n}",back:"← Back",skip:"Not sure, you decide",what:"What does this mean?",res:"Our recommendation",resl:"Here is what we recommend. Switch anything on or off; the price updates instantly.",
  rec:"Recommended",later:"Not needed now",once:"One-off",mo:"Monthly",add:"I want this, add to cart",again:"Start over",rest:"If you need it later, you can add it any time.",sofar:"Your plan so far",sofarEmpty:"Answer and your plan builds up here.",notNeeded:"not needed",
- bundleHint:"If your choice covers a bundle, the cart applies the discounted bundle price automatically."}};
+ bundleHint:"If your choice covers a bundle, the cart applies the discounted bundle price automatically.",
+ other:"Other, I'll describe it",otherS:"None of these fit, I'll say it in my own words.",otherPh:"Tell us in a few words what your situation is or what you want…",otherGo:"Next →",notes:"What else you told us",notesL:"We put this in the “Anything else” field of your order and take it into account."}};
 /* each option: add {id:reason}, no {id:reason}, flag */
 const GQ=[
 {id:"stage",hu:{q:"Hol tartasz most?",x:"Ebből tudjuk, mit kell a nulláról felépíteni, és mire építhetünk abból, ami már megvan."},en:{q:"Where are you right now?",x:"This tells us what we build from scratch and what we can build on."},
@@ -1882,11 +1890,11 @@ const GQ=[
  o:[{hu:["Intézzétek ti, havidíjért","Nem akarok vele foglalkozni."],en:["You handle it, monthly","I don't want to deal with it."],tag:{hu:"Ajánlott",en:"Recommended"},add:{setup:{hu:"Beállítjuk a domaint, a tárhelyet és a céges e-mailt.",en:"We set up the domain, hosting and business email."},care:{hu:"Tárhely, domain, mentés, frissítés és apró módosítások egy havidíjban.",en:"Hosting, domain, backups, updates and small edits in one monthly fee."}}},
     {hu:["Én fizetem, ti beállítjátok","Van informatikusom, vagy szeretem kézben tartani."],en:["I pay, you set it up","I have an IT person, or like control."],add:{setup:{hu:"Beállítjuk a te fiókjaidban, és átadjuk a hozzáféréseket.",en:"We set it up in your accounts and hand over access."}},no:{care:{hu:"A tárhelyet és domaint közvetlenül a szolgáltatónak fizeted.",en:"You pay hosting and domain directly to the providers."}}}]}
 ];
-let gA={},gI=0,gPick=null,gWhy={},gNo={};
+let gA={},gI=0,gPick=null,gWhy={},gNo={},gOther={};
 function gVisible(){return GQ.filter(q=>!(q.skip&&q.skip(gA)))}
 function gCalc(){
   const add={},no={};
-  GQ.forEach(q=>{if(q.skip&&q.skip(gA))return;const k=gA[q.id];if(k==null)return;const o=q.o[k];
+  GQ.forEach(q=>{if(q.skip&&q.skip(gA))return;const k=gA[q.id];if(k==null)return;const o=q.o[k];if(!o)return;
     Object.entries(o.add||{}).forEach(([id,r])=>{add[id]=r;delete no[id]});
     Object.entries(o.no||{}).forEach(([id,r])=>{if(!add[id])no[id]=r})});
   if(gA.stage!=="mkt"&&!add.landing&&!add.site&&!add.shop)add.site={hu:"Az alap: egy céges weboldal.",en:"The basis: a business website."};
@@ -1909,7 +1917,8 @@ function gRender(){
   if(!done){const q=vis[gI],Q=q[lang];const sel=gA[q.id];
     body.innerHTML=`<div class="g-grid"><div style="display:grid;gap:16px;min-width:0"><div class="g-q">${Q.q}</div>
       <details class="g-explain"${gI===0?" open":""}><summary>${L.what}</summary><p>${Q.x}</p></details>
-      <div class="g-opts">${q.o.map((o,i)=>`<button type="button" class="g-opt" data-i="${i}" aria-pressed="${sel===i}">${o.tag?`<span class="tag">${o.tag[lang]}</span>`:""}<b>${o[lang][0]}</b><small>${o[lang][1]}</small><span class="g-chips">${gChips(o)}</span></button>`).join("")}</div>
+      <div class="g-opts">${q.o.map((o,i)=>`<button type="button" class="g-opt" data-i="${i}" aria-pressed="${sel===i}">${o.tag?`<span class="tag">${o.tag[lang]}</span>`:""}<b>${o[lang][0]}</b><small>${o[lang][1]}</small><span class="g-chips">${gChips(o)}</span></button>`).join("")}<button type="button" class="g-opt g-other" id="g-other" aria-pressed="${sel==="x"}" aria-expanded="${sel==="x"}"><b>${L.other}</b><small>${L.otherS}</small></button></div>
+      <div class="g-otherbox" id="g-otherbox"${sel==="x"?"":" hidden"}><textarea id="g-other-t" rows="3" maxlength="600" placeholder="${L.otherPh}">${esc(gOther[q.id]||"")}</textarea><button type="button" class="btn btn-hazard" id="g-other-go">${L.otherGo}</button></div>
       <div class="g-nav"><button type="button" class="g-link" id="g-back" ${gI===0?"style=\"visibility:hidden\"":""}>${L.back}</button><button type="button" class="g-link" id="g-skip">${L.skip}</button></div></div>${gPanel()}</div>`;
     return}
   const all=S.filter(s=>gWhy[s.id]||gNo[s.id]);
@@ -1921,16 +1930,20 @@ function gRender(){
     ${skip.length?`<div class="g-sub">${L.later}</div><div class="g-list">${skip.map(s=>row(s,gNo[s.id][lang]+" "+L.rest,false)).join("")}</div>`:""}
     <div class="g-sum"><span>${L.once}: <span class="big tnum">${money(o)}</span>${m?` &nbsp;·&nbsp; ${L.mo}: <b class="tnum">${money(m,true)}</b>`:""}</span>
       <span style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn btn-ghost" id="g-again">${L.again}</button><button type="button" class="btn btn-hazard" id="g-add">${L.add}</button></span></div>
+    ${gNotes().length?`<div class="g-sub">${L.notes}</div><div class="g-notes">${gNotes().map(n=>`<p><b>${esc(n.q)}</b> ${esc(n.t)}</p>`).join("")}<p style="color:var(--muted);font-size:13px;margin:0">${L.notesL}</p></div>`:""}
     <p style="color:var(--muted);font-size:13px">${L.bundleHint}</p></div>`;
 }
+function gNotes(){return gVisible().filter(q=>gA[q.id]==="x"&&gOther[q.id]).map(q=>({q:q[lang].q,t:gOther[q.id]}))}
 function gCoolLang(){document.querySelectorAll("[data-gt]").forEach(el=>{const v=GT[lang][el.dataset.gt];if(v!=null)el.textContent=v});gRender()}
 $("#g-body").addEventListener("click",e=>{
-  const o=e.target.closest(".g-opt");const vis=gVisible();
+  const o=e.target.closest(".g-opt:not(.g-other)");const vis=gVisible();
   if(o){gA[vis[gI].id]=+o.dataset.i;gI++;if(gI>=gVisible().length)gCompute();gRender();return}
+  if(e.target.closest("#g-other")){const b=$("#g-otherbox");b.hidden=false;$("#g-other").setAttribute("aria-expanded","true");$("#g-other-t").focus();return}
+  if(e.target.id==="g-other-go"){const t=$("#g-other-t").value.trim();if(!t){$("#g-other-t").focus();return}const q=vis[gI];gOther[q.id]=t;gA[q.id]="x";gI++;if(gI>=gVisible().length)gCompute();gRender();return}
   if(e.target.id==="g-back"){gI=Math.max(0,gI-1);gRender();return}
   if(e.target.id==="g-skip"){const q=vis[gI];gA[q.id]=q.o.findIndex(x=>x.tag)>=0?q.o.findIndex(x=>x.tag):0;gI++;if(gI>=gVisible().length)gCompute();gRender();return}
-  if(e.target.id==="g-again"){gA={};gI=0;gRender();return}
-  if(e.target.id==="g-add"){sel.clear();gPick.forEach(id=>sel.add(id));renderMenu();renderTicket();$("#menu").scrollIntoView({behavior:still?"auto":"smooth"});return}
+  if(e.target.id==="g-again"){gA={};gOther={};gI=0;gRender();return}
+  if(e.target.id==="g-add"){const nt=gNotes();if(nt.length){const fx=$("#f-extra");if(fx){const add=nt.map(n=>`${n.q} ${n.t}`).join("\n");if(!fx.value.includes(add))fx.value=(fx.value?fx.value+"\n":"")+add}}sel.clear();gPick.forEach(id=>sel.add(id));renderMenu();renderTicket();$("#menu").scrollIntoView({behavior:still?"auto":"smooth"});return}
 });
 $("#g-body").addEventListener("change",e=>{const c=e.target.closest("[data-g]");if(!c)return;if(c.checked){tierExcl(gPick,c.dataset.g);gPick.add(c.dataset.g)}else gPick.delete(c.dataset.g);gRender()});
 

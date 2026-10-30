@@ -1,7 +1,7 @@
 // POST /api/admin/projects/:id/paylink  {kind: "sketch"|"deposit"|"final"|"subscription", send?: boolean}
 // "subscription": havidíjas weboldal – 12 hónapos előfizetés (a 13. hónaptól a webhook az üzemeltetés díjára vált).
 // Stripe Checkout fizetési linket készít, és (alapból) e-mailben elküldi az ügyfélnek.
-import { Env, json, bad, clean, logEvent, touch, money, priceOf, orderPrice, sketchFor, sketchAmount, SUB_MONTHS } from "../../../../../lib/core";
+import { Env, json, bad, clean, logEvent, touch, money, priceOf, orderPrice, sketchFor, sketchAmount, sketchFeeFor, SUB_MONTHS } from "../../../../../lib/core";
 import { stripe } from "../../../../../lib/stripe";
 import { sendMail, layout, rows } from "../../../../../lib/mail";
 
@@ -22,8 +22,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ params, request, env }
   const brief = JSON.parse(p.brief || "{}");
   const op = orderPrice(items, cur, { first_client: brief.first_client === true, pay_mode: brief.pay_mode });
   const once = op.once;
-  const sketch = sketchFor(priceOf(items, "HUF").once);
-  const sketchAmt = sketchAmount(priceOf(items, "HUF").once, cur);
+  const sf = sketchFeeFor(items, cur, { first_client: brief.first_client === true, pay_mode: brief.pay_mode });
+  const sketch = sf.code;
+  const sketchAmt = sf.amount;
 
   let lineItems: Record<string, unknown>[];
   let amount: number;

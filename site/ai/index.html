@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Webbridge a saját AI-asszisztensedből</title>
+<meta name="description" content="Kösd be a Webbridge-et a saját AI-asszisztensedbe (Claude, ChatGPT…): árak, árajánlat, rendelés, és a saját projektjeid állása, módosításkérés, jóváhagyás.">
+<link rel="canonical" href="https://webbridge.hu/ai/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#EDEFF2;--surface:#FFFFFF;--sunk:#E3E6EB;--ink:#10141B;--muted:#58616F;--line:#D2D7DE;
+  --hazard:#FF6B2C;--on-hazard:#10141B;--cobalt:#2B47F5;--on-cobalt:#FFFFFF;--ok:#1E8A55;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;--r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1015;--surface:#151A22;--sunk:#10141A;--ink:#ECEFF4;--muted:#8E97A6;--line:#262D38;--cobalt:#7187FF;--on-cobalt:#0D1015;--ok:#4CC488;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D1015;--surface:#151A22;--sunk:#10141A;--ink:#ECEFF4;--muted:#8E97A6;--line:#262D38;--cobalt:#7187FF;--on-cobalt:#0D1015;--ok:#4CC488;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html:not([data-lang="en"]) [data-l="en"],html[data-lang="en"] [data-l="hu"]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--cobalt)}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.02;text-wrap:balance}
+h1{font-size:clamp(34px,6.4vw,64px);font-weight:850;font-stretch:118%;letter-spacing:-.01em}
+h2{font-size:clamp(24px,3.6vw,36px);font-weight:820;font-stretch:115%}
+h3{font-size:18px;font-weight:750;font-stretch:105%;line-height:1.2}
+p{margin:0}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lead{font-size:18px;color:var(--muted);max-width:62ch}
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:14px;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:900;font-stretch:125%;font-size:17px;text-decoration:none;color:var(--ink);white-space:nowrap}
+.brand svg{width:30px;height:30px}
+.sp{flex:1}
+.nav a.lnk{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500}.nav a.lnk:hover{color:var(--ink)}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--surface)}
+.lang button{border:0;background:none;font:600 12px var(--mono);padding:5px 10px;border-radius:999px;cursor:pointer;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+section{padding-block:clamp(36px,6vw,64px)}
+.hero{padding-top:clamp(40px,7vw,80px)}
+.hero .lead{margin-top:16px}
+.stack{display:grid;gap:14px}
+.grid2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card p{color:var(--muted)}
+.url{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.url code{flex:1 1 220px;min-width:0;overflow-wrap:anywhere;font:600 14px var(--mono);background:var(--sunk);border-radius:var(--r);padding:10px 12px;color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r);padding:10px 16px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none}
+.btn.pri{background:var(--hazard);border-color:var(--hazard);color:var(--on-hazard);box-shadow:0 2px 0 var(--ink)}
+.tag{display:inline-block;font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--sunk);color:var(--muted);margin-bottom:10px}
+.tag.p{background:color-mix(in srgb,var(--hazard) 18%,transparent);color:var(--ink)}
+ul.q{list-style:none;padding:0;margin:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+ul.q li{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--hazard);border-radius:10px;padding:12px 14px;font-size:15px}
+ul.q li small{display:block;color:var(--muted);font-size:12.5px;margin-top:4px}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px}
+ol.steps li{counter-increment:s;position:relative;padding:14px 16px 14px 58px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+ol.steps li::before{content:counter(s);position:absolute;left:14px;top:12px;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font:700 14px var(--mono)}
+ol.steps b{font-weight:600}
+.note{background:var(--sunk);border-radius:10px;padding:14px 16px;font-size:15px;color:var(--muted)}
+.safe{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.safe div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.safe h3{font-size:16px;margin-bottom:6px}.safe p{color:var(--muted);font-size:15px}
+details{border-bottom:1px solid var(--line);padding:14px 0}details summary{cursor:pointer;font-weight:600}
+details p,details ul{color:var(--muted);margin-top:8px;font-size:15px}
+.mono{font-family:var(--mono);font-size:13.5px}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:14px}
+footer nav{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:10px}footer a{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:60}
+@media (max-width:560px){.nav a.lnk.hide-sm{display:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="/"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M2 24 H30" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M4 24 Q16 2 28 24" fill="none" stroke="var(--hazard)" stroke-width="3" stroke-linecap="round"/><path d="M10 24 V15 M16 24 V11 M22 24 V15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>WEBBRIDGE</a>
+  <span class="sp"></span>
+  <a class="lnk hide-sm" href="/" data-l="hu">Főoldal</a><a class="lnk hide-sm" href="/?lang=en" data-l="en">Home</a>
+  <a class="lnk" href="/pult/" data-l="hu">Pult</a><a class="lnk" href="/pult/?lang=en" data-l="en">Desk</a>
+  <div class="lang" role="group" aria-label="Nyelv / Language"><button type="button" id="l-hu" aria-pressed="true">HU</button><button type="button" id="l-en" aria-pressed="false">EN</button></div>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <span class="eyebrow" data-l="hu">Saját AI-ból</span><span class="eyebrow" data-l="en">From your own AI</span>
+  <h1 style="margin-top:12px" data-l="hu">Intézd a Webbridge-es ügyeidet a saját AI-asszisztensedből.</h1>
+  <h1 style="margin-top:12px" data-l="en">Handle your Webbridge work from your own AI assistant.</h1>
+  <p class="lead" data-l="hu">Ha Claude-ot, ChatGPT-t vagy más AI-asszisztenst használsz, egy linkkel beköthetsz minket hozzá. Utána a megszokott beszélgetésben kérdezhetsz az árainkról, kérhetsz árajánlatot és indíthatsz rendelést. A saját, személyes linkeddel azt is megnézheted, hol tart a munkád, megmutathatod a legújabb vázlatot, kérhetsz módosítást, vagy jóváhagyhatsz.</p>
+  <p class="lead" data-l="en">If you use Claude, ChatGPT or another AI assistant, you can connect us to it with one link. Then, in your usual chat, you can ask about our prices, get a quote and start an order. With your personal link you can also check how your work is going, look at the latest sketch, request changes or approve.</p>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap stack">
+  <h2 data-l="hu">Két cím, két szint</h2><h2 data-l="en">Two addresses, two levels</h2>
+  <div class="grid2">
+    <div class="card">
+      <span class="tag" data-l="hu">Nyilvános · bárkinek</span><span class="tag" data-l="en">Public · anyone</span>
+      <h3 data-l="hu">Árak, árajánlat, új rendelés</h3><h3 data-l="en">Prices, quotes, new orders</h3>
+      <p style="margin-top:6px" data-l="hu">Nem kell hozzá fiók. Az asszisztensed látja a teljes árlistát és a szabályokat, pontos árajánlatot számol, és elküldheti a rendelésedet – csak miután te igent mondtál rá.</p>
+      <p style="margin-top:6px" data-l="en">No account needed. Your assistant sees the full price list and rules, calculates an exact quote, and can send your order – only after you say yes.</p>
+      <div class="url"><code id="pub">https://webbridge.hu/mcp</code><button type="button" class="btn" data-copy="pub"><span data-l="hu">Másolás</span><span data-l="en">Copy</span></button></div>
+    </div>
+    <div class="card">
+      <span class="tag p" data-l="hu">Személyes · ügyfeleinknek</span><span class="tag p" data-l="en">Personal · for clients</span>
+      <h3 data-l="hu">A saját projektjeid</h3><h3 data-l="en">Your own projects</h3>
+      <p style="margin-top:6px" data-l="hu">Mindent tud, amit a nyilvános, és ezen felül eléri a fiókodat: projektek állása, legújabb verziók, megjegyzések, módosításkérés, jóváhagyás, kiegészítő rendelés. A linket a Pultban hozod létre.</p>
+      <p style="margin-top:6px" data-l="en">Everything the public one does, plus access to your account: project status, latest versions, comments, change requests, approval, add-on orders. You create the link in the Desk.</p>
+      <div class="url"><a class="btn pri" href="/pult/" data-l="hu">Link létrehozása a Pultban</a><a class="btn pri" href="/pult/?lang=en" data-l="en">Create a link in the Desk</a></div>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap stack">
+  <h2 data-l="hu">Mit kérdezhetsz?</h2><h2 data-l="en">What can you ask?</h2>
+  <p class="lead" data-l="hu">Írj az asszisztensednek úgy, ahogy nekünk írnál. Néhány példa:</p>
+  <p class="lead" data-l="en">Write to your assistant the way you'd write to us. A few examples (Hungarian works too):</p>
+  <ul class="q" data-l="hu">
+    <li>„Mennyibe kerül a Webbridge-nél egy egyoldalas weboldal logóval?”</li>
+    <li>„Kérj árajánlatot céges weboldalra és brandbookra, havidíjas fizetéssel.”</li>
+    <li>„Van olcsóbb csomag arra, amit kiválasztottam?”</li>
+    <li>„Indítsd el a rendelést a pékségemnek, az e-mail-címem anna@pekseg.hu.” <small>Elküldés előtt az asszisztens megmutatja az összefoglalót, és megkérdez.</small></li>
+    <li>„Hol tart a weboldalam?” <small>Személyes link kell.</small></li>
+    <li>„Mutasd a legújabb vázlatot.” <small>Személyes link kell.</small></li>
+    <li>„Kérd meg, hogy legyen nagyobb a logó.” <small>Személyes link kell.</small></li>
+    <li>„Fogadd el a 2. verziót.” <small>Csak a fiók gazdája, és csak a megerősítésed után.</small></li>
+    <li>„Kérj még egy +1 nyelvet az oldalamhoz.” <small>Kiegészítő rendelés, megerősítéssel.</small></li>
+  </ul>
+  <ul class="q" data-l="en">
+    <li>"How much is a one-page website with a logo at Webbridge?"</li>
+    <li>"Get me a quote for a business website and a brandbook, paid monthly."</li>
+    <li>"Is there a cheaper bundle for what I picked?"</li>
+    <li>"Start an order for my bakery, my email is anna@bakery.com." <small>Before sending, the assistant shows you the summary and asks.</small></li>
+    <li>"How is my website going?" <small>Personal link needed.</small></li>
+    <li>"Show me the latest sketch." <small>Personal link needed.</small></li>
+    <li>"Ask them to make the logo bigger." <small>Personal link needed.</small></li>
+    <li>"Approve version 2." <small>Account owner only, and only after you confirm.</small></li>
+    <li>"Order one more language for my site." <small>Add-on order, with confirmation.</small></li>
+  </ul>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap stack">
+  <h2 data-l="hu">Bekötés a Claude-ban</h2><h2 data-l="en">Connecting in Claude</h2>
+  <ol class="steps" data-l="hu">
+    <li>Nyisd meg a Claude-ot (claude.ai vagy az asztali alkalmazás), és menj a <b>Beállítások → Connectors</b> (Settings → Connectors) részre.</li>
+    <li>Válaszd az <b>Add custom connector</b> (egyedi connector hozzáadása) lehetőséget.</li>
+    <li>Adj neki nevet (pl. <b>Webbridge</b>), és illeszd be a címet: a nyilvánosat (<span class="mono">https://webbridge.hu/mcp</span>), vagy a Pultban létrehozott személyes linkedet.</li>
+    <li>Mentsd el, és egy új beszélgetésben kapcsold be a Webbridge connectort. Ezután kérdezhetsz – például: „Mennyibe kerül egy céges weboldal?”</li>
+  </ol>
+  <ol class="steps" data-l="en">
+    <li>Open Claude (claude.ai or the desktop app) and go to <b>Settings → Connectors</b>.</li>
+    <li>Choose <b>Add custom connector</b>.</li>
+    <li>Give it a name (e.g. <b>Webbridge</b>) and paste the address: the public one (<span class="mono">https://webbridge.hu/mcp</span>) or the personal link you created in the Desk.</li>
+    <li>Save it and switch the Webbridge connector on in a new chat. Then just ask – for example: "How much is a business website?"</li>
+  </ol>
+  <p class="note" data-l="hu">A menük neve és helye a Claude verziójától és az előfizetésedtől függően kicsit eltérhet. Ha a személyes linket használod, a nyilvánosra nincs szükség mellette.</p>
+  <p class="note" data-l="en">Menu names and places may differ slightly depending on your Claude version and plan. If you use the personal link, you don't need the public one as well.</p>
+  <h3 style="margin-top:10px" data-l="hu">Más asszisztensek</h3><h3 style="margin-top:10px" data-l="en">Other assistants</h3>
+  <p data-l="hu" style="color:var(--muted)">Más AI-asszisztensek is működnek, ha támogatják az egyedi (MCP) connectorokat vagy eszközöket – ilyen lehet például a ChatGPT is, ahol ez az előfizetéstől és a beállításoktól függ. A lényeg mindenhol ugyanaz: a connector címeként a fenti linket kell megadni. A pontos lépéseket az adott asszisztens súgójában találod.</p>
+  <p data-l="en" style="color:var(--muted)">Other AI assistants work too if they support custom (MCP) connectors or tools – this may include ChatGPT, where it depends on your plan and settings. The idea is the same everywhere: use the link above as the connector address. See your assistant's help pages for the exact steps.</p>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap stack">
+  <h2 data-l="hu">Biztonság</h2><h2 data-l="en">Safety</h2>
+  <div class="safe" data-l="hu">
+    <div><h3>A személyes link olyan, mint egy jelszó</h3><p>Aki ismeri, a nevedben láthatja és véleményezheti az anyagaidat. Ne oszd meg, és ne tedd ki sehova. Linkenként megnevezheted, hol használod.</p></div>
+    <div><h3>Bármikor visszavonhatod</h3><p>A Pultban, a „Saját AI-asszisztens bekötése” résznél egy kattintással. Visszavonás után az asszisztens már nem éri el a fiókodat.</p></div>
+    <div><h3>Fizetni nem tud, kötelezni sem</h3><p>Az asszisztens nem fizet és nem kér fizetést; a fizetési linket mindig mi küldjük e-mailben. Rendelést, kiegészítést és jóváhagyást csak a te kifejezett igened után küld, és a rendelés akkor is csak az e-mailes összefoglaló jóváhagyásával indul.</p></div>
+    <div><h3>Ugyanazok a jogok, mint a Pultban</h3><p>Jóváhagyni és új szolgáltatást rendelni csak a fiók gazdája tud. Véleményezőként megjegyzést és módosításkérést küldhetsz.</p></div>
+  </div>
+  <div class="safe" data-l="en">
+    <div><h3>The personal link is like a password</h3><p>Anyone who has it can see and comment on your materials in your name. Don't share or post it. You can label each link by where you use it.</p></div>
+    <div><h3>Revoke it any time</h3><p>In the Desk, under "Connect your own AI assistant", with one click. After that the assistant can no longer reach your account.</p></div>
+    <div><h3>It can't pay or bind you</h3><p>The assistant doesn't pay or take payments; payment links always come from us by email. It sends orders, add-ons and approvals only after your explicit yes, and an order still starts only when you approve our summary by email.</p></div>
+    <div><h3>Same rights as in the Desk</h3><p>Only the account owner can approve and order new services. As a reviewer you can comment and request changes.</p></div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <details><summary><span data-l="hu">Fejlesztőknek: technikai részletek</span><span data-l="en">For developers: technical details</span></summary>
+    <ul class="mono">
+      <li>Endpoint: https://webbridge.hu/mcp · MCP Streamable HTTP · JSON-RPC 2.0 (POST, JSON responses, no SSE)</li>
+      <li>Auth: none (public tools) · personal: <span>?k=&lt;token&gt;</span> or <span>Authorization: Bearer &lt;token&gt;</span></li>
+      <li>Public tools: get_services, get_quote, start_order</li>
+      <li>Personal tools: my_projects, get_preview, list_comments, request_change, approve_version, request_service</li>
+      <li>Optional argument on every tool: lang = hu | en</li>
+    </ul>
+  </details>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <span data-l="hu">© 2026 Webbridge · a Tactical Edge Systems OÜ márkája · Tallinn, Észtország · hello@webbridge.hu</span>
+  <span data-l="en">© 2026 Webbridge · a brand of Tactical Edge Systems OÜ · Tallinn, Estonia · hello@webbridge.hu</span>
+  <nav data-l="hu" aria-label="Linkek"><a href="/">Főoldal</a><a href="/pult/">Pult</a><a href="/#aszf">ÁSZF</a><a href="/#adatvedelem">Adatkezelési tájékoztató</a></nav>
+  <nav data-l="en" aria-label="Links"><a href="/?lang=en">Home</a><a href="/pult/?lang=en">Desk</a><a href="/?lang=en#aszf">Terms</a><a href="/?lang=en#adatvedelem">Privacy notice</a></nav>
+</div></footer>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+"use strict";
+(function(){
+  var lang=(function(){try{var q=new URLSearchParams(location.search).get("lang");if(q==="hu"||q==="en")return q;var v=localStorage.getItem("wb-lang");if(v==="hu"||v==="en")return v}catch(e){}return "hu"})();
+  var TITLE={hu:"Webbridge a saját AI-asszisztensedből",en:"Webbridge from your own AI assistant"};
+  function apply(){
+    document.documentElement.lang=lang;document.documentElement.dataset.lang=lang;document.title=TITLE[lang];
+    document.getElementById("l-hu").setAttribute("aria-pressed",lang==="hu");document.getElementById("l-en").setAttribute("aria-pressed",lang==="en");
+    try{localStorage.setItem("wb-lang",lang)}catch(e){}
+  }
+  document.getElementById("l-hu").onclick=function(){lang="hu";apply()};
+  document.getElementById("l-en").onclick=function(){lang="en";apply()};
+  function toast(m){var e=document.getElementById("toast");e.textContent=m;e.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(function(){e.hidden=true},2500)}
+  document.querySelectorAll("[data-copy]").forEach(function(b){b.onclick=function(){var txt=document.getElementById(b.dataset.copy).textContent;
+    var done=function(){toast(lang==="hu"?"Kimásolva.":"Copied.")};
+    if(navigator.clipboard)navigator.clipboard.writeText(txt).then(done,function(){})}});
+  apply();
+})();
+</script>
+</body>
+</html>

@@ -48,6 +48,7 @@ textarea{min-height:84px;resize:vertical}
 .wcard .th{aspect-ratio:16/10;background:var(--sunk);display:grid;place-items:center;overflow:hidden}.wcard .th img{width:100%;height:100%;object-fit:contain;background:#fff}
 .wcard .bd{padding:14px 16px;display:grid;gap:6px}.wcard h3{font-size:18px}
 .empty{text-align:center;padding:40px 16px}
+.aic{margin-top:28px}
 /* work view */
 .wv{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start;margin-top:14px}
 @media (max-width:900px){.wv{grid-template-columns:1fr}}
@@ -158,7 +159,12 @@ const T={hu:{desk:"Pult",team:"Csapat",logout:"Kilépés",
   p_ok:"Mehet",p_change:"Változtatás",p_skip:"Kihagyjuk",n_ok:"mehet",n_change:"változtatás",n_skip:"kihagyva",n_pending:"még vár döntésre",
   editText:"Szöveg átírása",proposed:"Javasolt szöveg",needDec:"Jóváhagyás előtt minden poszthoz kell döntés – még {n} vár.",noDate:"Dátum nélkül",
   postsErr:"A posztlista nem tölthető be.",cmtN:"megjegyzés",ourNote:"Tőlünk",post:"Poszt",
-  k_logo:"Logó",k_brand:"Arculat",k_flyer:"Szórólap",k_design:"Grafika",k_web:"Weboldal",k_doc:"Dokumentum",k_posts:"Posztok",k_other:"Egyéb"},
+  k_logo:"Logó",k_brand:"Arculat",k_flyer:"Szórólap",k_design:"Grafika",k_web:"Weboldal",k_doc:"Dokumentum",k_posts:"Posztok",k_other:"Egyéb",
+  aiT:"Saját AI-asszisztens bekötése",aiP:"Ha Claude-ot, ChatGPT-t vagy más AI-asszisztenst használsz, bekötheted a Webbridge-et connectorként. Utána onnan is megkérdezheted, hol tart a munka, megnézheted a legújabb vázlatot, kérhetsz módosítást vagy jóváhagyhatsz (jóváhagyni csak a fiók gazdája tud).",
+  aiLabel:"Megnevezés (nem kötelező), pl. Claude a laptopon",aiNew:"Connector-link létrehozása",aiOnce:"A linked (csak most látod, másold ki és illeszd be az asszisztensed connector-beállításába):",
+  aiCopy:"Másolás",aiCopied:"Kimásolva.",aiSafe:"Úgy vigyázz rá, mint egy jelszóra: aki ismeri, a nevedben láthatja és véleményezheti az anyagaidat. Ha kikerült, vond vissza.",
+  aiList:"Aktív linkjeid",aiNone:"Még nincs connector-linked.",aiCreated:"létrehozva",aiUsed:"utoljára használva",aiNever:"még nem használt",aiRevoke:"Visszavonás",aiRevokeQ:"Visszavonod ezt a linket? Az asszisztens utána nem éri el a fiókodat.",aiRevoked:"Visszavonva.",
+  aiGuide:"Útmutató: így kötöd be",aiLink:"Link"},
  en:{desk:"Desk",team:"Team",logout:"Sign out",
   loginT:"Sign in to the Desk",loginP:"See and review your materials here: logo, brand, flyer, website.",email:"Email address",sendLink:"Send sign-in link",or:"or",google:"Sign in with Google",
   sent:"If there's an account for this address, the sign-in link arrives in a few minutes. Check promotions and spam too.",useOrder:"Use the address you ordered with or were invited to.",
@@ -187,7 +193,12 @@ const T={hu:{desk:"Pult",team:"Csapat",logout:"Kilépés",
   p_ok:"Go",p_change:"Change",p_skip:"Skip",n_ok:"go",n_change:"change",n_skip:"skipped",n_pending:"awaiting decision",
   editText:"Rewrite text",proposed:"Proposed text",needDec:"Every post needs a decision before approval – {n} left.",noDate:"No date",
   postsErr:"The post list could not be loaded.",cmtN:"comment(s)",ourNote:"From us",post:"Post",
-  k_logo:"Logo",k_brand:"Brand",k_flyer:"Flyer",k_design:"Design",k_web:"Website",k_doc:"Document",k_posts:"Posts",k_other:"Other"}};
+  k_logo:"Logo",k_brand:"Brand",k_flyer:"Flyer",k_design:"Design",k_web:"Website",k_doc:"Document",k_posts:"Posts",k_other:"Other",
+  aiT:"Connect your own AI assistant",aiP:"If you use Claude, ChatGPT or another AI assistant, you can add Webbridge to it as a connector. Then you can ask it how the work is going, look at the latest sketch, request changes or approve (only the account owner can approve).",
+  aiLabel:"Label (optional), e.g. Claude on my laptop",aiNew:"Create connector link",aiOnce:"Your link (shown only now; copy it and paste it into your assistant's connector settings):",
+  aiCopy:"Copy",aiCopied:"Copied.",aiSafe:"Treat it like a password: anyone who has it can see and comment on your materials in your name. If it leaks, revoke it.",
+  aiList:"Your active links",aiNone:"No connector links yet.",aiCreated:"created",aiUsed:"last used",aiNever:"not used yet",aiRevoke:"Revoke",aiRevokeQ:"Revoke this link? The assistant will no longer reach your account.",aiRevoked:"Revoked.",
+  aiGuide:"Guide: how to connect",aiLink:"Link"}};
 const t=k=>T[lang][k]??k;
 const pgLabel=i=>lang==="hu"?`${i}. oldal`:`Page ${i}`;
 function toast(m){const e=$("#toast");e.textContent=m;e.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>e.hidden=true,3200)}
@@ -207,7 +218,7 @@ async function route(){
   if(!ME){const m=await api("me");if(m.__login){return loginView()}ME=m}
   $("#who").hidden=false;$("#who").textContent=(ME.customer.business?ME.customer.business+" · ":"")+ME.user.email;$("#outbtn").hidden=false;$("#teambtn").hidden=ME.user.role!=="owner";
   const h=location.hash.slice(1);
-  try{if(h.startsWith("w/"))await workView(h.slice(2));else await listView()}catch(e){app.innerHTML=`<div class="page"><div class="card empty">${esc(e.message)}</div></div>`}
+  try{if(h.startsWith("w/")){AINEW=null;await workView(h.slice(2))}else await listView()}catch(e){app.innerHTML=`<div class="page"><div class="card empty">${esc(e.message)}</div></div>`}
 }
 window.addEventListener("hashchange",()=>{closePop();hideSel();route()});
 
@@ -228,7 +239,25 @@ async function listView(){
   const d=await api("works");if(d.__login)return loginView();
   app.innerHTML=`<div class="page"><h1>${t("works")}</h1><p class="mut">${t("worksP")}</p>
   ${d.works.length?`<div class="grid">${d.works.map(w=>{const f=(JSON.parse(w.last_files||"[]")||[]).find(x=>/^image\//.test(x.type));
-    return `<a class="card wcard" href="#w/${w.id}"><div class="th">${f?`<img src="${fileUrl(f.key)}" alt="" loading="lazy">`:`<span class="mut">${esc(t("k_"+w.kind))}</span>`}</div><div class="bd"><div class="row" style="justify-content:space-between"><h3>${esc(w.title)}</h3>${stTag(w.status)}</div><div class="sm mut">${t("version")} ${w.last_n||1}${w.open_comments?` · ${w.open_comments} ${t("open")}`:""}</div></div></a>`}).join("")}</div>`:`<div class="card empty" style="margin-top:18px"><p class="mut">${t("noWorks")}</p></div>`}</div>`;
+    return `<a class="card wcard" href="#w/${w.id}"><div class="th">${f?`<img src="${fileUrl(f.key)}" alt="" loading="lazy">`:`<span class="mut">${esc(t("k_"+w.kind))}</span>`}</div><div class="bd"><div class="row" style="justify-content:space-between"><h3>${esc(w.title)}</h3>${stTag(w.status)}</div><div class="sm mut">${t("version")} ${w.last_n||1}${w.open_comments?` · ${w.open_comments} ${t("open")}`:""}</div></div></a>`}).join("")}</div>`:`<div class="card empty" style="margin-top:18px"><p class="mut">${t("noWorks")}</p></div>`}
+  <section class="card aic" id="aicard" aria-labelledby="aih"></section></div>`;
+  aiCard();
+}
+
+/* ---------- saját AI-asszisztens (MCP connector-link) ---------- */
+let AINEW=null;
+async function aiCard(){
+  const box=$("#aicard");if(!box)return;
+  let d;try{d=await api("mcp-token")}catch(e){box.hidden=true;return}if(d.__login)return;
+  box.innerHTML=`<h2 id="aih" style="font-size:22px">🤖 ${t("aiT")}</h2><p class="help" style="margin:8px 0 12px;max-width:70ch">${t("aiP")}</p>
+   <form class="row" id="aif"><input type="text" id="ailabel" maxlength="60" placeholder="${esc(t("aiLabel"))}" aria-label="${esc(t("aiLabel"))}" style="flex:1 1 240px;width:auto;min-width:0"><button class="btn pri" id="ainew">${t("aiNew")}</button></form>
+   ${AINEW?`<div class="note" style="margin-top:12px;display:grid;gap:8px"><span>${t("aiOnce")}</span><div class="row"><input type="text" id="aiurl" readonly value="${esc(AINEW)}" style="flex:1 1 240px;width:auto;min-width:0;font-family:ui-monospace,Menlo,monospace;font-size:13px"><button type="button" class="btn sm" id="aicopy">${t("aiCopy")}</button></div><b class="sm">${t("aiSafe")}</b></div>`:`<p class="help" style="margin:10px 0 0">${t("aiSafe")}</p>`}
+   <h3 style="font-size:16px;margin:16px 0 8px">${t("aiList")}</h3>
+   ${d.tokens.length?`<div style="display:grid;gap:6px">${d.tokens.map(k=>`<div class="row" style="justify-content:space-between;border-top:1px solid var(--line);padding-top:6px"><span class="sm"><b>${esc(k.label||t("aiLink"))}</b> <span class="mut">${t("aiCreated")}: ${dt(k.created_at)} · ${k.last_used_at?t("aiUsed")+": "+dt(k.last_used_at):t("aiNever")}</span></span><button type="button" class="btn sm ghost" data-airm="${esc(k.id)}">${t("aiRevoke")}</button></div>`).join("")}</div>`:`<p class="sm mut">${t("aiNone")}</p>`}
+   <p style="margin:14px 0 0"><a href="/ai/?lang=${lang}" target="_blank" rel="noopener">${t("aiGuide")} →</a></p>`;
+  $("#aif").onsubmit=async e=>{e.preventDefault();const b=$("#ainew");b.disabled=true;try{const r=await api("mcp-token",{label:$("#ailabel").value.trim()});AINEW=r.url;await aiCard();const u=$("#aiurl");if(u){u.focus();u.select()}}catch(err){toast(err.message);b.disabled=false}};
+  const cp=$("#aicopy");if(cp)cp.onclick=async()=>{const u=$("#aiurl");try{await navigator.clipboard.writeText(u.value)}catch(e){u.select();try{document.execCommand("copy")}catch(_){}}toast(t("aiCopied"))};
+  box.querySelectorAll("[data-airm]").forEach(b=>b.onclick=async()=>{if(!confirm(t("aiRevokeQ")))return;b.disabled=true;try{await api("mcp-token",{revoke:b.dataset.airm});AINEW=null;toast(t("aiRevoked"));aiCard()}catch(e){toast(e.message);b.disabled=false}});
 }
 
 /* ---------- egy munka ---------- */

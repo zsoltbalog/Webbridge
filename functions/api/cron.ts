@@ -35,6 +35,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const out = { nudges: 0, reviews: 0, digest: 0, instr: 0, vat: 0 };
   out.instr = await instrNotify(env);
   out.vat = await vatAlert(env).catch(() => 0);
+  // Régi rate-limit sorok törlése (chat, MCP)
+  await env.DB.prepare("DELETE FROM rate_limit WHERE at < ?1").bind(new Date(Date.now() - 3 * H).toISOString()).run().catch(() => null);
 
   const open = (await env.DB.prepare(
     "SELECT p.id, p.customer_id, p.stage, COALESCE(p.stage_at,p.updated_at) stage_at, p.title, p.amount, p.currency, p.next_action, c.email, c.name, c.lang FROM projects p JOIN customers c ON c.id=p.customer_id WHERE p.stage NOT IN ('lost')"

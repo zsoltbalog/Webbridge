@@ -17,6 +17,14 @@
 - Bundles: Start (one-page site + logo + Pro technical) 149 900 Ft · Business (business site + brandbook + strategy + Pro technical) 399 900 Ft · Growth (Business + 90-day plan + Marketing Medium) 449 900 Ft + 69 900 Ft/month.
 - VAT: private individuals pay the listed price (no VAT added). Businesses get invoices without VAT (reverse charge with an EU VAT number).
 
+## Use from your own AI assistant (MCP)
+- Customers can connect Webbridge to their own AI assistant (e.g. Claude, or others that support custom MCP connectors) at https://webbridge.hu/mcp (MCP Streamable HTTP, JSON-RPC over POST).
+- Public tools, no account: get_services (full offer and rules), get_quote (exact prices, bundles, payment schedule), start_order (non-binding order request; asks for the user's confirmation first; the customer then approves a written brief by email).
+- Personal tools, with a personal connector link created by the customer in the client Desk (Pult): my_projects, get_preview, list_comments, request_change, approve_version (account owner only), request_service (add-on order, account owner only). The assistant cannot take payments; payment links come from Webbridge by email.
+- Guide (HU/EN): https://webbridge.hu/ai/
+
 ## Links
 - [Home and order form](https://webbridge.hu/)
 - [Client Desk (Pult)](https://webbridge.hu/pult/)
+- [Use Webbridge from your own AI assistant](https://webbridge.hu/ai/)
+- [MCP server endpoint](https://webbridge.hu/mcp)

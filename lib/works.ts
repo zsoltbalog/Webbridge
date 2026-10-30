@@ -69,24 +69,27 @@ export async function addComment(env: Env, c: {
   work: Work; version_id: string; parent_id?: string | null; author_kind: "customer" | "staff" | "email"; user_id?: string | null; author_name?: string | null;
   file_key?: string | null; page?: number | null; x?: number | null; y?: number | null; action?: string | null; body: string; attachment?: unknown;
   device?: string | null; path?: string | null; quote?: string | null; anchor?: string | null; post_id?: string | null; proposal?: boolean;
+  via?: "mcp" | null; // mcp: az ügyfél saját AI-asszisztense írta be
 }) {
   const id = rid("cmt_"), t = nowIso();
   await env.DB.prepare(
-    "INSERT INTO comments (id,work_id,version_id,parent_id,author_kind,user_id,author_name,file_key,page,x,y,action,body,attachment,status,created_at,updated_at,device,path,quote,anchor,post_id,proposal) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,'open',?15,?15,?16,?17,?18,?19,?20,?21)"
+    "INSERT INTO comments (id,work_id,version_id,parent_id,author_kind,user_id,author_name,file_key,page,x,y,action,body,attachment,status,created_at,updated_at,device,path,quote,anchor,post_id,proposal" + (c.via ? ",via" : "") + ") VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,'open',?15,?15,?16,?17,?18,?19,?20,?21" + (c.via ? ",?22" : "") + ")"
   ).bind(id, c.work.id, c.version_id, c.parent_id ?? null, c.author_kind, c.user_id ?? null, c.author_name ?? null, c.file_key ?? null, c.page ?? null, c.x ?? null, c.y ?? null,
     c.action ?? null, c.body, c.attachment ? JSON.stringify(c.attachment) : null, t,
-    c.device ?? null, c.path ?? null, c.quote ?? null, c.anchor ?? null, c.post_id ?? null, c.proposal ? 1 : 0).run();
+    c.device ?? null, c.path ?? null, c.quote ?? null, c.anchor ?? null, c.post_id ?? null, c.proposal ? 1 : 0, ...(c.via ? [c.via] : [])).run();
   await env.DB.prepare("UPDATE works SET updated_at=?1 WHERE id=?2").bind(t, c.work.id).run();
   if (c.author_kind !== "staff") {
     const act = ({ change: "Változtatás", add: "Hozzáadás", remove: "Törlés" } as Record<string, string>)[c.action || ""] || "Megjegyzés";
-    await logEvent(env, { customer_id: c.work.customer_id, project_id: c.work.project_id, kind: "change_request", actor: "customer", title: `Pult – ${c.work.title}: ${act}`, body: c.body, meta: { work_id: c.work.id, comment_id: id } });
+    await logEvent(env, { customer_id: c.work.customer_id, project_id: c.work.project_id, kind: "change_request", actor: "customer", title: `${c.via === "mcp" ? "Saját AI-asszisztensből (MCP)" : "Pult"} – ${c.work.title}: ${act}`, body: c.body, meta: { work_id: c.work.id, comment_id: id, ...(c.via ? { via: c.via } : {}) } });
     await touch(env, c.work.customer_id, c.work.project_id);
   }
   return id;
 }
 
+const VIA_HU: Record<string, string> = { pult: "Pult", email: "e-mailes link", mcp: "saját AI-asszisztens (MCP)" };
+
 /** Jóváhagyás: csak a fiók gazdája (Pultból vagy e-mailes linkkel). */
-export async function approveVersion(env: Env, work: Work, versionId: string, u: PUser, via: "pult" | "email", chosen?: string | null) {
+export async function approveVersion(env: Env, work: Work, versionId: string, u: PUser, via: "pult" | "email" | "mcp", chosen?: string | null) {
   const v = await env.DB.prepare("SELECT id,n,status,files FROM versions WHERE id=?1 AND work_id=?2").bind(versionId, work.id).first<{ id: string; n: number; status: string; files: string }>();
   if (!v) return { ok: false, error: "Nincs ilyen verzió." };
   if (v.status === "approved") return { ok: true, already: true, n: v.n };
@@ -108,16 +111,16 @@ export async function approveVersion(env: Env, work: Work, versionId: string, u:
     env.DB.prepare("UPDATE works SET status='approved', updated_at=?1 WHERE id=?2").bind(t, work.id),
   ]);
   const chosenName = pick ? (files as { key: string; label?: string; name?: string }[]).find((f) => f.key === pick) : null;
-  await logEvent(env, { customer_id: work.customer_id, project_id: work.project_id, kind: "approval", actor: "customer", title: `Jóváhagyva: ${work.title} v${v.n}${chosenName ? ` (${chosenName.label || chosenName.name})` : ""}`, body: `${u.email} · ${via === "email" ? "e-mailes link" : "Pult"}`, meta: { work_id: work.id, version_id: v.id } });
+  await logEvent(env, { customer_id: work.customer_id, project_id: work.project_id, kind: "approval", actor: "customer", title: `${via === "mcp" ? "Jóváhagyva saját AI-asszisztensből (MCP)" : "Jóváhagyva"}: ${work.title} v${v.n}${chosenName ? ` (${chosenName.label || chosenName.name})` : ""}`, body: `${u.email} · ${VIA_HU[via]}`, meta: { work_id: work.id, version_id: v.id, via } });
   await sendMail(env, {
     to: env.NOTIFY_TO, subject: `✅ Jóváhagyva: ${work.title} v${v.n}`, template: "internal_approved", customer_id: work.customer_id, project_id: work.project_id,
-    html: layout("hu", `Jóváhagyva: ${work.title} v${v.n}`, `<p>${esc(u.email)} jóváhagyta (${via === "email" ? "e-mailes link" : "Pult"}).${chosenName ? ` Választott irány: <b>${esc(chosenName.label || chosenName.name)}</b>.` : ""}</p>`, { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${work.customer_id}` }),
+    html: layout("hu", `Jóváhagyva: ${work.title} v${v.n}`, `<p>${esc(u.email)} jóváhagyta (${VIA_HU[via]}).${chosenName ? ` Választott irány: <b>${esc(chosenName.label || chosenName.name)}</b>.` : ""}</p>`, { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${work.customer_id}` }),
   });
   return { ok: true, n: v.n };
 }
 
 /** Az ügyfél jelzi: kész a visszajelzéssel (a nyitott megjegyzéseket egyben kapjuk meg). */
-export async function feedbackSubmitted(env: Env, work: Work, versionId: string, u: PUser) {
+export async function feedbackSubmitted(env: Env, work: Work, versionId: string, u: PUser, via?: "mcp") {
   const v = await env.DB.prepare("SELECT n FROM versions WHERE id=?1 AND work_id=?2").bind(versionId, work.id).first<{ n: number }>();
   if (!v) return { ok: false, error: "Nincs ilyen verzió." };
   const open = (await env.DB.prepare("SELECT action,body,page,device,path,quote,post_id,proposal FROM comments WHERE version_id=?1 AND parent_id IS NULL AND status='open' AND author_kind<>'staff' ORDER BY created_at").bind(versionId)
@@ -132,10 +135,10 @@ export async function feedbackSubmitted(env: Env, work: Work, versionId: string,
   }
   const act = (a: string) => ({ change: "Változtatás", add: "Hozzáadás", remove: "Törlés" } as Record<string, string>)[a] || "Megjegyzés";
   await sendMail(env, {
-    to: env.NOTIFY_TO, subject: `✏️ Visszajelzés: ${work.title} v${v.n} (${open.length} pont)`, template: "internal_feedback", customer_id: work.customer_id, project_id: work.project_id,
-    html: layout("hu", `Visszajelzés: ${work.title} v${v.n}`, `<p>${esc(u.email)} (${u.role === "owner" ? "fiók gazdája" : "véleményező"}) elküldte a visszajelzést.</p><ol>${open.map((c) => `<li><b>${act(c.action)}</b>${where(c) ? ` (${esc(where(c))})` : ""}: ${esc(c.body)}</li>`).join("")}</ol>`, { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${work.customer_id}` }),
+    to: env.NOTIFY_TO, subject: `✏️ Visszajelzés: ${work.title} v${v.n} (${open.length} pont)${via === "mcp" ? " – saját AI-ból" : ""}`, template: "internal_feedback", customer_id: work.customer_id, project_id: work.project_id,
+    html: layout("hu", `Visszajelzés: ${work.title} v${v.n}`, `<p>${esc(u.email)} (${u.role === "owner" ? "fiók gazdája" : "véleményező"}) elküldte a visszajelzést${via === "mcp" ? " a saját AI-asszisztensén keresztül (MCP)" : ""}.</p><ol>${open.map((c) => `<li><b>${act(c.action)}</b>${where(c) ? ` (${esc(where(c))})` : ""}: ${esc(c.body)}</li>`).join("")}</ol>`, { label: "Megnyitás a CRM-ben", url: `${env.SITE_URL}/admin/#c/${work.customer_id}` }),
   });
-  await logEvent(env, { customer_id: work.customer_id, project_id: work.project_id, kind: "change_request", actor: "customer", title: `Visszajelzés elküldve: ${work.title} v${v.n} (${open.length} pont)` });
+  await logEvent(env, { customer_id: work.customer_id, project_id: work.project_id, kind: "change_request", actor: "customer", title: `Visszajelzés elküldve${via === "mcp" ? " saját AI-asszisztensből (MCP)" : ""}: ${work.title} v${v.n} (${open.length} pont)` });
   return { ok: true, count: open.length };
 }
 

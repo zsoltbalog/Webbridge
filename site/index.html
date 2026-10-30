@@ -846,6 +846,258 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
 #site .live-badge.on{opacity:1;transform:none}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+/* service explainer: "?" button, tooltip, side sheet */
+.item-acts{display:flex;align-items:center;gap:8px;flex:none}
+.qwrap{position:relative;display:inline-flex}
+.qbtn{position:relative;width:24px;height:24px;padding:0;border-radius:50%;border:1.5px solid var(--line);background:var(--bg);color:var(--muted);font-family:var(--mono);font-size:12px;font-weight:600;line-height:1;cursor:pointer;display:grid;place-items:center;transition:border-color .15s,color .15s,background .15s}
+.qbtn::before{content:"";position:absolute;inset:-10px}
+.qbtn:hover,.qbtn:focus-visible{border-color:var(--ink);color:var(--ink);background:var(--surface)}
+.item:has(input:checked) .qbtn{border-color:color-mix(in srgb,var(--ink) 35%,var(--line))}
+.qtip{position:absolute;right:-9px;bottom:calc(100% + 11px);width:max-content;max-width:min(260px,70vw);background:var(--ink);color:var(--bg);font-family:var(--body);font-size:13px;font-weight:400;line-height:1.45;text-align:left;padding:9px 12px;border-radius:8px;box-shadow:0 10px 30px -10px rgba(0,0,0,.45);opacity:0;visibility:hidden;transform:translateY(4px);pointer-events:none;transition:opacity .15s,transform .15s,visibility .15s;z-index:6}
+.qtip::after{content:"";position:absolute;right:15px;top:100%;border:6px solid transparent;border-top-color:var(--ink)}
+@media (hover:hover){.qwrap:hover .qtip{opacity:1;visibility:visible;transform:none;transition-delay:.12s}}
+.qbtn:focus-visible + .qtip{opacity:1;visibility:visible;transform:none}
+
+.qx{position:fixed;inset:0;z-index:75;display:flex;justify-content:flex-end;align-items:stretch}
+.qx-bd{position:absolute;inset:0;background:rgba(6,9,14,.55);opacity:0;transition:opacity .28s ease}
+.qx.open .qx-bd{opacity:1}
+.qx-panel{position:relative;min-width:0;width:min(540px,100%);height:100%;background:var(--surface);color:var(--ink);display:grid;grid-template-rows:auto minmax(0,1fr) auto;box-shadow:-30px 0 80px -30px rgba(0,0,0,.55);transform:translateX(100%);transition:transform .34s cubic-bezier(.2,.8,.2,1);outline:none}
+.qx.open .qx-panel{transform:none}
+.qx-grab{display:none}
+.qx-head{position:relative;padding:22px 20px 16px;border-bottom:1px solid var(--line);display:grid;gap:10px}
+.qx-head::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:repeating-linear-gradient(-45deg,var(--hazard) 0 9px,var(--on-hazard) 9px 18px)}
+.qx-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.qx-head h3{font-size:clamp(23px,4.6vw,28px);font-weight:850;font-stretch:112%;line-height:1.05;margin-top:6px}
+.qx-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.qx-price{font-family:var(--display);font-stretch:110%;font-weight:850;font-size:20px;white-space:nowrap}
+.qx-chip{font-family:var(--mono);font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 9px;white-space:nowrap}
+.qx-chip.on{background:var(--hazard);color:var(--on-hazard);border-color:var(--hazard);font-weight:600}
+.qx-lead{color:var(--muted);font-size:15px;max-width:52ch}
+.qx-body{overflow-y:auto;overscroll-behavior:contain;padding:18px 20px 26px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-content:start}
+.qx-sec{display:grid;gap:10px;min-width:0}
+.qx-h{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:600}
+.qx-get{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px;line-height:1.45}
+.qx-get li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;align-items:start}
+.qx-get li i{width:20px;height:20px;border-radius:5px;background:var(--hazard);color:var(--on-hazard);display:grid;place-items:center;margin-top:1px}
+.qx-get li i svg{width:12px;height:12px}
+.qx-fit{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.qx-fit>div{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:8px;align-content:start}
+.qx-fit>div.yes{border-color:color-mix(in srgb,var(--ok) 45%,var(--line));background:color-mix(in srgb,var(--ok) 6%,transparent)}
+.qx-fit b{font-family:var(--display);font-stretch:108%;font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px}
+.qx-fit b span{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-family:var(--mono);flex:none}
+.qx-fit .yes b span{background:var(--ok);color:#fff}.qx-fit .no b span{background:var(--sunk);color:var(--muted);border:1px solid var(--line)}
+.qx-fit ul{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:13.5px;line-height:1.45;color:var(--muted)}
+.qx-fit .yes ul{color:var(--ink)}
+.qx-time{display:flex;gap:12px;align-items:center;background:var(--sunk);border-radius:10px;padding:12px 14px}
+.qx-time svg{width:26px;height:26px;flex:none;color:var(--hazard)}
+.qx-time b{font-family:var(--display);font-stretch:110%;font-size:18px;font-weight:850;display:block;line-height:1.1}
+.qx-time small{font-size:13px;color:var(--muted);line-height:1.4;display:block}
+.qx-faq{display:grid;gap:0;border-top:1px solid var(--line)}
+.qx-faq details{border-bottom:1px solid var(--line)}
+.qx-faq summary{cursor:pointer;list-style:none;padding:12px 28px 12px 0;font-weight:600;font-size:15px;position:relative}
+.qx-faq summary::-webkit-details-marker{display:none}
+.qx-faq summary::after{content:"+";position:absolute;right:4px;top:10px;font-family:var(--mono);font-size:18px;color:var(--muted);transition:transform .2s}
+.qx-faq details[open] summary::after{transform:rotate(45deg)}
+.qx-faq details p{padding:0 0 14px;color:var(--muted);font-size:14.5px;line-height:1.55}
+.qx-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--surface)}
+.qx-foot .qx-price{font-size:18px}
+.qx-foot small{display:block;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.qx-foot .btn{flex:none}
+.qx-foot .btn[data-have]{background:var(--sunk);color:var(--ink);box-shadow:none;border:1px solid var(--line)}
+@media (max-width:640px){
+  .qx{align-items:flex-end}
+  .qx-panel{width:100%;height:auto;max-height:calc(100dvh - 40px - env(safe-area-inset-top,0px));border-radius:16px 16px 0 0;transform:translateY(100%);box-shadow:0 -20px 60px -20px rgba(0,0,0,.5);overflow:hidden}
+  .qx-grab{display:block;position:absolute;top:10px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:2px;background:var(--line);z-index:1}
+  .qx-head{padding-top:24px}
+  .qx-head::before{display:none}
+  .qx-fit{grid-template-columns:1fr}
+  .qx-body{padding:16px 16px 22px}.qx-head,.qx-foot{padding-left:16px;padding-right:16px}
+}
+@media (prefers-reduced-motion:reduce){.qx-bd,.qx-panel,.qtip{transition:none}}
+
+/* sample demos */
+.dm{background:var(--sunk);border-radius:12px;padding:12px;display:grid;gap:10px;min-width:0}
+.dm-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.dm-note{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.dm-seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--surface);flex-wrap:wrap}
+.dm-seg button{border:0;background:none;border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);white-space:nowrap}
+.dm-seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.dm-stage{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0;overflow:hidden}
+.dm-cap{font-size:13px;color:var(--muted);line-height:1.45}
+/* site mock */
+.dm-dev{display:grid;place-items:center;padding:14px 8px;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.dm-frame{--c:#C8462B;--cbg:#FBF5EE;--cink:#2A1A10;background:var(--cbg);color:var(--cink);border:6px solid #1b1f26;border-radius:18px;width:170px;height:290px;overflow:hidden;display:flex;flex-direction:column;transition:width .35s cubic-bezier(.2,.8,.2,1),height .35s,border-radius .35s}
+.dm-frame[data-dev="desk"]{width:100%;max-width:420px;height:250px;border-radius:8px;border-width:5px 5px 7px}
+.dm-nav{display:flex;align-items:center;gap:6px;padding:7px 9px;border-bottom:1px solid rgba(0,0,0,.08);font-size:9.5px;font-weight:700;flex:none}
+.dm-nav .lg{width:14px;height:14px;border-radius:4px;background:var(--c);flex:none}
+.dm-nav .lk{margin-left:auto;display:flex;gap:7px;font-weight:500;opacity:.75}
+.dm-nav .lk span[aria-current="true"]{color:var(--c);opacity:1;font-weight:700}
+.dm-frame[data-dev="mob"] .dm-nav .lk{display:none}
+.dm-nav .burger{margin-left:auto;width:12px;height:8px;border-top:2px solid currentColor;border-bottom:2px solid currentColor;position:relative}
+.dm-frame[data-dev="desk"] .dm-nav .burger{display:none}
+.dm-scr{overflow-y:auto;flex:1;padding:10px;display:grid;gap:8px;align-content:start;scrollbar-width:none}
+.dm-scr::-webkit-scrollbar{display:none}
+.dm-hero{display:grid;gap:6px}
+.dm-frame[data-dev="desk"] .dm-hero{grid-template-columns:1.2fr 1fr;align-items:center}
+.dm-hero h5{margin:0;font-family:"Fraunces",Georgia,serif;font-size:17px;line-height:1.05;font-weight:800}
+.dm-frame[data-dev="desk"] .dm-hero h5{font-size:21px}
+.dm-hero .ph{height:64px;border-radius:7px;background:linear-gradient(135deg,var(--c),#7A2E14)}
+.dm-hero .cta{justify-self:start;background:var(--c);color:#fff;border-radius:5px;padding:4px 8px;font-size:9px;font-weight:700}
+.dm-blk{border-radius:6px;background:rgba(0,0,0,.05);padding:7px 8px;display:grid;gap:4px}
+.dm-blk b{font-size:10px}
+.dm-blk i{display:block;height:4px;border-radius:2px;background:rgba(0,0,0,.12)}
+.dm-blk i:nth-child(3){width:70%}
+.dm-blk.map{background:repeating-linear-gradient(45deg,rgba(0,0,0,.05) 0 6px,rgba(0,0,0,.08) 6px 12px);min-height:34px;position:relative}
+.dm-blk.map::after{content:"";position:absolute;right:16px;top:9px;width:9px;height:9px;border-radius:50% 50% 50% 0;background:var(--c);transform:rotate(-45deg)}
+.dm-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.dm-frame[data-dev="desk"] .dm-cols{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dm-row{display:flex;justify-content:space-between;font-size:9.5px;border-bottom:1px dashed rgba(0,0,0,.15);padding:3px 0}
+.dm-pages{display:flex;gap:4px;flex-wrap:wrap}
+.dm-pages button{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer}
+.dm-pages button[aria-pressed="true"]{border-color:var(--hazard);box-shadow:inset 0 0 0 1px var(--hazard);font-weight:600}
+/* logo */
+.dm-logos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.dm-logos>div{border-radius:10px;display:grid;place-items:center;height:132px;border:1px solid var(--line)}
+.dm-logos>div.l{background:#FBF7F0;color:#2A1D14}.dm-logos>div.d{background:#17130F;color:#F4EBDD;border-color:#17130F}
+.dm-logos svg{width:82%;height:100px;transition:opacity .25s}
+.dm-logos small{font-family:var(--mono);font-size:10px;opacity:.6;margin-top:-18px}
+/* brand */
+.dm-sw{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.dm-sw button{border:1px solid var(--line);border-radius:8px;padding:0;cursor:pointer;background:var(--surface);overflow:hidden;text-align:left;display:grid}
+.dm-sw button span{height:44px;display:block}
+.dm-sw button em{font-style:normal;font-family:var(--mono);font-size:10px;padding:5px 6px;color:var(--muted)}
+.dm-sw button[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:1px}
+.dm-type{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;align-items:baseline}
+.dm-type .aa{font-family:"Fraunces",Georgia,serif;font-size:40px;font-weight:800;line-height:1}
+.dm-type div{font-size:12.5px;color:var(--muted);line-height:1.4}
+.dm-type b{color:var(--ink);font-weight:600}
+.dm-card{border-radius:10px;padding:14px;display:grid;gap:4px;transition:background .3s,color .3s}
+.dm-card h6{margin:0;font-family:"Fraunces",Georgia,serif;font-size:19px;font-weight:800;line-height:1.1}
+.dm-card p{font-size:12px;opacity:.85}
+.dm-tone{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;font-size:12.5px}
+.dm-tone div{border-radius:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--line);line-height:1.4}
+.dm-tone div b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.dm-tone .ok b{color:var(--ok)}.dm-tone .bad b{color:var(--muted)}.dm-tone .bad{color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
+/* shop */
+.dm-prod{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:center}
+.dm-mug{height:120px;border-radius:10px;background:#F2ECE4;display:grid;place-items:center;position:relative}
+.dm-mug svg{width:76px;height:76px}
+.dm-prod h5{margin:0;font-family:var(--display);font-stretch:105%;font-size:17px;font-weight:800}
+.dm-prod .pp{font-family:var(--display);font-weight:850;font-size:18px}
+.dm-dots{display:flex;gap:6px}
+.dm-dots button{width:22px;height:22px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.dm-dots button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
+.dm-qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.dm-qty button{border:0;background:var(--sunk);width:28px;height:28px;cursor:pointer;font-weight:700}
+.dm-qty span{min-width:28px;text-align:center;font-family:var(--mono);font-size:13px}
+.dm-buy{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dm-add{border:0;border-radius:6px;background:var(--hazard);color:var(--on-hazard);font-weight:700;font-size:13px;padding:7px 12px;cursor:pointer}
+.dm-cart{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.dm-cart b{background:var(--ink);color:var(--bg);border-radius:999px;min-width:20px;height:20px;display:inline-grid;place-items:center;font-size:11px;padding:0 5px}
+.dm-cart.pop b{animation:dmPop .35s}
+@keyframes dmPop{50%{transform:scale(1.35)}}
+.dm-pay{display:flex;flex-wrap:wrap;gap:6px}
+.dm-pay span{font-family:var(--mono);font-size:10.5px;border:1px solid var(--line);border-radius:999px;padding:3px 8px;color:var(--muted);background:var(--surface)}
+.dm-banner{border-radius:8px;padding:12px 14px;color:#fff;font-weight:700;font-size:14px;display:flex;justify-content:space-between;gap:10px;align-items:center;transition:background .3s}
+.dm-banner code{font-family:var(--mono);font-size:11px;background:rgba(255,255,255,.2);padding:2px 6px;border-radius:4px;white-space:nowrap}
+.dm-log{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:13px}
+.dm-log li{display:flex;gap:8px;align-items:baseline}
+.dm-log li b{font-family:var(--mono);font-size:12px;min-width:34px;color:var(--ink)}
+.dm-log li span{color:var(--muted)}
+/* calendar */
+.dm-cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.dm-cal .wd{font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding-bottom:2px}
+.dm-cal button{position:relative;height:clamp(36px,9vw,46px);border:1px solid var(--line);border-radius:6px;background:var(--surface);padding:3px;font-family:var(--mono);font-size:9.5px;color:var(--muted);text-align:left;display:flex;flex-direction:column;justify-content:space-between;cursor:default;overflow:hidden}
+.dm-cal button[data-k]{cursor:pointer;color:var(--ink)}
+.dm-cal button[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:0}
+.dm-cal button.ads::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--cobalt)}
+.dm-cal .mk{align-self:flex-end;width:16px;height:16px;border-radius:4px;display:grid;place-items:center;font-size:9px;font-weight:700;color:#fff}
+.k-p{background:var(--hazard)}.k-v{background:#B4398A}.k-b{background:var(--ok)}.k-n{background:#8A6D1F}.k-s,.k-r,.k-w{background:var(--ink);color:var(--bg)!important}.k-g{background:#6B7A8F}
+.dm-leg{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:11.5px;color:var(--muted)}
+.dm-leg span{display:inline-flex;align-items:center;gap:5px}
+.dm-leg i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.dm-leg i.ads{height:4px;border-radius:1px;background:var(--cobalt)}
+.dm-det{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.45;display:grid;gap:4px;min-height:64px}
+.dm-det b{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.dm-det .who{font-size:12.5px;color:var(--muted)}
+.dm-sum{display:flex;flex-wrap:wrap;gap:6px}
+.dm-sum span{font-family:var(--mono);font-size:11px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+/* chat / phone */
+.dm-chat{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:grid}
+.dm-chat-h{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--ink);color:var(--bg);font-size:12.5px;font-weight:600}
+.dm-chat-h small{font-weight:400;opacity:.7;font-size:11px;display:block}
+.dm-chat-h .dot{width:8px;height:8px;border-radius:50%;background:#4CC488;flex:none}
+.dm-msgs{display:grid;gap:7px;padding:12px;min-height:236px;align-content:start}
+.dm-msg{max-width:84%;padding:7px 10px;border-radius:12px;font-size:13px;line-height:1.4;animation:dmIn .3s ease both}
+.dm-msg.u{justify-self:end;background:var(--hazard);color:var(--on-hazard);border-bottom-right-radius:4px}
+.dm-msg.a{justify-self:start;background:var(--sunk);border-bottom-left-radius:4px}
+.dm-msg.sys{justify-self:center;max-width:100%;background:none;font-family:var(--mono);font-size:10.5px;color:var(--muted);padding:2px}
+.dm-typing{justify-self:start;background:var(--sunk);border-radius:12px;padding:9px 12px;display:flex;gap:4px}
+.dm-typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:dmDot 1s infinite}
+.dm-typing i:nth-child(2){animation-delay:.15s}.dm-typing i:nth-child(3){animation-delay:.3s}
+@keyframes dmIn{from{opacity:0;transform:translateY(6px)}}
+@keyframes dmDot{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.dm-lead{justify-self:center;font-family:var(--mono);font-size:11px;background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok);border-radius:999px;padding:4px 10px;animation:dmIn .3s ease both}
+.dm-mail{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:3px;font-size:13px;animation:dmIn .35s ease both}
+.dm-mail .fr{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.dm-mail b{font-size:13.5px}
+.dm-mail span{color:var(--muted);line-height:1.45}
+.dm-replay{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 11px;font-size:12px;cursor:pointer}
+/* email */
+.dm-in{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.dm-in input{flex:1 1 160px;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;font-size:14px}
+.dm-addr{display:grid;gap:6px}
+.dm-addr div{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-family:var(--mono);font-size:13px;min-width:0}
+.dm-addr div span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dm-addr div em{margin-left:auto;font-style:normal;font-family:var(--body);font-size:11.5px;color:var(--muted);white-space:nowrap}
+.dm-addr svg{width:16px;height:16px;flex:none;color:var(--hazard)}
+/* timeline (plan, care, setup, move, lang, strategy) */
+.dm-tl{display:grid;grid-template-columns:repeat(13,minmax(0,1fr));gap:3px}
+.dm-tl i{height:10px;border-radius:3px;background:var(--line);transition:background .25s}
+.dm-tl i.on{background:var(--hazard)}
+.dm-tl-lab{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.dm-tl-lab button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px;text-align:left;cursor:pointer;display:grid;gap:1px}
+.dm-tl-lab button b{font-size:13px;font-family:var(--display);font-stretch:105%}
+.dm-tl-lab button small{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.dm-tl-lab button[aria-pressed="true"]{border-color:var(--hazard);box-shadow:inset 0 0 0 1px var(--hazard)}
+.dm-ul{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:13.5px}
+.dm-ul li{padding-left:16px;position:relative;line-height:1.4}
+.dm-ul li::before{content:"";position:absolute;left:0;top:.6em;width:8px;height:2px;background:var(--hazard)}
+.dm-goal{font-family:var(--mono);font-size:12px;background:var(--surface);border:1px dashed var(--line);border-radius:6px;padding:6px 9px}
+.dm-serp{display:grid;gap:3px}
+.dm-serp .u{font-size:12px;color:var(--muted)}
+.dm-serp .t{font-size:16px;color:var(--cobalt);font-weight:500;line-height:1.25}
+.dm-serp .d{font-size:12.5px;color:var(--muted);line-height:1.4}
+.dm-gbp{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.dm-gbp span{font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.dm-gbp span.open{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 40%,var(--line))}
+.dm-chk{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.dm-chk li{display:flex;align-items:center;gap:9px;font-size:13.5px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.dm-chk li i{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);flex:none;display:grid;place-items:center;transition:background .2s,border-color .2s}
+.dm-chk li i svg{width:10px;height:10px;opacity:0;color:#fff}
+.dm-chk li.ok i{background:var(--ok);border-color:var(--ok)}.dm-chk li.ok i svg{opacity:1}
+.dm-chk li small{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.dm-run{border:0;border-radius:6px;background:var(--ink);color:var(--bg);font-weight:600;font-size:12.5px;padding:6px 12px;cursor:pointer}
+.dm-days{display:grid;grid-template-columns:repeat(15,minmax(0,1fr));gap:3px}
+.dm-days button{aspect-ratio:1/1;border:0;border-radius:3px;background:color-mix(in srgb,var(--ok) 70%,var(--surface));cursor:pointer;padding:0;min-width:0}
+.dm-days button.up{background:var(--cobalt)}.dm-days button.ed{background:var(--hazard)}
+.dm-days button[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:1px}
+.dm-mv{display:grid;gap:8px}
+.dm-mv>div{display:grid;grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);gap:6px;align-items:center;font-size:12.5px}
+.dm-mv>div>span{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 9px;line-height:1.35;min-width:0;overflow-wrap:anywhere}
+.dm-mv>div>span.new{border-color:color-mix(in srgb,var(--ok) 50%,var(--line))}
+.dm-mv>div>span b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.dm-mv svg{width:22px;height:14px;color:var(--hazard)}
+.dm-code{font-family:var(--mono);font-size:11.5px;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:6px;padding:6px 8px;overflow-wrap:anywhere}
+.dm-swap{transition:opacity .2s}
+.dm-pers{display:grid;gap:8px}
+.dm-pers dl{margin:0;display:grid;grid-template-columns:minmax(0,92px) minmax(0,1fr);gap:5px 10px;font-size:13px}
+.dm-pers dt{color:var(--muted);font-size:12px}
+.dm-pers dd{margin:0}
+.dm-pos{font-family:"Fraunces",Georgia,serif;font-size:15px;line-height:1.35;font-weight:600;border-left:3px solid var(--hazard);padding-left:10px}
+@media (max-width:420px){.dm-prod{grid-template-columns:96px minmax(0,1fr)}.dm-mug{height:110px}.dm-logos>div{height:112px}.dm-sw button span{height:36px}.dm-tone{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.dm-msg,.dm-lead,.dm-mail{animation:none}.dm-typing i{animation:none}.dm-frame{transition:none}}
 </style>
 
 <div class="scrollbar" id="scrollbar" aria-hidden="true"></div>
@@ -1489,6 +1741,7 @@ function applyStatic(){
   if(typeof gCoolLang==="function")gCoolLang();
   if(typeof mRender==="function")mRender();
   if(typeof lgLang==="function")lgLang();
+  if(typeof qxLang==="function")qxLang();
   if(typeof renderVG==="function")renderVG();
   if(typeof syncCommerce==="function"){syncCommerce();const il=document.getElementById("f-ilang");if(il)il.value=lang}
   if(typeof cbRender==="function"){cbRender();const ic=document.getElementById("ind-custom");if(ic)ic.placeholder=lang==="hu"?"pl. fogászat, pékség, autószerviz":"e.g. dentist, bakery, car repair"}
@@ -1502,7 +1755,7 @@ function fmtT(v){if(typeof v!=="string"||v.indexOf("{")<0)return v;const lg=S.fi
 function renderSteps(){$("#paysteps").innerHTML=PS[lang].map(p=>`<div class="paystep"><span class="eyebrow">${p[0]}</span><span class="amt tnum">${fmtT(p[1])}</span><p>${fmtT(p[2])}</p></div>`).join("");$("#steps").innerHTML=STEPS[lang].map((s,i)=>`<div class="step"><div class="t"><span>0${i+1}</span><span>${s[0]}</span></div><h3>${s[1]}</h3><p>${s[2]}</p></div>`).join("")}
 const tick='<svg viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7.5l3 3 7-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function renderMenu(){
-  $("#groups").innerHTML=G[lang].map((g,gi)=>`<div class="group-title">${g}</div><div class="items">`+S.filter(s=>s.g===gi).map(s=>{const L=s[lang];return `<label class="item"><input type="checkbox" id="svc-${s.id}" value="${s.id}" ${sel.has(s.id)?"checked":""}><div class="item-top"><h3>${L[0]}</h3><span class="tick" style="color:var(--on-hazard)">${tick}</span></div><p>${L[1]}</p><ul>${L[2].map(x=>`<li>${x}</li>`).join("")}</ul><div class="item-foot"><span class="price tnum">${money(P(s),s.m)}</span><span class="time">${s.m?"":(lang==="hu"?"kész ~":"ready in ~")+s.h}</span></div></label>`}).join("")+`</div>`).join("");
+  $("#groups").innerHTML=G[lang].map((g,gi)=>`<div class="group-title">${g}</div><div class="items">`+S.filter(s=>s.g===gi).map(s=>{const L=s[lang];return `<label class="item"><input type="checkbox" id="svc-${s.id}" value="${s.id}" ${sel.has(s.id)?"checked":""}><div class="item-top"><h3>${L[0]}</h3><span class="item-acts">${qxBtn(s)}<span class="tick" style="color:var(--on-hazard)">${tick}</span></span></div><p>${L[1]}</p><ul>${L[2].map(x=>`<li>${x}</li>`).join("")}</ul><div class="item-foot"><span class="price tnum">${money(P(s),s.m)}</span><span class="time">${s.m?"":(lang==="hu"?"kész ~":"ready in ~")+s.h}</span></div></label>`}).join("")+`</div>`).join("");
 }
 function bundlePrice(b){return gross(cur==="HUF"?b.huf:b.eur)}
 function bundleMonthly(b){return b.items.includes("mkt2")?gross(cur==="HUF"?b.mhuf:b.meur):0}
@@ -1988,6 +2241,386 @@ const TIERS=[
  en:{n:"Maximum",t:"Full management",d:"Instead of a whole marketing team. We run your ads too and optimise weekly.",you:"2 minutes a week: approve the weekly suggestions.",
   inc:["Everything in Medium","20 posts and short videos","4 SEO blog articles","Meta and Google ads management, weekly optimisation","A/B tests and competitor tracking","Weekly report and suggestions","4 channels + Google Business Profile"],note:"You pay the ad budget directly to Meta and Google from your own card. You set the amount; we suggest one in your desk.",
   lanes:[["Strategy, ad plan and budget proposal","Approve the budget"],["Campaigns launch, 20 posts and videos scheduled","—"],["Weekly optimisation: stop what doesn't work, push what does","2 minutes of approvals weekly"],["Report, A/B results, next month's plan","Say yes"]]}}];
+/* ---------- Service explainer: "?" tooltip + side sheet (QX) ---------- */
+const QXT={hu:{q:"Mi ez pontosan?",get:"Mit kapsz pontosan",demo:"Így néz ki",note:"Minta · kitalált tartalom",yes:"Kinek való",no:"Kinek nem",time:"Mennyi idő",faq:"Gyakori kérdések",want:"Ezt kérem",have:"Benne van ✓ Bezárás",close:"Bezárás",inOrder:"A rendelésedben",
+  hrs:h=>`kb. ${h} óra munka`,hrsSub:"A teljes rendelést 24 órán belül szállítjuk attól, hogy jóváhagyod a brief összefoglalóját.",mon:"Havonta, folyamatosan",monSub:"A havidíj az élesítéstől indul, és egy hónapos felmondással bármikor lemondhatod.",once:"egyszeri díj",monthly:"havidíj",replay:"Újra",mailbox:"postafiókonként"},
+ en:{q:"What is this exactly?",get:"What you get exactly",demo:"What it looks like",note:"Sample · made-up content",yes:"Who it's for",no:"Who it's not for",time:"How long it takes",faq:"Common questions",want:"I want this",have:"Added ✓ Close",close:"Close",inOrder:"In your order",
+  hrs:h=>`about ${h} hours of work`,hrsSub:"The whole order is delivered within 24 hours of you approving our brief summary.",mon:"Monthly, ongoing",monSub:"The monthly fee starts at go-live, and you can cancel any time with one month's notice.",once:"one-off fee",monthly:"monthly fee",replay:"Replay",mailbox:"per mailbox"}};
+const QX={
+landing:{
+ hu:{tip:"Egyetlen görgethető oldal, ami bemutat és elérhetővé tesz. Akkor jó, ha az a cél, hogy hívjanak vagy írjanak.",
+  get:["6–8 szekció: nyitókép, rólad, kínálat, vélemények, GYIK, kapcsolat","Kész szövegek a válaszaid alapján, neked nem kell írnod","Kapcsolati űrlap, térkép és egy koppintással hívható telefonszám","Mobilra tervezve, gépen is rendben","SEO-alapok és szép előnézet, amikor megosztod a linket"],
+  yes:["Most indulsz, és gyorsan kell egy jó első benyomás","Egy fő szolgáltatásod van, és az a cél, hogy hívjanak","Kampányhoz vagy eseményhez kell egy önálló oldal"],
+  no:["Sok szolgáltatásod és árlistád van, vagy blogot írnál: ehhez a Céges weboldal való","Online árulnál: ehhez Webshop kell"],
+  faq:[["Később bővíthető több oldalra?","Igen. Az új aloldal új tételnek számít: a Pult előre megmutatja az árát, és csak a jóváhagyásod után kezdünk bele."],["Nekem kell megírni a szövegeket?","Nem. A kérdőívből és az anyagaidból mi írjuk meg, te jóváhagyod, vagy szólsz, mit írjunk át."],["Mi kell tőlem?","A kérdőív (10 perc), és ami már megvan: logó, fotók, étlap vagy árlista."]],
+  d:{name:"Minta Bisztró",hero:"Friss ebéd, 11-től.",cta:"Asztalfoglalás",secs:["Rólunk","Heti menü","Vélemények","Kapcsolat és térkép"],mob:"Mobil",desk:"Gép",cap:"Egy oldal, ami mobilon és gépen is végigvezet: ki vagy, mit kínálsz, hogyan érnek el."}},
+ en:{tip:"A single scrolling page that introduces you and makes you reachable. Right when the goal is to get people to call or write.",
+  get:["6–8 sections: hero, about, offer, reviews, FAQ, contact","Copy written from your answers, nothing for you to write","Contact form, map and a tap-to-call phone number","Designed for mobile, looks right on desktop too","SEO basics and a neat preview when you share the link"],
+  yes:["You're just starting and need a good first impression fast","You have one main service and want people to call","You need a standalone page for a campaign or event"],
+  no:["Lots of services, price lists or a blog: go for the Business website","Selling online: you need a Web shop"],
+  faq:[["Can it grow into more pages later?","Yes. A new page counts as a new item: your Desk shows the price up front, and we only start once you approve."],["Do I have to write the copy?","No. We write it from your questionnaire and materials; you approve it or tell us what to change."],["What do you need from me?","The questionnaire (10 minutes) and whatever you already have: logo, photos, menu or price list."]],
+  d:{name:"Sample Bistro",hero:"Fresh lunch, from 11.",cta:"Book a table",secs:["About us","Weekly menu","Reviews","Contact and map"],mob:"Mobile",desk:"Desktop",cap:"One page that walks people through on phone and desktop: who you are, what you offer, how to reach you."}}},
+site:{
+ hu:{tip:"Több aloldalas weboldal, ha sok mindent kell elmondanod: rólad, szolgáltatások, árak, kapcsolat.",
+  get:["Legfeljebb 5 aloldal, kész szövegekkel","Blog vagy hírek modul, hogy friss maradjon az oldal","Szerkeszthető admin felület, ha magad is írnál bele","Kapcsolati űrlap, térkép, mobilra tervezve","SEO-alapok minden aloldalon"],
+  yes:["Több szolgáltatásod van, és mindegyiket rendesen be akarod mutatni","Árlistát, referenciákat vagy időpontfoglalást mutatnál","Rendszeresen írnál híreket vagy blogot"],
+  no:["Egy szolgáltatásod van, és csak hívjanak: az Egyoldalas weboldal elég","Termékeket árulnál kosárral és fizetéssel: ehhez Webshop kell"],
+  faq:[["Mi van, ha 5-nél több aloldal kell?","Az új aloldal új tételnek számít. A Pult előre megmutatja az árát, és csak a jóváhagyásod után készítjük el."],["Magam is tudom szerkeszteni?","Igen, az admin felületen. Az átadás után 14 napig pedig annyi apró módosítást kérhetsz tőlünk, amennyit akarsz."],["Lehet rajta időpontfoglalás?","Igen, az időpontfoglaló és az árlista külön aloldalt kap."]],
+  d:{name:"Minta Szalon",pages:["Főoldal","Rólunk","Szolgáltatások","Árak","Kapcsolat"],heads:["Vágás, festés, nyugalom.","Három fodrász, egy csapat.","Amit csinálunk","Árlista","Itt találsz minket"],rows:[["Női vágás","6 500 Ft"],["Festés","12 000 Ft"],["Melír","15 500 Ft"]],cta:"Időpontot kérek",mob:"Mobil",desk:"Gép",cap:"Kattints az aloldalakra, és válts mobil és gépi nézet között."}},
+ en:{tip:"A multi-page website for when you have a lot to say: about, services, prices, contact.",
+  get:["Up to 5 pages, with the copy written","Blog or news module to keep the site fresh","Editable admin panel if you want to write too","Contact form, map, designed for mobile","SEO basics on every page"],
+  yes:["You offer several services and want to present each properly","You want to show prices, references or online booking","You plan to post news or a blog regularly"],
+  no:["One service and you just want calls: the One-page website is enough","Selling products with cart and payment: you need a Web shop"],
+  faq:[["What if I need more than 5 pages?","A new page counts as a new item. Your Desk shows the price up front, and we only build it once you approve."],["Can I edit it myself?","Yes, in the admin panel. And for 14 days after handover you can ask us for as many small edits as you like."],["Can it take bookings?","Yes, booking and the price list get their own pages."]],
+  d:{name:"Sample Salon",pages:["Home","About","Services","Prices","Contact"],heads:["Cut, colour, calm.","Three stylists, one team.","What we do","Price list","Find us here"],rows:[["Women's cut","€18"],["Colour","€32"],["Highlights","€42"]],cta:"Book a visit",mob:"Mobile",desk:"Desktop",cap:"Click the pages and switch between mobile and desktop view."}}},
+shop:{
+ hu:{tip:"Kis termékkínálatra szabott, működő webshop kártyás fizetéssel, számlázással és szállítással.",
+  get:["Legfeljebb 30 termék feltöltve, fotóval, leírással, árral","Kártyás fizetés bekötése","Számlázó beállítása, hogy a számla magától menjen","Szállítási módok és díjak beállítása","Mobilra tervezett termékoldalak és kosár"],
+  yes:["Kevés, jól körülhatárolt terméked van","Most kezdenél online eladni, gyorsan","Kézműves, helyi vagy szezonális termékeket árulsz"],
+  no:["Több száz termékkel indulnál egyszerre: az induló csomag 30 termékig szól","Csak bemutatnád a kínálatod, eladás nélkül: a Céges weboldal elég"],
+  faq:[["Mikor fogadhatok kártyás fizetést?","A bolt 24 órán belül elkészül, de a kártyás fizetés élesítése a fizetési szolgáltatón múlik, ez néhány napot is igénybe vehet."],["Ki tölti fel az új termékeket később?","Te is, az admin felületen. Ha nem akarsz vele foglalkozni, a Webshop-üzemeltetés havonta 30 új vagy módosított terméket kezel helyetted."],["Kell hozzá saját számlázó?","A számlázót mi állítjuk be. Ha már használsz egyet, jelezd a kérdőívben."]],
+  d:{name:"Minta Kerámia",prod:"Kézzel festett bögre",desc:"300 ml, mosogatógépbe tehető.",price:{HUF:"5 900 Ft",EUR:"€15"},colors:[["#2F6FD6","Kék"],["#C8462B","Terrakotta"],["#3E8E7E","Zöld"]],add:"Kosárba",cart:"Kosár",pay:["Bankkártya","Számla automatikusan","Csomagpont vagy futár"],cap:"Válassz színt és mennyiséget, és tedd kosárba."}},
+ en:{tip:"A working shop sized for a small catalogue, with card payments, invoicing and shipping.",
+  get:["Up to 30 products loaded, with photo, description and price","Card payments connected","Invoicing set up so invoices go out on their own","Shipping methods and fees set up","Mobile-first product pages and cart"],
+  yes:["You have a small, clear range of products","You want to start selling online, fast","You sell handmade, local or seasonal goods"],
+  no:["You'd launch with hundreds of products at once: the starter covers up to 30","You only want to show your range, not sell: the Business website is enough"],
+  faq:[["When can I take card payments?","The shop is ready within 24 hours, but going live with card payments depends on the payment provider and can take a few days."],["Who adds new products later?","You can, in the admin panel. If you'd rather not, Web shop management handles 30 new or updated products a month for you."],["Do I need my own invoicing tool?","We set up the invoicing. If you already use one, mention it in the questionnaire."]],
+  d:{name:"Sample Ceramics",prod:"Hand-painted mug",desc:"300 ml, dishwasher safe.",price:{HUF:"5 900 Ft",EUR:"€15"},colors:[["#2F6FD6","Blue"],["#C8462B","Terracotta"],["#3E8E7E","Green"]],add:"Add to cart",cart:"Cart",pay:["Card","Automatic invoice","Pickup point or courier"],cap:"Pick a colour and quantity, then add it to the cart."}}},
+shopcare:{
+ hu:{tip:"Havidíjas boltkezelés: termékek, akciók, bannerek és figyelés, hogy a webshopod mindig naprakész legyen.",
+  get:["Havonta 30 új vagy módosított termék","Akciók, kuponok és szezonális bannerek","Készlet- és rendelésfigyelés","Havi riport: mi fogy, mi nem"],
+  yes:["Van webshopod, de nincs időd frissíteni","Szezonálisan változik a kínálatod","Rendszeresen futtatnál akciókat"],
+  no:["Ritkán változik a kínálatod, és az admin felületen magad is boldogulsz","Még nincs webshopod: előbb a Webshop indulócsomag kell"],
+  faq:[["Mi számít egy terméknek a 30-ból?","Egy új termék feltöltése vagy egy meglévő módosítása (ár, leírás, fotó, készlet)."],["Bármikor lemondható?","Igen, havonta, 30 napos felmondással, büntetés nélkül."],["Én is szerkeszthetem közben a boltot?","Igen, az admin felület a tiéd. Mi csak azt visszük, amit ránk bízol."]],
+  d:{tabs:["Ősz","Black Friday","Karácsony"],ban:[["Őszi kupon, minden bögrére","OSZ15 · −15%","#B5651D"],["Péntektől vasárnapig mindenre","−25%","#14161B"],["Rendelj dec. 18-ig, karácsonyra odaér","Ingyen szállítás","#2E6B4F"]],log:[["+18","új termék feltöltve"],["12","termék ára és leírása frissítve"],["3","termék fogyóban: szóltunk"],["1","havi riport: mi fogyott, mi nem"]],cap:"Egy hónap a boltodban. Válts a szezonális bannerek között."}},
+ en:{tip:"Monthly shop management: products, promotions, banners and monitoring, so your store is always up to date.",
+  get:["30 new or updated products a month","Promotions, coupons and seasonal banners","Stock and order monitoring","Monthly report: what sells, what doesn't"],
+  yes:["You have a shop but no time to update it","Your range changes with the seasons","You want to run promotions regularly"],
+  no:["Your range rarely changes and you're fine in the admin panel","No shop yet: start with the Starter web shop"],
+  faq:[["What counts as one of the 30?","Adding a new product or changing an existing one (price, description, photo, stock)."],["Can I cancel any time?","Yes, monthly, with 30 days' notice and no penalty."],["Can I still edit the shop myself?","Yes, the admin panel is yours. We only handle what you hand to us."]],
+  d:{tabs:["Autumn","Black Friday","Christmas"],ban:[["Autumn coupon on every mug","FALL15 · −15%","#B5651D"],["Friday to Sunday, everything","−25%","#14161B"],["Order by 18 Dec, arrives for Christmas","Free shipping","#2E6B4F"]],log:[["+18","new products added"],["12","products repriced and rewritten"],["3","products running low: we told you"],["1","monthly report: what sold, what didn't"]],cap:"A month in your shop. Switch between the seasonal banners."}}},
+logo:{
+ hu:{tip:"Új logó vagy a régi frissítése: három irányt mutatunk, a kiválasztottat véglegesítjük minden formátumban.",
+  get:["3 különböző koncepció, hogy legyen miből választani","A kiválasztott irány véglegesítve","Vektoros fájlok: SVG, PNG, PDF","Világos és sötét háttérre is","Teljes felhasználási jog a kifizetés után"],
+  yes:["Most indulsz, és még nincs logód","Van logód, de régi, amatőr, vagy már nem illik hozzátok","Brandbookot is kérsz, és az új logóra építenéd"],
+  no:["Szereted a mostani logódat: arra építünk","Teljes arculati rendszer kellene: ahhoz a Brandbook is"],
+  faq:[["Mi van, ha egyik irány sem tetszik?","Kérhetsz újabb 3 irányt egy újabb vázlatdíjért, vagy kiszállsz, és csak a vázlatdíjat fizetted ki."],["A régi logómat is frissítitek?","Igen. Megtartjuk, ami működik, és modernizáljuk, hogy illeszkedjen az új oldalhoz."],["Az enyém lesz?","Igen, a felhasználási jog a kifizetéssel száll át rád, a fájlokat pedig átadjuk."]],
+  d:{name:"Minta",sub:"KÁVÉZÓ",dirs:["A · Betűkép","B · Embléma","C · Monogram"],why:["Elegáns, olvasható, kis méretben is működik.","Barátságos, jól mutat cégtáblán és poharon.","Tömör jel, ami profilképnek és ikonnak is jó."],light:"Világos",dark:"Sötét",cap:"Három irányt kapsz. Válts köztük: mindegyik világos és sötét változatban is elkészül."}},
+ en:{tip:"A new logo or a refresh of yours: we show three directions and finalise your pick in every format.",
+  get:["3 different concepts to choose from","Your chosen direction finalised","Vector files: SVG, PNG, PDF","For light and dark backgrounds","Full usage rights once paid"],
+  yes:["You're starting out and have no logo","You have one, but it's old, amateur or no longer fits","You're getting a Brandbook and want it built on a new logo"],
+  no:["You love your current logo: we build on it","You need a full brand system: add the Brandbook too"],
+  faq:[["What if I don't like any direction?","You can ask for 3 new directions for another sketch fee, or walk away having paid only the sketch fee."],["Can you refresh my old logo?","Yes. We keep what works and modernise it to match the new site."],["Will it be mine?","Yes. Usage rights pass to you on payment, and we hand over the files."]],
+  d:{name:"Sample",sub:"CAFÉ",dirs:["A · Wordmark","B · Emblem","C · Monogram"],why:["Elegant, readable, works small.","Friendly, looks good on a sign and a cup.","A compact mark for profile pictures and icons."],light:"Light",dark:"Dark",cap:"You get three directions. Switch between them: each comes in light and dark versions."}}},
+brand:{
+ hu:{tip:"A márkád szabálykönyve: színek, betűk, hangnem és sablonok, hogy minden ugyanúgy nézzen ki.",
+  get:["Színpaletta kódokkal, és hogy melyik színt mire használd","Betűpár címekhez és szöveghez","Logóhasználat: méretek, térköz, mit ne","Hangnem és szóhasználat, példákkal","Social poszt és névjegy sablonok"],
+  yes:["Többen készítetek posztot, szórólapot, és mindig máshogy néz ki","Külsős grafikussal dolgozol, és kell neki egy pontos brief","Most építed fel a márkád, és egységesen akarsz indulni"],
+  no:["Nem készítetek saját anyagokat, csak a weboldal kell: ráér","Nincs logód: párosítsd a Logótervezéssel, és arra építjük"],
+  faq:[["Milyen formában kapom meg?","PDF-ben, a sablonokkal együtt, amiket azonnal használhatsz."],["Logó nélkül is működik?","Kell hozzá egy logó. Ha nincs, add hozzá a Logótervezést, és a brandbook már az új logóra épül."],["A weboldal is ehhez igazodik?","Igen, ha egyben rendeled, az oldal ugyanazokat a színeket és betűket kapja."]],
+  d:{sw:[["Paprika","#C8462B","Fő szín: gombok, kiemelések"],["Krém","#F4EBDD","Háttér, nagy felületek"],["Szén","#22201E","Szöveg, logó sötét változat"],["Zsálya","#7D9A7E","Kiegészítő: címkék, ikonok"]],h:"Fraunces",b:"IBM Plex Sans",hu:"címekhez",bu:"szöveghez",ok:["Így írunk","„Friss, ma reggel sült.”"],bad:["Így nem","„Kiváló minőségű pékárukínálat.”"],card:["Minta Pékség","Kovászos kenyér minden reggel 7-től"],tabs:["Poszt","Névjegy"],nm:"Kiss Anna · tulajdonos",cap:"Kattints egy színre: megmutatja, mire való, és rögtön ráteszi a sablonra."}},
+ en:{tip:"Your brand rulebook: colours, type, tone and templates, so everything looks the same.",
+  get:["Colour palette with codes and what each colour is for","Type pair for headings and body text","Logo usage: sizes, clear space, don'ts","Tone of voice and word choice, with examples","Social post and business card templates"],
+  yes:["Several people make posts and flyers, and it always looks different","You work with an outside designer who needs a precise brief","You're building your brand now and want to start consistent"],
+  no:["You don't make your own materials, only the website: it can wait","No logo yet: pair it with Logo design and we build on that"],
+  faq:[["What format do I get?","A PDF, plus templates you can use straight away."],["Does it work without a logo?","It needs one. If you don't have it, add Logo design and the brandbook is built on the new logo."],["Will the website match it?","Yes. Order them together and the site uses the same colours and type."]],
+  d:{sw:[["Paprika","#C8462B","Main: buttons, highlights"],["Cream","#F4EBDD","Background, large areas"],["Coal","#22201E","Text, dark logo version"],["Sage","#7D9A7E","Accent: labels, icons"]],h:"Fraunces",b:"IBM Plex Sans",hu:"for headings",bu:"for body text",ok:["We write","“Fresh, baked this morning.”"],bad:["Not like","“A premium-quality bakery assortment.”"],card:["Sample Bakery","Sourdough every morning from 7"],tabs:["Post","Card"],nm:"Anna K. · owner",cap:"Click a colour: it shows what it's for and applies it to the template."}}},
+strategy:{
+ hu:{tip:"Megmondja, kik a legjobb vevőid, mit ajánlj nekik, és miben vagy jobb a versenytársaknál.",
+  get:["Pozicionálás: egy mondat arról, kinek és miért te","Ajánlat: mit tegyél előre, és hogyan fogalmazd meg","3 vevőperszóna: ki, mit akar, mi győzi meg, hol éred el","Versenytárs-elemzés 5 cégről: mit csinálnak, hol van rés"],
+  yes:["Mindenkinek próbálsz eladni, és nem tudod, kire fókuszálj","Hirdetnél, de nem tudod, kinek és mit mondj","Új piacra vagy új ajánlattal lépsz"],
+  no:["Pontosan ismered a célcsoportodat, csak rendszer kell: a 90 napos terv elég","Van már friss stratégiád"],
+  faq:[["Mi a különbség a stratégia és a 90 napos terv között?","A stratégia megmondja, kinek és mit kínálj. A 90 napos terv ebből lesz konkrét naptár: mikor, hol, mit posztolj, mennyit költs."],["Honnan tudjátok, kik a vevőim?","A kérdőív válaszaiból, a meglévő anyagaidból és a versenytársak vizsgálatából. Az összefoglalót jóváhagyásra elküldjük."],["Mihez kezdek vele?","Erre épül minden szöveg, poszt és hirdetés. Ha a weboldalt is nálunk rendeled, az már ehhez igazodik."]],
+  d:{pos:"Minta Bisztró: friss, házias ebéd 30 perc alatt annak, aki a környéken dolgozik.",lab:["Ki","Mit akar","Mi győzi meg","Hol éred el"],p:[["Siető irodista","28–40 éves, a környéken dolgozik","Gyors, kiszámítható ebéd","„Rendelj 10:30-ig, 12-re kész.”","Google Cégprofil, Instagram"],["Hétvégi család","Két gyerek, a közelben laknak","Kényelmes hely, gyerekbarát menü","„Vasárnap gyerekmenüvel várunk.”","Facebook, hírlevél"],["Törzsvendég","Hetente kétszer jön","Újdonság és egy kis figyelem","„Minden tizedik ebéd ránk megy.”","Hírlevél, helyben"]],comp:"5 versenytárs megnézve · a rés: gyorsaság és házias íz egyszerre",cap:"Három perszónát kapsz. Válts köztük."}},
+ en:{tip:"Defines your best customers, what to offer them, and where you beat the competition.",
+  get:["Positioning: one sentence on who it's for and why you","Offer: what to put first and how to say it","3 customer personas: who, what they want, what convinces them, where to reach them","Competitor scan of 5 companies: what they do, where the gap is"],
+  yes:["You try to sell to everyone and don't know where to focus","You want to advertise but don't know to whom or what to say","You're entering a new market or launching a new offer"],
+  no:["You know your audience well and just need structure: the 90-day plan is enough","You already have a recent strategy"],
+  faq:[["How is this different from the 90-day plan?","The strategy says who to target and what to offer. The 90-day plan turns it into a calendar: when, where, what to post and how much to spend."],["How do you know who my customers are?","From your questionnaire, your existing materials and a look at competitors. We send the summary for your approval."],["What do I do with it?","Every text, post and ad builds on it. If we build your website too, it follows the strategy."]],
+  d:{pos:"Sample Bistro: fresh, home-style lunch in 30 minutes for people working nearby.",lab:["Who","Wants","Convinced by","Where"],p:[["Busy office worker","28–40, works nearby","A quick, predictable lunch","“Order by 10:30, ready at 12.”","Google Business Profile, Instagram"],["Weekend family","Two kids, live nearby","A comfortable, kid-friendly place","“Kids' menu every Sunday.”","Facebook, newsletter"],["Regular","Comes twice a week","Something new and a little attention","“Every tenth lunch is on us.”","Newsletter, in person"]],comp:"5 competitors checked · the gap: fast and home-style at once",cap:"You get three personas. Switch between them."}}},
+plan:{
+ hu:{tip:"A stratégiából konkrét 90 napos naptár: melyik csatorna, mikor, mit posztolj, mennyit költs hirdetésre.",
+  get:["Csatornaválasztás: hol legyél jelen, és hol ne","Mérhető célok hónapokra bontva","Tartalomnaptár 90 napra, témákkal","Hirdetési büdzsé-javaslat, amiről te döntesz"],
+  yes:["Tudod, kik a vevőid, csak nincs rendszer a marketingben","Van embered a posztoláshoz, de nem tudja, mit és mikor","Holnaptól követhető tervet akarsz"],
+  no:["Nem tudod, kinek szólj: előbb a Marketingstratégia kell","Nem akarsz vele foglalkozni: a folyamatos marketing elvégzi helyetted"],
+  faq:[["Ki hajtja végre a tervet?","Te vagy a csapatod. Ha nem akarsz vele foglalkozni, a folyamatos marketing havonta elkészíti és ki is teszi helyetted."],["Mennyit kell hirdetésre költenem?","A tervben javaslatot adunk, de az összegről te döntesz."],["Mi van 90 nap után?","A számaid alapján látni fogod, mi működött. Ebből jöhet a következő terv, vagy a folyamatos marketing."]],
+  d:{m:[["1. hónap","Alapozás",["Google Cégprofil rendbetétele","Heti 2 poszt Instagramon","Első vélemények begyűjtése"],"Cél: 300 profilmegtekintés"],["2. hónap","Építkezés",["Heti 3 poszt és 1 hírlevél","Kis hirdetés a környékre","Ajánlat a törzsvendégeknek"],"Cél: 40 új feliratkozó"],["3. hónap","Gyorsítás",["Ami működött, abból több","Ami nem, azt leállítjuk","Szezonális kampány"],"Cél: +15% foglalás"]],wk:"hét",cap:"90 nap, 13 hét. Kattints egy hónapra."}},
+ en:{tip:"Turns the strategy into a concrete 90-day calendar: which channel, when, what to post, how much to spend on ads.",
+  get:["Channel choice: where to be, and where not","Measurable goals, month by month","90-day content calendar with topics","Ad budget proposal; you decide"],
+  yes:["You know your customers, there's just no system to your marketing","Someone on your team posts, but doesn't know what or when","You want a plan you can follow from tomorrow"],
+  no:["You don't know who to talk to: start with the Marketing strategy","You don't want to deal with it: continuous marketing does it for you"],
+  faq:[["Who carries out the plan?","You or your team. If you'd rather not, continuous marketing creates and publishes it for you each month."],["How much should I spend on ads?","We suggest an amount in the plan, but you decide."],["What happens after 90 days?","Your numbers show what worked. That feeds the next plan, or continuous marketing."]],
+  d:{m:[["Month 1","Foundations",["Tidy up your Google Business Profile","2 Instagram posts a week","Collect the first reviews"],"Goal: 300 profile views"],["Month 2","Build",["3 posts a week and 1 newsletter","A small local ad","An offer for regulars"],"Goal: 40 new subscribers"],["Month 3","Accelerate",["More of what worked","Stop what didn't","Seasonal campaign"],"Goal: +15% bookings"]],wk:"weeks",cap:"90 days, 13 weeks. Click a month."}}},
+setup:{
+ hu:{tip:"A domain, tárhely és SSL minden weboldalban benne van. Ez a teljes kör, hogy a Google is jól lásson és mérni is tudj.",
+  get:["GA4 bekötése: látod, honnan jönnek és mit néznek a látogatók","Search Console: a Google megtalálja és jól olvassa az oldalt","Google Cégprofil beállítása: térkép, nyitvatartás, értékelések","Sütibanner és adatkezelési tájékoztató"],
+  yes:["Új weboldal indul, és mindent rendben akarsz az elejétől","Nem jelensz meg a Google térképen, vagy rossz adatokkal","Szeretnéd tudni, hány látogatód van, és honnan"],
+  no:["Ezt már valaki beállította nálad, és működik","Nem lesz weboldalad, csak közösségi oldalad"],
+  faq:[["A domain és a tárhely benne van?","Ezek minden weboldalban benne vannak. Ez a csomag a mérést, a Google-láthatóságot és a jogi alapokat teszi mellé."],["Miért tart néha tovább a Google Cégprofil?","A Google néha postai vagy telefonos ellenőrzést kér. Ez rajtuk múlik, és néhány napot is igénybe vehet."],["Kinek a nevén lesznek a fiókok?","A te nevedre állítjuk be őket, és átadjuk a hozzáféréseket."]],
+  d:{u:"mintabisztro.hu",t:"Minta Bisztró · Friss ebéd 11-től",ds:"Házias ebéd a környéken dolgozóknak. Heti menü, asztalfoglalás, elvitel.",gbp:["Nyitva · 11–15","Útvonal","Hívás","Weboldal"],chk:[["GA4","látogatottság mérése"],["Search Console","a Google látja az oldalt"],["Google Cégprofil","térkép és nyitvatartás"],["Sütibanner","és adatkezelési tájékoztató"]],run:"Ellenőrzés",cap:"Így látnak a Google-ben. Futtasd az ellenőrzést."}},
+ en:{tip:"Domain, hosting and SSL come with every website. This is the full round so Google sees you properly and you can measure results.",
+  get:["GA4 connected: see where visitors come from and what they look at","Search Console: Google finds and reads your site properly","Google Business Profile set up: map, hours, reviews","Cookie banner and privacy notice"],
+  yes:["A new site is launching and you want it right from day one","You don't show up on Google Maps, or with wrong details","You want to know how many visitors you get, and from where"],
+  no:["Someone already set this up for you and it works","You won't have a website, only social media"],
+  faq:[["Are domain and hosting included?","They come with every website. This package adds measurement, Google visibility and the legal basics."],["Why does the Google Business Profile sometimes take longer?","Google sometimes asks for verification by post or phone. That's up to them and can take a few days."],["Whose name are the accounts in?","Yours. We set them up in your name and hand over access."]],
+  d:{u:"samplebistro.com",t:"Sample Bistro · Fresh lunch from 11",ds:"Home-style lunch for people working nearby. Weekly menu, bookings, takeaway.",gbp:["Open · 11–15","Directions","Call","Website"],chk:[["GA4","visitor measurement"],["Search Console","Google sees the site"],["Google Business Profile","map and hours"],["Cookie banner","and privacy notice"]],run:"Run check",cap:"How you appear on Google. Run the check."}}},
+move:{
+ hu:{tip:"Ha már van domained, e-mailed vagy régi oldalad, mindent mi viszünk át, hogy semmi ne vesszen el.",
+  get:["Régi e-mailek átköltöztetése Google Workspace-be","A régi oldal címeinek átirányítása, hogy megmaradjon a Google-helyezés","A domain átvitele (.com, .eu)","A .hu domain a helyén marad, csak az új oldalra irányítjuk"],
+  yes:["Van régi oldalad, és nem akarod elveszíteni a Google-helyezést","Régi tárhelyes e-mailt használsz, és Gmailre váltanál","Egy helyen akarod tudni az oldalt, a domaint és az e-mailt"],
+  no:["Most indulsz, nincs mit átvinni","A domainod maradhat, ahol van, és csak irányítani kell: ezt a Pro technikai csomag megoldja"],
+  faq:[["Elvesznek a régi leveleim?","Nem. A régi leveleket is átköltöztetjük az új postafiókba."],["Miért marad a .hu domain a helyén?","A .hu domain átvitele lassú, ezért a mostani szolgáltatódnál hagyjuk, és csak átirányítjuk az új oldalra. Ugyanúgy működik."],["Mennyi ideig tart?","A mi részünk kb. egy nap. A domain átvitele a régi szolgáltatón is múlik, ez néhány napot is igénybe vehet."]],
+  d:{tabs:[".hu domain",".com / .eu domain"],rows:[["E-mail","régi tárhelyes postafiók","Google Workspace","a régi levelekkel együtt"],["Domain","a mostani szolgáltatódnál","marad, csak átirányítjuk","az új oldalra"],["Régi címek","/rolunk.html · /arak.php","/rolunk · /arak","átirányítva, megmarad a helyezés"]],dcom:["Domain","a régi szolgáltatónál","átvisszük","a te nevedre"],from:"Előtte",to:"Utána",cap:"Mi megy hova. Válts a domain típusa szerint."}},
+ en:{tip:"Already have a domain, email or an old site? We move it all over, so nothing gets lost.",
+  get:["Old email moved into Google Workspace","Old page addresses redirected so you keep your Google ranking","Domain transferred (.com, .eu)","A .hu domain stays put and we point it to the new site"],
+  yes:["You have an old site and don't want to lose your Google ranking","You use old hosting email and want to switch to Gmail","You want site, domain and email in one place"],
+  no:["You're just starting, there's nothing to move","Your domain can stay where it is and just needs pointing: the Pro technical package covers that"],
+  faq:[["Will I lose my old emails?","No. We move your old messages into the new mailbox too."],["Why does a .hu domain stay where it is?","Transferring a .hu domain is slow, so we leave it with your current provider and just point it to the new site. It works the same."],["How long does it take?","Our part takes about a day. The domain transfer also depends on your old provider and can take a few days."]],
+  d:{tabs:[".hu domain",".com / .eu domain"],rows:[["Email","old hosting mailbox","Google Workspace","old messages included"],["Domain","with your current provider","stays, we point it","to the new site"],["Old addresses","/about.html · /prices.php","/about · /prices","redirected, ranking kept"]],dcom:["Domain","with the old provider","transferred","into your name"],from:"Before",to:"After",cap:"What moves where. Switch by domain type."}}},
+lang:{
+ hu:{tip:"A teljes weboldal egy további nyelven, nyelvváltóval, hogy a külföldi vendégeid is értsék.",
+  get:["A teljes oldal lefordítva és lokalizálva, nem gépi szöveg","Nyelvváltó a fejlécben","Nyelvenkénti SEO-címkék, hogy a Google a jó nyelvet mutassa","Űrlapok és gombok is az adott nyelven"],
+  yes:["Turisták, külföldi vendégek vagy partnerek is keresnek","Külföldre is szállítasz vagy dolgozol","Nemzetközi csapatnak is szól az oldal"],
+  no:["Csak helyi ügyfeleid vannak: egy nyelv elég"],
+  faq:[["Csak angol lehet?","Nem, bármelyik nyelv lehet. Egy tétel egy további nyelvet jelent."],["A posztjaim is két nyelven lesznek?","Ez a tétel a weboldalra szól. A marketingtartalom nyelvét a folyamatos marketingnél beszéljük meg."],["Mi van, ha később módosítok?","A módosítást mindkét nyelven átvezetjük."]],
+  d:{l:{hu:["Friss ebéd, 11-től.","Heti menü","Asztalfoglalás","Vajas csirke · Dal · Lassi"],en:["Fresh lunch, from 11.","Weekly menu","Book a table","Butter chicken · Dal · Lassi"]},name:"Minta Bisztró",cap:"Egy oldal, két nyelv. Váltsd át."}},
+ en:{tip:"Your whole website in one more language, with a language switcher, so foreign visitors understand you too.",
+  get:["The whole site translated and localised, not machine text","Language switcher in the header","SEO tags per language so Google shows the right one","Forms and buttons in that language too"],
+  yes:["Tourists, foreign guests or partners look for you","You ship or work abroad","The site speaks to an international team"],
+  no:["Your customers are all local: one language is enough"],
+  faq:[["Only English?","No, any language. One item means one extra language."],["Will my posts be in two languages too?","This item covers the website. We agree the language of marketing content under continuous marketing."],["What if I change something later?","We carry the change into both languages."]],
+  d:{l:{hu:["Friss ebéd, 11-től.","Heti menü","Asztalfoglalás","Vajas csirke · Dal · Lassi"],en:["Fresh lunch, from 11.","Weekly menu","Book a table","Butter chicken · Dal · Lassi"]},name:"Sample Bistro",cap:"One site, two languages. Switch it."}}},
+care:{
+ hu:{tip:"Tárhely, domain, mentés, frissítés és apró módosítások egy havidíjban. Neked nincs vele dolgod.",
+  get:["Tárhely, domain és SSL, megújítva","Napi mentés, bármikor visszaállítható","Biztonsági frissítések és felügyelet","Havi 30 perc apró módosítás: ár, nyitvatartás, kép, szöveg"],
+  yes:["Nem akarsz tárhellyel, domainnel, frissítéssel foglalkozni","Néha változik az árlistád vagy a nyitvatartásod","Biztosra akarsz menni, hogy az oldal mindig működik"],
+  no:["Van informatikusod, aki ezt intézi: fizetheted közvetlenül a szolgáltatókat, mi beállítjuk"],
+  faq:[["Mi számít apró módosításnak?","Szöveg, kép, szín, link, elérhetőség vagy nyitvatartás cseréje, illetve egy meglévő elem áthelyezése."],["Mi van, ha lemondom?","Havonta, 30 napos felmondással lemondható. Lemondáskor díjmentesen átadjuk a teljes mentést és minden hozzáférést."],["Muszáj nálatok üzemeltetni?","Nem. Fizetheted közvetlenül a szolgáltatókat is, és mi beállítjuk a fiókjaidban."]],
+  d:{leg:[["Minden rendben, mentés kész",""],["Biztonsági frissítés","up"],["Apró módosítás","ed"]],det:{ok:"{d}. nap: napi mentés kész, az oldal végig elérhető volt.",up:"{d}. nap: biztonsági frissítés telepítve, mentés kész.",ed:"{d}. nap: nyitvatartás frissítve (12 perc a havi 30-ból)."},sum:["Mentés 30/30","Frissítés 2","Apró módosítás 12/30 perc"],cap:"Egy hónap üzemeltetés. Kattints egy napra."}},
+ en:{tip:"Hosting, domain, backups, updates and small edits in one monthly fee. Nothing for you to manage.",
+  get:["Hosting, domain and SSL, renewed","Daily backups, restorable any time","Security updates and monitoring","30 minutes of small edits a month: prices, hours, images, text"],
+  yes:["You don't want to deal with hosting, domains or updates","Your prices or opening hours change now and then","You want to be sure the site always works"],
+  no:["You have an IT person who handles this: you can pay the providers directly and we set it up"],
+  faq:[["What counts as a small edit?","Swapping text, an image, a colour, a link, contact details or opening hours, or moving an existing element."],["What if I cancel?","Cancel any month with 30 days' notice. When you leave, we hand over a full backup and every login, free of charge."],["Do I have to host with you?","No. You can pay the providers directly and we set it up in your accounts."]],
+  d:{leg:[["All good, backup done",""],["Security update","up"],["Small edit","ed"]],det:{ok:"Day {d}: daily backup done, site up all day.",up:"Day {d}: security update installed, backup done.",ed:"Day {d}: opening hours updated (12 of 30 minutes)."},sum:["Backups 30/30","Updates 2","Small edits 12/30 min"],cap:"A month of care. Click a day."}}},
+email:{
+ hu:{tip:"Saját domaines e-mail-cím, például info@cegem.hu, Gmaillel, naptárral és Drive-val. Hitelesebb, mint egy ingyenes cím.",
+  get:["Google Workspace beállítása a domainedhez","Annyi postafiók, amennyi kell, mindegyik saját címmel","Gmail, Naptár és Drive a megszokott felülettel","Spam- és adathalászvédelem","Beállítás telefonon és gépen"],
+  yes:["Gmailes vagy más ingyenes címről írsz az ügyfeleidnek","Több kollégának kell saját cím","A weboldal érdeklődői egy céges címre érkezzenek"],
+  no:["Már van működő céges e-mailed, és elégedett vagy vele","Ha csak át kell hozni a régit: a Költöztetés is kell hozzá"],
+  faq:[["Hogyan számoljátok a díjat?","Postafiókonként havidíj. Annyi fiókot nyitsz, amennyi kell."],["Megmaradnak a régi leveleim?","Ha van régi céges postafiókod, a Költöztetéssel a régi leveleket is áthozzuk."],["Kell hozzá domain?","Igen, az e-mail a domainedhez kapcsolódik. Ha még nincs, a nevedre regisztráljuk."]],
+  d:{lbl:"A vállalkozásod neve",def:"Minta Bisztró",boxes:[["info","általános"],["foglalas","foglalások"],["anna","a te címed"]],inbox:["vendeg@pelda.hu","Asztalfoglalás péntekre, 4 fő"],apps:["Gmail","Naptár","Drive"],cap:"Írd be a vállalkozásod nevét, és nézd meg, milyen címeid lehetnek."}},
+ en:{tip:"Email on your own domain, like info@mybusiness.com, with Gmail, Calendar and Drive. More credible than a free address.",
+  get:["Google Workspace set up on your domain","As many mailboxes as you need, each with its own address","Gmail, Calendar and Drive, the interface you know","Spam and phishing protection","Set up on phone and computer"],
+  yes:["You email customers from gmail or another free address","Several people need their own address","You want website leads to land in a business inbox"],
+  no:["You already have working business email you're happy with","If you only need the old one moved: add Migration too"],
+  faq:[["How is it priced?","A monthly fee per mailbox. Open as many as you need."],["Will I keep my old emails?","If you have an old business mailbox, Migration brings your old messages over too."],["Do I need a domain?","Yes, the email is tied to your domain. If you don't have one, we register it in your name."]],
+  d:{lbl:"Your business name",def:"Sample Bistro",boxes:[["info","general"],["bookings","bookings"],["anna","your own"]],inbox:["guest@example.com","Table for 4 on Friday"],apps:["Gmail","Calendar","Drive"],cap:"Type your business name and see which addresses you could have."}}},
+chat:{
+ hu:{tip:"Chatablak a weboldaladon, ami 0–24 válaszol a látogatók kérdéseire, és összegyűjti az érdeklődőket.",
+  get:["Válaszol nyitvatartásról, árakról, szolgáltatásokról","Időpontfoglalást és ajánlatkérést vesz fel","Magyarul és angolul","Az érdeklődők adatait összegyűjti neked","Havi riport: miket kérdeznek a látogatók"],
+  yes:["Sok ugyanolyan kérdést kapsz a weboldalon","Este és hétvégén is jönnek érdeklődők","Foglalásokat vagy ajánlatkéréseket gyűjtenél"],
+  no:["Alig jön kérdés a weboldalon","Minden kérdésre azonnal személyesen akarsz válaszolni"],
+  faq:[["Honnan tudja, mit válaszoljon?","A weboldaladon lévő információkból és abból, amit a kérdőívben megadsz: nyitvatartás, árak, szolgáltatások."],["Mi történik, ha nem tud válaszolni?","Felveszi a látogató elérhetőségét és a kérdését, és továbbítja neked."],["Hol látom az érdeklődőket?","Az összegyűjtött érdeklődőket megkapod, a havi riportban pedig azt is látod, miket kérdeznek a látogatók."]],
+  d:{name:"Minta Bisztró",role:"Virtuális asszisztens · online",m:[["u","Nyitva vagytok vasárnap?"],["a","Igen, vasárnap 9 és 14 óra között. Foglaljak asztalt?"],["u","Igen, 4 főre délre."],["a","Rendben: vasárnap 12:00, 4 fő. Milyen névre és milyen telefonszámra?"],["u","Anna, 06 30 000 0000"],["a","Köszönöm, Anna! Továbbítottam a foglalást, hamarosan visszaigazolják."]],lead:"Új érdeklődő elmentve",cap:"Egy minta-beszélgetés a weboldalon."}},
+ en:{tip:"A chat window on your website that answers visitors 24/7 and collects leads.",
+  get:["Answers about opening hours, prices and services","Takes bookings and quote requests","In Hungarian and English","Collects leads' details for you","Monthly report: what visitors ask about"],
+  yes:["You get the same questions over and over on your site","Leads come in evenings and weekends too","You want to collect bookings or quote requests"],
+  no:["Hardly anyone asks questions on your site","You want to answer every question in person, right away"],
+  faq:[["How does it know what to say?","From the information on your website and what you tell us in the questionnaire: hours, prices, services."],["What if it can't answer?","It takes the visitor's contact details and question, and passes them to you."],["Where do I see the leads?","You receive the collected leads, and the monthly report shows what visitors ask about."]],
+  d:{name:"Sample Bistro",role:"Virtual assistant · online",m:[["u","Are you open on Sunday?"],["a","Yes, Sunday from 9 to 2. Shall I book you a table?"],["u","Yes, for 4 at noon."],["a","Done: Sunday 12:00, 4 people. What name and phone number?"],["u","Anna, 06 30 000 0000"],["a","Thanks, Anna! I've passed on your booking; you'll get a confirmation shortly."]],lead:"New lead saved",cap:"A sample conversation on the website."}}},
+phone:{
+ hu:{tip:"Felveszi a telefont, amikor te nem tudod, és e-mailben összefoglalja a hívást. Egy hívás sem vész el.",
+  get:["0–24 hívásfogadás magyarul és angolul","Foglalást, ajánlatkérést és üzenetet vesz fel","Minden hívásról rövid e-mail-összefoglaló","Havi 200 perc, felette {ppm}/perc"],
+  yes:["Munka közben nem tudod felvenni a telefont","Este és hétvégén is hívnak","Elveszett hívások miatt maradnak el munkák"],
+  no:["Van recepciósod, aki minden hívást felvesz","Alig hívnak, és mindig el tudod érni a telefont"],
+  faq:[["Mi van, ha elfogy a havi 200 perc?","Felette percenként {ppm}. A felhasználást a havi összesítőben látod."],["Megmarad a telefonszámom?","Igen. A hívók ugyanazt a számot hívják, a virtuális recepciós akkor veszi fel, amikor te nem tudod."],["Milyen gyorsan kapom meg az összefoglalót?","Minden hívás után e-mailben megkapod, kivel beszélt és mit kért."]],
+  d:{name:"Minta Burkolás",in:"Bejövő hívás · nem tudtad felvenni",pick:"A virtuális recepciós fogadta",m:[["a","Minta Burkolás, jó napot! Miben segíthetek?"],["u","Fürdőszobát szeretnék felújíttatni, kérnék árajánlatot."],["a","Szívesen. Nagyjából hány négyzetméter, és melyik kerületben?"],["u","Kb. 6 négyzetméter, a XI. kerületben."],["a","Felírtam. Holnap délelőtt visszahívják. Ezen a számon jó lesz?"],["u","Igen, köszönöm."]],mail:["Új e-mail · hívás-összefoglaló","Ajánlatkérés: fürdőszoba, kb. 6 m², XI. ker.","Visszahívást kér holnap délelőtt, ezen a számon. Hívás hossza: 1:42."],cap:"Egy minta-hívás, és az e-mail, ami utána jön."}},
+ en:{tip:"Picks up when you can't and emails you a summary of the call. No call gets lost.",
+  get:["24/7 call answering in Hungarian and English","Takes bookings, quote requests and messages","A short email summary of every call","200 minutes a month, then {ppm}/min"],
+  yes:["You can't pick up while you work","People call in the evening and at weekends","You lose jobs because of missed calls"],
+  no:["You have a receptionist who takes every call","You hardly get calls and can always pick up"],
+  faq:[["What if I use up the 200 minutes?","After that it's {ppm} per minute. You see usage in the monthly summary."],["Do I keep my phone number?","Yes. Callers ring the same number; the virtual receptionist picks up when you can't."],["How fast do I get the summary?","After every call you get an email with who called and what they wanted."]],
+  d:{name:"Sample Tiling",in:"Incoming call · you couldn't pick up",pick:"The virtual receptionist answered",m:[["a","Sample Tiling, good morning! How can I help?"],["u","I'd like my bathroom redone. Could I get a quote?"],["a","Of course. Roughly how many square metres, and which area?"],["u","About 6 square metres, in District 11."],["a","Noted. You'll get a call back tomorrow morning. Is this number OK?"],["u","Yes, thanks."]],mail:["New email · call summary","Quote request: bathroom, about 6 m², District 11","Wants a call back tomorrow morning on this number. Call length: 1:42."],cap:"A sample call, and the email that follows."}}}
+};
+/* the three marketing tiers share copy + calendar */
+const QXM={
+ hu:{tips:{mkt1:"Havonta megmondjuk, mit posztolj, és mindent elkészítünk hozzá. A közzététel a te kezedben marad.",mkt2:"Mindent elkészítünk és ütemezve közzé is teszünk. Te havonta kb. 10 percben jóváhagysz.",mkt3:"Teljes marketing hirdetésekkel: mindent mi csinálunk, és hetente optimalizálunk a számaid alapján."},
+  yes:{mkt1:["Van havi 1–2 órád kitenni a posztokat","Tudni akarod, mit és mikor posztolj","Egy csatornán indulnál"],mkt2:["Nincs időd a marketingre, de jelen akarsz lenni","Elég, ha havonta 10 percben rábólintasz","Blog és hírlevél is kellene"],mkt3:["Gyorsan kellenek az új ügyfelek","Hirdetnél, de nem akarod magad kezelni","Több csatornán akarsz jelen lenni"]},
+  no:{mkt1:["Egyáltalán nincs időd posztolni: a Közepes kiteszi helyetted"],mkt2:["Hirdetni is akarsz: az a Maximális szint","Van házon belül embered a marketingre: a 90 napos terv segíthet neki"],mkt3:["Még nincs kész az oldalad vagy az ajánlatod: hirdetni ráér","Nem akarsz hirdetésre költeni: a Közepes is sokat ad"]},
+  faq:{all:[["Válthatok szintet?","Igen, bármikor válthatsz a három szint között."],["Mi kell tőlem az elején?","Egyszer összekötöd a fiókjaidat a pultban, és válaszolsz néhány kérdésre. Utána minden hónapban automatikusan megy."]],mkt3:["Ki fizeti a hirdetéseket?","A hirdetési keretet közvetlenül a Metának és a Google-nek fizeted a saját kártyádról. Az összeget te határozod meg, a díj a kezelést és az optimalizálást fedezi."],other:["Lemondható?","Igen, havonta, 30 napos felmondással, büntetés nélkül."]},
+  tabs:["Minimális","Közepes","Maximális"],wd:["H","K","Sz","Cs","P","Sz","V"],
+  leg:{p:"Poszt",v:"Videó",b:"Blogcikk",n:"Hírlevél",g:"Értékelés-válasz",s:"Stratégia",w:"Heti javaslat",r:"Riport",ads:"Hirdetés fut"},
+  det:{p:"Poszt · „Új a heti menüben: sütőtökkrémleves. Ma 11-től.”",v:"Rövid videó · 15 mp: így készül a reggeli kenyér.",b:"Blogcikk a weboldalra · „5 tipp a gyors, de rendes ebédhez”",n:"Hírlevél a törzsvendégeknek: a hónap újdonságai és egy kupon.",g:"Válaszjavaslatok az új Google-értékelésekre.",s:"Stratégia-frissítés: elemezzük az előző hónapot, te válaszolsz 2–3 kérdésre a pultban.",w:"Heti javaslatok: ami nem hoz, leállítjuk, ami hoz, erősítjük.",r:"Havi riport: elérés, kattintás, új érdeklődők, és javaslatok a következő hónapra."},
+  who:{mkt1:{p:"Kész képpel és szöveggel letöltöd, és te teszed ki.",s:"5 perc tőled.",r:"Elolvasod, 5 perc."},mkt2:{p:"Automatikusan kimegy, miután egy kattintással jóváhagytad.",b:"Mi tesszük ki.",n:"Mi küldjük ki.",g:"Te jóváhagyod, mi kitesszük.",s:"5 perc tőled.",r:"Rábólintasz, 5 perc."},mkt3:{p:"Automatikusan kimegy.",v:"Automatikusan kimegy.",b:"Mi tesszük ki.",n:"Mi küldjük ki.",w:"Te 2 perc alatt rábólintasz.",s:"Te jóváhagyod a hirdetési keretet.",r:"Rábólintasz."}},
+  sum:{mkt1:["8 poszt","1 csatorna + Google Cégprofil","te teszed ki"],mkt2:["12 poszt","2 blogcikk","hírlevél","2 csatorna + Google Cégprofil"],mkt3:["20 poszt és videók","4 blogcikk","hirdetések egész hónapban","4 csatorna + Google Cégprofil"]},
+  pick:"Kattints egy jelölt napra.",cap:"Egy minta-hónap. Válts a szintek között, és kattints a napokra."},
+ en:{tips:{mkt1:"Each month we tell you what to post and create it all. Publishing stays in your hands.",mkt2:"We create everything and publish it on schedule. You approve in about 10 minutes a month.",mkt3:"Full marketing with ads: we do it all and optimise weekly from your numbers."},
+  yes:{mkt1:["You have 1–2 hours a month to post","You want to know what to post and when","You're starting on one channel"],mkt2:["No time for marketing, but you want to be visible","10 minutes of approvals a month is fine","You'd like a blog and newsletter too"],mkt3:["You need new customers fast","You want ads but don't want to run them yourself","You want to be on several channels"]},
+  no:{mkt1:["You have no time to post at all: Medium publishes for you"],mkt2:["You want ads too: that's the Maximum level","You have someone in-house for marketing: the 90-day plan can guide them"],mkt3:["Your site or offer isn't ready yet: ads can wait","You don't want to spend on ads: Medium already does a lot"]},
+  faq:{all:[["Can I switch levels?","Yes, switch between the three levels any time."],["What do you need from me at the start?","Connect your accounts once in your desk and answer a few questions. After that it runs every month on its own."]],mkt3:["Who pays for the ads?","You pay the ad budget directly to Meta and Google from your own card. You set the amount; the fee covers management and optimisation."],other:["Can I cancel?","Yes, monthly, with 30 days' notice and no penalty."]},
+  tabs:["Minimum","Medium","Maximum"],wd:["M","T","W","T","F","S","S"],
+  leg:{p:"Post",v:"Video",b:"Blog article",n:"Newsletter",g:"Review reply",s:"Strategy",w:"Weekly tips",r:"Report",ads:"Ads running"},
+  det:{p:"Post · “New on this week's menu: pumpkin soup. From 11 today.”",v:"Short video · 15 sec: how the morning bread is made.",b:"Blog article for your site · “5 tips for a quick but proper lunch”",n:"Newsletter to regulars: this month's news and a coupon.",g:"Suggested replies to new Google reviews.",s:"Strategy update: we analyse last month, you answer 2–3 questions in your desk.",w:"Weekly suggestions: stop what doesn't work, push what does.",r:"Monthly report: reach, clicks, new leads, and suggestions for next month."},
+  who:{mkt1:{p:"Download it with image and copy ready, and you post it.",s:"5 minutes from you.",r:"Read it, 5 minutes."},mkt2:{p:"Goes out automatically after your one-click approval.",b:"We publish it.",n:"We send it.",g:"You approve, we post.",s:"5 minutes from you.",r:"Say yes, 5 minutes."},mkt3:{p:"Goes out automatically.",v:"Goes out automatically.",b:"We publish it.",n:"We send it.",w:"You say yes in 2 minutes.",s:"You approve the ad budget.",r:"Say yes."}},
+  sum:{mkt1:["8 posts","1 channel + Google Business Profile","you publish"],mkt2:["12 posts","2 blog articles","newsletter","2 channels + Google Business Profile"],mkt3:["20 posts and videos","4 blog articles","ads all month","4 channels + Google Business Profile"]},
+  pick:"Click a marked day.",cap:"A sample month. Switch levels and click the days."}};
+const QXCAL={
+ mkt1:{1:"s",2:"p",5:"p",9:"p",12:"p",16:"p",19:"p",23:"p",26:"p",30:"r"},
+ mkt2:{1:"s",2:"p",4:"p",6:"p",8:"b",9:"p",10:"g",11:"p",13:"p",15:"n",16:"p",18:"p",20:"p",22:"b",23:"p",24:"g",25:"p",27:"p",30:"r"},
+ mkt3:{1:"s",2:"p",3:"v",4:"b",5:"p",6:"p",7:"w",8:"p",9:"p",10:"v",11:"b",12:"p",13:"p",14:"w",15:"n",16:"p",17:"v",18:"b",19:"p",20:"p",21:"w",22:"p",23:"p",24:"v",25:"b",26:"p",27:"p",28:"w",29:"p",30:"r"}};
+["mkt1","mkt2","mkt3"].forEach(id=>{QX[id]={};["hu","en"].forEach(l=>{const M=QXM[l],t=TIERS.find(x=>x.id===id)[l];
+  QX[id][l]={tip:M.tips[id],get:t.inc.slice(),yes:M.yes[id],no:M.no[id],faq:[...M.faq.all,id==="mkt3"?M.faq.mkt3:M.faq.other],you:t.you}})});
+
+let qxId=null,qxRet=null,qxSt={},qxTimers=[];
+const qxStill=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+const qxTick='<svg viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7.5l3 3 7-7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const qxArrow='<svg viewBox="0 0 22 14" fill="none" aria-hidden="true"><path d="M1 7h18M14 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function qxPPM(){return money(gross(cur==="HUF"?49:0.13))}
+function qxFmt(s){return String(s).replace(/\{ppm\}/g,qxPPM())}
+function qxBtn(s){const C=QX[s.id];if(!C)return "";const L=C[lang],nm=s[lang][0];
+  return `<span class="qwrap"><button type="button" class="qbtn" data-qx="${s.id}" aria-haspopup="dialog" aria-label="${esc(QXT[lang].q+" "+nm)}" aria-describedby="qt-${s.id}">?</button><span class="qtip" role="tooltip" id="qt-${s.id}">${esc(qxFmt(L.tip))}</span></span>`}
+function qxSeg(act,opts,cur0){return `<div class="dm-seg" role="group">${opts.map((o,i)=>`<button type="button" data-act="${act}" data-v="${i}" aria-pressed="${i===cur0}">${o}</button>`).join("")}</div>`}
+function qxClear(){qxTimers.forEach(clearTimeout);qxTimers=[]}
+
+function qxSiteMock(D,multi){const dev=qxSt.dev||"mob",pg=qxSt.page||0;
+  const blk=t=>`<div class="dm-blk"><b>${t}</b><i></i><i></i></div>`;
+  let body;
+  if(!multi){body=`<div class="dm-hero"><div style="display:grid;gap:6px"><h5>${D.hero}</h5><span class="cta">${D.cta}</span></div><div class="ph"></div></div>`+
+    `<div class="dm-cols">${D.secs.slice(0,3).map(blk).join("")}</div><div class="dm-blk map"><b>${D.secs[3]}</b></div>`}
+  else{const h=D.heads[pg];
+    if(pg===0)body=`<div class="dm-hero"><div style="display:grid;gap:6px"><h5>${h}</h5><span class="cta">${D.cta}</span></div><div class="ph"></div></div><div class="dm-cols">${D.pages.slice(1,4).map(blk).join("")}</div>`;
+    else if(pg===3)body=`<h5 style="margin:0;font-family:Fraunces,Georgia,serif;font-size:16px">${h}</h5>`+D.rows.map(r=>`<div class="dm-row"><span>${r[0]}</span><b>${r[1]}</b></div>`).join("")+`<span class="cta" style="background:var(--c);color:#fff;border-radius:5px;padding:4px 8px;font-size:9px;font-weight:700;justify-self:start">${D.cta}</span>`;
+    else if(pg===4)body=`<h5 style="margin:0;font-family:Fraunces,Georgia,serif;font-size:16px">${h}</h5><div class="dm-blk map" style="min-height:70px"><b>${D.name}</b></div>${blk("")}`;
+    else body=`<h5 style="margin:0;font-family:Fraunces,Georgia,serif;font-size:16px">${h}</h5><div class="ph" style="height:48px;border-radius:7px;background:linear-gradient(135deg,var(--c),#7A2E14)"></div><div class="dm-cols">${blk("")}${blk("")}</div>${blk("")}`}
+  const links=multi?`<span class="lk">${D.pages.map((p,i)=>`<span aria-current="${i===pg}">${p}</span>`).join("")}</span>`:`<span class="lk"><span>${D.secs[0]}</span><span>${D.secs[1]}</span><span>${D.secs[3].split(" ")[0]}</span></span>`;
+  return `<div class="dm-bar">${qxSeg("dev",[D.mob,D.desk],dev==="mob"?0:1)}${multi?"":""}</div>`+
+    (multi?`<div class="dm-pages" role="group">${D.pages.map((p,i)=>`<button type="button" data-act="page" data-v="${i}" aria-pressed="${i===pg}">${p}</button>`).join("")}</div>`:"")+
+    `<div class="dm-dev"><div class="dm-frame" data-dev="${dev}" ${multi?'style="--c:#7A4FB5;--cbg:#F7F3FB;--cink:#231833"':""} aria-hidden="true"><div class="dm-nav"><span class="lg"></span>${D.name}${links}<span class="burger"></span></div><div class="dm-scr">${body}</div></div></div>`}
+
+function qxLogoSVG(i,D){
+  if(i===0)return `<svg viewBox="0 0 220 100" aria-hidden="true"><text x="110" y="58" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="46" fill="currentColor">${D.name}</text><line x1="62" y1="72" x2="158" y2="72" stroke="#C8462B" stroke-width="2"/><text x="110" y="90" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" letter-spacing="5" fill="currentColor">${D.sub}</text></svg>`;
+  if(i===1)return `<svg viewBox="0 0 220 100" aria-hidden="true"><circle cx="110" cy="44" r="36" fill="#C8462B"/><circle cx="110" cy="44" r="30" fill="none" stroke="#F4EBDD" stroke-width="1.5" stroke-dasharray="2 3"/><path d="M96 34h24v14a12 12 0 0 1-24 0z" fill="#F4EBDD"/><path d="M120 38h4a5 5 0 0 1 0 10h-4" fill="none" stroke="#F4EBDD" stroke-width="3"/><path d="M103 22c0 4 4 4 4 8M111 20c0 4 4 4 4 8" stroke="#F4EBDD" stroke-width="2" fill="none" stroke-linecap="round"/><text x="110" y="96" text-anchor="middle" font-family="Bricolage Grotesque,Archivo,sans-serif" font-weight="800" font-size="15" letter-spacing="1" fill="currentColor">${D.name.toUpperCase()} ${D.sub}</text></svg>`;
+  return `<svg viewBox="0 0 220 100" aria-hidden="true"><rect x="80" y="10" width="60" height="60" rx="16" fill="currentColor"/><text x="110" y="54" text-anchor="middle" font-family="DM Serif Display,Georgia,serif" font-size="36" fill="#C8462B">${D.name[0]}${D.sub[0].toLowerCase()}</text><text x="110" y="92" text-anchor="middle" font-family="Archivo,sans-serif" font-weight="700" font-size="13" letter-spacing="2" fill="currentColor">${D.name} ${D.sub.charAt(0)+D.sub.slice(1).toLowerCase()}</text></svg>`}
+function qxMug(c){return `<svg viewBox="0 0 80 80" aria-hidden="true"><path d="M16 22h40v30a14 14 0 0 1-14 14H30a14 14 0 0 1-14-14z" fill="${c}"/><path d="M56 30h5a9 9 0 0 1 0 18h-5" fill="none" stroke="${c}" stroke-width="5"/><path d="M22 34c6 4 10-4 16 0s10-4 16 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".85"/><ellipse cx="36" cy="22" rx="20" ry="3.5" fill="rgba(0,0,0,.18)"/></svg>`}
+
+function qxDemo(id){const C=QX[id];if(!C)return "";const L=C[lang],D=L.d,st=qxSt;
+  switch(id){
+  case "landing":return qxSiteMock(D,false);
+  case "site":return qxSiteMock(D,true);
+  case "shop":{const ci=st.c||0,q=st.q||1,n=st.cart||0;
+    return `<div class="dm-stage"><div class="dm-prod"><div class="dm-mug">${qxMug(D.colors[ci][0])}</div><div style="display:grid;gap:8px;min-width:0"><span class="dm-note" style="letter-spacing:.04em">${D.name}</span><h5>${D.prod}</h5><span class="dm-cap" style="margin-top:-4px">${D.desc}</span><span class="pp">${D.price[cur]||D.price.HUF}</span>
+      <div class="dm-dots" role="group">${D.colors.map((c,i)=>`<button type="button" data-act="c" data-v="${i}" style="background:${c[0]}" aria-label="${c[1]}" aria-pressed="${i===ci}"></button>`).join("")}</div>
+      <div class="dm-buy"><span class="dm-qty"><button type="button" data-act="q" data-v="-1" aria-label="−">−</button><span aria-live="polite">${q}</span><button type="button" data-act="q" data-v="1" aria-label="+">+</button></span><button type="button" class="dm-add" data-act="add">${D.add}</button></div></div></div></div>
+      <div class="dm-bar"><div class="dm-pay">${D.pay.map(p=>`<span>${p}</span>`).join("")}</div><span class="dm-cart${st.pop?" pop":""}" aria-live="polite">${D.cart} <b>${n}</b></span></div>`}
+  case "shopcare":{const b=st.b||0,B=D.ban[b];
+    return `<div class="dm-bar">${qxSeg("b",D.tabs,b)}</div><div class="dm-stage" style="display:grid;gap:10px"><div class="dm-banner" style="background:${B[2]}"><span>${B[0]}</span><code>${B[1]}</code></div><ul class="dm-log">${D.log.map(r=>`<li><b>${r[0]}</b><span>${r[1]}</span></li>`).join("")}</ul></div>`}
+  case "logo":{const i=st.l||0;
+    return `<div class="dm-bar">${qxSeg("l",D.dirs,i)}</div><div class="dm-logos"><div class="l">${qxLogoSVG(i,D)}<small>${D.light}</small></div><div class="d">${qxLogoSVG(i,D)}<small>${D.dark}</small></div></div><p class="dm-cap">${D.why[i]}</p>`}
+  case "brand":{const i=st.sw==null?0:st.sw,t=st.t||0,S0=D.sw[i],bg=S0[1],fg=(i===1||i===3)?"#22201E":"#F4EBDD";
+    const card=t===0?`<div class="dm-card" style="background:${bg};color:${fg};min-height:120px;align-content:end"><span class="dm-note" style="color:inherit;opacity:.75">@${lang==="hu"?"mintapekseg":"samplebakery"}</span><h6>${D.ok[1]}</h6><p>${D.card[1]}</p></div>`
+      :`<div class="dm-card" style="background:#F4EBDD;color:#22201E;border:1px solid var(--line);grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:50%;background:${S0[1]};display:block;border:1px solid rgba(0,0,0,.08)"></span><div><h6>${D.card[0]}</h6><p>${D.nm}</p><p style="font-family:var(--mono);font-size:10px;opacity:.7">hello@${lang==="hu"?"mintapekseg.hu":"samplebakery.com"}</p></div></div>`;
+    return `<div class="dm-sw" role="group">${D.sw.map((s,k)=>`<button type="button" data-act="sw" data-v="${k}" aria-pressed="${k===i}"><span style="background:${s[1]}"></span><em>${s[0]}<br>${s[1]}</em></button>`).join("")}</div>
+      <p class="dm-cap" aria-live="polite"><b style="color:var(--ink)">${S0[0]}</b> · ${S0[2]}</p>
+      <div class="dm-bar">${qxSeg("t",D.tabs,t)}</div>${card}
+      <div class="dm-type"><span class="aa">Aa</span><div><b>${D.h}</b> ${D.hu}<br><b style="font-family:var(--body)">${D.b}</b> ${D.bu}</div></div>
+      <div class="dm-tone"><div class="ok"><b>${D.ok[0]}</b>${D.ok[1]}</div><div class="bad"><b>${D.bad[0]}</b>${D.bad[1]}</div></div>`}
+  case "strategy":{const i=st.p||0,P0=D.p[i];
+    return `<p class="dm-pos">${D.pos}</p><div class="dm-bar">${qxSeg("p",D.p.map(p=>p[0]),i)}</div><div class="dm-stage dm-pers"><dl><dt>${D.lab[0]}</dt><dd>${P0[1]}</dd><dt>${D.lab[1]}</dt><dd>${P0[2]}</dd><dt>${D.lab[2]}</dt><dd><b>${P0[3]}</b></dd><dt>${D.lab[3]}</dt><dd>${P0[4]}</dd></dl></div><span class="dm-goal">${D.comp}</span>`}
+  case "plan":{const m=st.m||0,M=D.m[m];
+    return `<div class="dm-tl" aria-hidden="true">${Array.from({length:13},(_,k)=>`<i class="${(m===0&&k<4)||(m===1&&k>=4&&k<9)||(m===2&&k>=9)?"on":""}"></i>`).join("")}</div>
+      <div class="dm-tl-lab" role="group">${D.m.map((x,k)=>`<button type="button" data-act="m" data-v="${k}" aria-pressed="${k===m}"><small>${x[0]}</small><b>${x[1]}</b></button>`).join("")}</div>
+      <div class="dm-stage" style="display:grid;gap:10px"><ul class="dm-ul">${M[2].map(x=>`<li>${x}</li>`).join("")}</ul><span class="dm-goal">${M[3]}</span></div>`}
+  case "setup":{const k=st.k||0;
+    return `<div class="dm-stage dm-serp"><span class="u">${D.u}</span><span class="t">${D.t}</span><span class="d">${D.ds}</span><div class="dm-gbp">${D.gbp.map((g,j)=>`<span class="${j===0?"open":""}">${g}</span>`).join("")}</div></div>
+      <ul class="dm-chk">${D.chk.map((c,j)=>`<li class="${j<k?"ok":""}"><i>${qxTick}</i><span><b>${c[0]}</b> · ${c[1]}</span></li>`).join("")}</ul>
+      <div class="dm-bar"><button type="button" class="dm-run" data-act="run">${D.run}</button><span class="dm-note" aria-live="polite">${k}/${D.chk.length}</span></div>`}
+  case "move":{const t=st.dt||0,rows=D.rows.map((r,j)=>j===1&&t===1?D.dcom:r);
+    return `<div class="dm-bar">${qxSeg("dt",D.tabs,t)}</div><div class="dm-mv">${rows.map(r=>`<div><span><b>${r[0]}</b>${r[1]}</span>${qxArrow}<span class="new"><b>${r[0]}</b>${r[2]} · <span style="color:var(--muted)">${r[3]}</span></span></div>`).join("")}</div>`}
+  case "lang":{const v=st.lg||"hu",X=D.l[v];
+    return `<div class="dm-bar">${qxSeg("lg",["HU","EN"],v==="hu"?0:1)}</div><div class="dm-dev"><div class="dm-frame" data-dev="desk" style="height:auto" aria-hidden="true"><div class="dm-nav"><span class="lg"></span>${D.name}<span class="lk" style="display:flex"><span>${X[1]}</span><span aria-current="true">${v.toUpperCase()}</span></span></div><div class="dm-scr"><div class="dm-hero"><div style="display:grid;gap:6px"><h5>${X[0]}</h5><span class="cta">${X[2]}</span></div><div class="ph"></div></div><div class="dm-blk"><b>${X[1]}</b><span style="font-size:10px">${X[3]}</span></div></div></div></div>
+      <div class="dm-code">&lt;html lang="${v}"&gt; · &lt;link rel="alternate" hreflang="${v==="hu"?"en":"hu"}"&gt;</div>`}
+  case "care":{const d=st.d||0,ty=x=>x===9||x===23?"up":x===14?"ed":"";
+    const det=d?D.det[ty(d)||"ok"].replace("{d}",d):"";
+    return `<div class="dm-days" role="group">${Array.from({length:30},(_,k)=>{const x=k+1,t=ty(x);return `<button type="button" data-act="d" data-v="${x}" class="${t}" aria-pressed="${x===d}" aria-label="${x}"></button>`}).join("")}</div>
+      <div class="dm-leg">${D.leg.map(l=>`<span><i style="background:${l[1]==="up"?"var(--cobalt)":l[1]==="ed"?"var(--hazard)":"color-mix(in srgb,var(--ok) 70%,var(--surface))"}"></i>${l[0]}</span>`).join("")}</div>
+      <div class="dm-det" aria-live="polite">${det||`<span class="who">${D.cap}</span>`}</div><div class="dm-sum">${D.sum.map(s=>`<span>${s}</span>`).join("")}</div>`}
+  case "email":{const nm=st.nm==null?D.def:st.nm,tl=st.tl||0,dom=slug(nm)+(tl?".com":".hu");
+    const ic='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 6h18v12H3zM3 6l9 7 9-7" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+    return `<div class="dm-in"><input type="text" id="qx-nm" value="${esc(nm)}" aria-label="${D.lbl}" maxlength="40" autocomplete="off">${qxSeg("tl",[".hu",".com"],tl)}</div>
+      <div class="dm-addr" aria-live="polite">${D.boxes.map(b=>`<div>${ic}<span>${b[0]}@${esc(dom)}</span><em>${b[1]}</em></div>`).join("")}</div>
+      <div class="dm-mail" style="animation:none"><span class="fr">${D.inbox[0]} → info@${esc(dom)}</span><b>${D.inbox[1]}</b></div>
+      <div class="dm-pay">${D.apps.map(a=>`<span>${a}</span>`).join("")}</div>`}
+  case "chat":case "phone":{
+    const head=id==="chat"?`<div class="dm-chat-h"><span class="dot"></span><div>${D.name}<small>${D.role}</small></div></div>`:`<div class="dm-chat-h"><span class="dot" style="background:var(--hazard)"></span><div>${D.in}<small>${D.pick}</small></div></div>`;
+    return `<div class="dm-chat">${head}<div class="dm-msgs" id="qx-msgs" aria-live="polite"></div></div><div class="dm-bar"><span class="dm-note">${D.name}</span><button type="button" class="dm-replay" data-act="replay">↻ ${QXT[lang].replay}</button></div>`}
+  case "mkt1":case "mkt2":case "mkt3":{const M=QXM[lang],tier=st.tier||id,ti=["mkt1","mkt2","mkt3"].indexOf(tier),cal=QXCAL[tier],d=st.day||0,k=d?cal[d]:null;
+    const cells=Array.from({length:30},(_,i)=>{const x=i+1,t=cal[x];return `<button type="button" ${t?`data-act="day" data-v="${x}" data-k="${t}" aria-label="${x}. ${M.leg[t]}"`:`tabindex="-1" aria-hidden="true"`} class="${tier==="mkt3"?"ads":""}" aria-pressed="${x===d}"><span>${x}</span>${t?`<span class="mk k-${t}">${M.leg[t][0]}</span>`:""}</button>`}).join("");
+    const used=[...new Set(Object.values(cal))];
+    const x2=n=>lang==="hu"?n+". nap":"Day "+n;const det=k?`<b>${x2(d)} · ${M.leg[k]}</b><span>${M.det[k]}</span><span class="who">${(M.who[tier]||{})[k]||""}</span>`:`<span class="who">${M.pick}</span>`;
+    return `<div class="dm-bar">${qxSeg("tier",M.tabs,ti)}</div><div class="dm-cal">${M.wd.map(w=>`<span class="wd">${w}</span>`).join("")}${cells}</div>
+      <div class="dm-leg">${used.map(u=>`<span><i class="k-${u}"></i>${M.leg[u]}</span>`).join("")}${tier==="mkt3"?`<span><i class="ads"></i>${M.leg.ads}</span>`:""}</div>
+      <div class="dm-det" aria-live="polite">${det}</div><div class="dm-sum">${M.sum[tier].map(s=>`<span>${s}</span>`).join("")}</div>`}
+  }return ""}
+function qxCap(id){const C=QX[id];if(!C)return "";if(/^mkt/.test(id))return QXM[lang].cap;return C[lang].d?C[lang].d.cap:""}
+function qxPlay(){qxClear();const box=document.getElementById("qx-msgs");if(!box||!qxId)return;const D=QX[qxId][lang].d;
+  const parts=D.m.map(m=>`<div class="dm-msg ${m[0]}">${esc(m[1])}</div>`);
+  const tail=qxId==="chat"?`<span class="dm-lead">✓ ${D.lead}</span>`:`<div class="dm-mail"><span class="fr">${D.mail[0]}</span><b>${D.mail[1]}</b><span>${D.mail[2]}</span></div>`;
+  if(qxStill()){box.innerHTML=parts.join("")+tail;return}
+  box.innerHTML="";let t=250;
+  D.m.forEach((m,i)=>{if(m[0]==="a"){qxTimers.push(setTimeout(()=>{box.insertAdjacentHTML("beforeend",'<div class="dm-typing" aria-hidden="true"><i></i><i></i><i></i></div>')},t));t+=850}
+    qxTimers.push(setTimeout(()=>{const ty=box.querySelector(".dm-typing");if(ty)ty.remove();box.insertAdjacentHTML("beforeend",parts[i])},t));t+=m[0]==="a"?900:750});
+  qxTimers.push(setTimeout(()=>box.insertAdjacentHTML("beforeend",tail),t+200))}
+function qxRenderDemo(){const el=document.getElementById("qx-demo");if(!el||!qxId)return;qxClear();el.innerHTML=qxDemo(qxId);if(qxId==="chat"||qxId==="phone")qxPlay()}
+function qxRender(){if(!qxId)return;const s=S.find(x=>x.id===qxId),C=QX[qxId],L=C[lang],X=QXT[lang],N=s[lang],have=sel.has(qxId);
+  const time=s.m?`<b>${X.mon}</b><small>${L.you?L.you.charAt(0).toUpperCase()+L.you.slice(1)+" ":""}${X.monSub}</small>`:`<b>${X.hrs(parseInt(s.h,10))}</b><small>${X.hrsSub}</small>`;
+  const price=money(P(s),s.m)+(s.id==="email"?` <small style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500">${X.mailbox}</small>`:"");
+  const clock='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  const p=$("#qx-panel");
+  p.innerHTML=`<span class="qx-grab" aria-hidden="true"></span><div class="qx-head"><div class="qx-top"><div><span class="eyebrow">${G[lang][s.g]||""}</span><h3 id="qx-title">${N[0]}</h3></div><button type="button" class="lg-close" id="qx-close" aria-label="${X.close}">✕</button></div>
+    <div class="qx-meta"><span class="qx-price tnum">${price}</span><span class="qx-chip">${s.m?X.monthly:X.once}</span>${s.m?"":`<span class="qx-chip">~${s.h}</span>`}${have?`<span class="qx-chip on">${X.inOrder}</span>`:""}</div><p class="qx-lead">${N[1]}</p></div>
+    <div class="qx-body" id="qx-body">
+      <div class="qx-sec"><h4 class="qx-h">${X.get}</h4><ul class="qx-get">${L.get.map(g=>`<li><i>${qxTick}</i><span>${qxFmt(g)}</span></li>`).join("")}</ul></div>
+      <div class="qx-sec"><div class="dm-bar"><h4 class="qx-h">${X.demo}</h4><span class="dm-note">${X.note}</span></div><div class="dm" id="qx-demo"></div><p class="dm-cap">${qxCap(qxId)}</p></div>
+      <div class="qx-sec"><div class="qx-fit"><div class="yes"><b><span>✓</span>${X.yes}</b><ul>${L.yes.map(x=>`<li>${x}</li>`).join("")}</ul></div><div class="no"><b><span>–</span>${X.no}</b><ul>${L.no.map(x=>`<li>${x}</li>`).join("")}</ul></div></div></div>
+      <div class="qx-sec"><h4 class="qx-h">${X.time}</h4><div class="qx-time">${clock}<div>${time}</div></div></div>
+      <div class="qx-sec"><h4 class="qx-h">${X.faq}</h4><div class="qx-faq">${L.faq.map(f=>`<details><summary>${qxFmt(f[0])}</summary><p>${qxFmt(f[1])}</p></details>`).join("")}</div></div>
+    </div>
+    <div class="qx-foot"><div><small>${s.m?X.monthly:X.once}</small><span class="qx-price tnum">${money(P(s),s.m)}</span></div><button type="button" class="btn btn-hazard" id="qx-want" ${have?"data-have":""}>${have?X.have:X.want}</button></div>`;
+  p.setAttribute("aria-labelledby","qx-title");qxRenderDemo()}
+function qxOpen(id,ret){if(!QX[id])return;const box=$("#qx");qxId=id;qxRet=id;qxSt={};if(/^mkt/.test(id))qxSt.tier=id;
+  qxRender();box.hidden=false;document.body.style.overflow="hidden";
+  const go=()=>{box.classList.add("open");$("#qx-close").focus({preventScroll:true})};
+  if(qxStill())go();else{void box.offsetWidth;requestAnimationFrame(go)}}
+function qxClose(){const box=$("#qx");if(box.hidden)return;qxClear();box.classList.remove("open");document.body.style.overflow="";const id=qxRet;qxId=null;
+  const fin=()=>{box.hidden=true;const b=document.querySelector(`.qbtn[data-qx="${id}"]`);if(b)b.focus({preventScroll:false})};
+  if(qxStill())fin();else setTimeout(fin,300)}
+function qxLang(){if(qxId){const st=qxSt;qxRender();qxSt=st;qxRenderDemo()}}
+function qxWant(){const id=qxId;if(!id)return;if(!sel.has(id)){tierExcl(sel,id);sel.add(id);renderMenu();renderTicket()}qxClose()}
+(function(){const box=document.createElement("div");box.className="qx";box.id="qx";box.hidden=true;
+  box.innerHTML='<div class="qx-bd" data-qx-close></div><div class="qx-panel" id="qx-panel" role="dialog" aria-modal="true" tabindex="-1"></div>';document.body.appendChild(box);
+  box.addEventListener("click",e=>{if(e.target.closest("[data-qx-close]")||e.target.closest("#qx-close")){qxClose();return}
+    if(e.target.closest("#qx-want")){qxWant();return}
+    const a=e.target.closest("[data-act]");if(!a)return;const v=a.dataset.v,n=+v,st=qxSt;
+    switch(a.dataset.act){
+      case "dev":st.dev=n?"desk":"mob";break;case "page":st.page=n;break;case "c":st.c=n;break;
+      case "q":st.q=Math.max(1,Math.min(9,(st.q||1)+n));break;
+      case "add":st.cart=(st.cart||0)+(st.q||1);st.pop=1;setTimeout(()=>{qxSt.pop=0},400);break;
+      case "b":st.b=n;break;case "l":st.l=n;break;case "sw":st.sw=n;break;case "t":st.t=n;break;case "p":st.p=n;break;case "m":st.m=n;break;
+      case "dt":st.dt=n;break;case "lg":st.lg=n?"en":"hu";break;case "d":st.d=n;break;case "tl":st.tl=n;break;
+      case "tier":st.tier=["mkt1","mkt2","mkt3"][n];st.day=0;break;case "day":st.day=n;break;
+      case "run":{if(st.run)return;st.k=0;st.run=1;const step=()=>{if(!qxId)return;st.k++;qxRenderDemo();if(st.k<4)qxTimers.push(setTimeout(step,qxStill()?0:420));else st.run=0};qxRenderDemo();qxTimers.push(setTimeout(step,qxStill()?0:300));return}
+      case "replay":qxPlay();return;
+    }
+    const f=a.dataset.act,fv=a.dataset.v;qxRenderDemo();
+    const again=document.querySelector(`#qx-demo [data-act="${f}"][data-v="${fv}"]`)||document.querySelector(`#qx-demo [data-act="${f}"]`);if(again)again.focus({preventScroll:true})});
+  box.addEventListener("input",e=>{if(e.target.id!=="qx-nm")return;qxSt.nm=e.target.value;const pos=e.target.selectionStart;qxRenderDemo();const i=document.getElementById("qx-nm");if(i){i.focus();try{i.setSelectionRange(pos,pos)}catch(_){}}});
+  document.addEventListener("keydown",e=>{if($("#qx").hidden)return;
+    if(e.key==="Escape"){e.preventDefault();qxClose();return}
+    if(e.key==="Tab"){const f=[...$("#qx-panel").querySelectorAll('button:not([disabled]):not([tabindex="-1"]),input,summary,[href],[tabindex="0"]')].filter(x=>x.offsetParent!==null);if(!f.length)return;
+      const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}else if(!$("#qx-panel").contains(document.activeElement)){e.preventDefault();first.focus()}}});
+  $("#groups").addEventListener("click",e=>{const b=e.target.closest(".qbtn");if(!b)return;e.preventDefault();e.stopPropagation();qxOpen(b.dataset.qx)});
+})();
 const MODS=[
 {id:"fbig",ch:1,tool:"Meta Business Suite",hu:["Facebook és Instagram","Posztok, sztorik, közösség.","Szinte mindenkinek, főleg vendéglátásnak, szépségiparnak, kisboltnak."],en:["Facebook and Instagram","Posts, stories, community.","Almost everyone, especially food, beauty and small shops."]},
 {id:"gbp",free:1,tool:"Google Business Profile",hu:["Google Cégprofil","Térkép, értékelések, nyitvatartás, posztok a Google-ben.","Minden helyi vállalkozásnak. Mindig benne van."],en:["Google Business Profile","Maps, reviews, hours, posts on Google.","Every local business. Always included."]},

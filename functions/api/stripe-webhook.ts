@@ -1,9 +1,10 @@
 // POST /api/stripe-webhook – Stripe események: fizetés → CRM státusz + e-mail.
 import { Env, json, nowIso, logEvent, touch, money, setStage, once } from "../../lib/core";
-import { verifyStripeSig } from "../../lib/stripe";
+import { verifyStripeSig, stripe } from "../../lib/stripe";
 import { sendMail, layout, rows } from "../../lib/mail";
 
-const NEXT_STAGE: Record<string, string> = { sketch: "sketch_paid", deposit: "deposit_paid", final: "live" };
+// Havidíjas weboldalnál az első havidíj helyettesíti az előleget.
+const NEXT_STAGE: Record<string, string> = { sketch: "sketch_paid", deposit: "deposit_paid", final: "live", subscription: "deposit_paid" };
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!env.STRIPE_WEBHOOK_SECRET) return json({ ok: false, error: "not configured" }, 503);
@@ -23,7 +24,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     const kind = md.kind || "other";
     const cur = String(o.currency || "").toUpperCase();
     const amount = Math.round(o.amount_total / 100);
-    await env.DB.prepare("INSERT OR REPLACE INTO payments (id,at,customer_id,project_id,kind,amount,currency,status,raw) VALUES (?1,?2,?3,?4,?5,?6,?7,'paid',?8)")
+    // Előfizetésnél a befizetést az invoice.paid esemény rögzíti (különben duplán számolnánk).
+    if (o.mode !== "subscription") await env.DB.prepare("INSERT OR REPLACE INTO payments (id,at,customer_id,project_id,kind,amount,currency,status,raw) VALUES (?1,?2,?3,?4,?5,?6,?7,'paid',?8)")
       .bind(o.id, nowIso(), md.customer_id || null, md.project_id || null, kind, amount, cur, JSON.stringify({ payment_intent: o.payment_intent, invoice: o.invoice, email: o.customer_details?.email })).run();
     if (md.project_id && NEXT_STAGE[kind]) {
       const p = await env.DB.prepare("SELECT id, customer_id, stage FROM projects WHERE id=?1").bind(md.project_id).first<{ id: string; customer_id: string; stage: string }>();
@@ -44,8 +46,24 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     const cust = o.customer ? await env.DB.prepare("SELECT id FROM customers WHERE stripe_customer_id=?1").bind(o.customer).first<{ id: string }>() : null;
     const cur = String(o.currency || "").toUpperCase();
     const amount = Math.round((paid ? o.amount_paid : o.amount_due) / 100);
-    await env.DB.prepare("INSERT OR REPLACE INTO payments (id,at,customer_id,project_id,kind,amount,currency,status,raw) VALUES (?1,?2,?3,NULL,?4,?5,?6,?7,?8)")
-      .bind(o.id, nowIso(), cust?.id ?? null, o.subscription ? "subscription" : "other", amount, cur, paid ? "paid" : "failed", JSON.stringify({ number: o.number, url: o.hosted_invoice_url })).run();
+    const subId: string | null = o.subscription || o.parent?.subscription_details?.subscription || null;
+    const smd = (o.subscription_details?.metadata || o.parent?.subscription_details?.metadata || {}) as Record<string, string>;
+    await env.DB.prepare("INSERT OR REPLACE INTO payments (id,at,customer_id,project_id,kind,amount,currency,status,raw) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)")
+      .bind(o.id, nowIso(), cust?.id ?? smd.customer_id ?? null, smd.project_id || null, subId ? "subscription" : "other", amount, cur, paid ? "paid" : "failed", JSON.stringify({ number: o.number, url: o.hosted_invoice_url, subscription: subId })).run();
+    // Havidíjas weboldal: a 12. befizetett hónap után a havidíj az üzemeltetés díjára vált (egyszer).
+    if (paid && subId && smd.months && smd.after_amount) {
+      const n = await env.DB.prepare("SELECT COUNT(*) n FROM payments WHERE kind='subscription' AND status='paid' AND raw LIKE ?1").bind(`%"subscription":"${subId}"%`).first<{ n: number }>();
+      if ((n?.n ?? 0) >= Number(smd.months) && (await once(env, subId, "sub-switch"))) {
+        try {
+          const sub = await stripe(env, "GET", `/subscriptions/${subId}`);
+          const it = sub.items?.data?.[0];
+          await stripe(env, "POST", `/subscriptions/${subId}`, { proration_behavior: "none", items: [{ id: it.id, price_data: { currency: String(smd.currency || cur).toLowerCase(), unit_amount: Number(smd.after_amount) * 100, tax_behavior: "exclusive", product: it.price.product, recurring: { interval: "month" } } }], metadata: { switched: "1" } });
+          await logEvent(env, { customer_id: cust?.id ?? smd.customer_id, project_id: smd.project_id, kind: "payment", actor: "system", title: `Havidíjas weboldal: ${smd.months} hónap letelt, a havidíj ${money(Number(smd.after_amount), cur)}/hó lett` });
+        } catch (e) {
+          await sendMail(env, { to: env.NOTIFY_TO, subject: `⚠️ Előfizetés-váltás sikertelen – ${subId}`, template: "internal_sub_switch", html: layout("hu", "Előfizetés-váltás sikertelen", `<p>A ${smd.months}. hónap után nem sikerült átállítani a havidíjat (${String(e)}). Állítsd át kézzel a Stripe-ban ${money(Number(smd.after_amount), cur)}/hó-ra.</p>`) });
+        }
+      }
+    }
     if (cust) await logEvent(env, { customer_id: cust.id, kind: "payment", title: `${paid ? "Számla fizetve" : "Sikertelen fizetés"}: ${o.number || o.id} – ${money(amount, cur)}`, body: paid ? undefined : `${o.attempt_count || 1}. próbálkozás. A Stripe automatikusan újrapróbálja, és e-mailben kéri az ügyfelet a kártya frissítésére.` });
     if (!paid) {
       // Teendő a legutóbbi projekten + belső értesítés (csak az első sikertelen próbálkozásnál).

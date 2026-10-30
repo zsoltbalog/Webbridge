@@ -13,7 +13,7 @@ export async function vatThreshold(env: Env) {
     "SELECT p.currency cur, SUM(p.amount) s FROM payments p JOIN customers c ON c.id=p.customer_id WHERE p.status='paid' AND substr(p.at,1,4)=?1 AND (c.buyer_type='b2c' OR c.vat_id IS NULL OR c.vat_id='') GROUP BY p.currency"
   ).bind(year).all<{ cur: string; s: number }>()).results;
   let eur = 0, huf = 0;
-  for (const r of rows) { if ((r.cur || "").toUpperCase() === "EUR") eur += (r.s || 0) / 100; else huf += (r.s || 0) / 100; }
+  for (const r of rows) { if ((r.cur || "").toUpperCase() === "EUR") eur += r.s || 0; else huf += r.s || 0; } // a payments.amount fő egységben van (Ft / €)
   const eur_equiv = Math.round(eur + huf / rate);
   return { year, eur: Math.round(eur), huf: Math.round(huf), rate, eur_equiv, limit: VAT_LIMIT_EUR, pct: Math.round((eur_equiv / VAT_LIMIT_EUR) * 100) };
 }

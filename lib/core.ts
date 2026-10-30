@@ -93,6 +93,26 @@ export function priceOf(ids: string[], cur: "HUF" | "EUR") {
   return { once, monthly };
 }
 
+// ---------- Havidíjas weboldal (12 hónapos szerződés, utána az üzemeltetés díja) ----------
+export const SUBS: Record<string, { huf: number; eur: number; after_huf: number; after_eur: number; covers: string[] }> = {
+  landing: { huf: 19900, eur: 52, after_huf: 9900, after_eur: 25, covers: ["care"] },
+  site: { huf: 29900, eur: 78, after_huf: 9900, after_eur: 25, covers: ["care"] },
+  shop: { huf: 49900, eur: 129, after_huf: 29900, after_eur: 79, covers: ["care", "shopcare"] },
+};
+export const SUB_MONTHS = 12;
+export const FIRST_CLIENT_RATE = 0.7;
+
+/** A rendelés tényleges ára: Első ügyfél kedvezmény (−30% az egyszeri díjakból) és havidíjas weboldal figyelembevételével. */
+export function orderPrice(ids: string[], cur: "HUF" | "EUR", opt: { first_client?: boolean; pay_mode?: string } = {}) {
+  const subItem = opt.pay_mode === "sub" ? ["shop", "site", "landing"].find((x) => ids.includes(x)) : undefined;
+  const sub = subItem ? SUBS[subItem] : undefined;
+  const rest = sub ? ids.filter((x) => x !== subItem && !sub.covers.includes(x)) : ids;
+  const base = priceOf(rest, cur);
+  const once = opt.first_client ? (cur === "HUF" ? Math.round((base.once * FIRST_CLIENT_RATE) / 100) * 100 : Math.round(base.once * FIRST_CLIENT_RATE)) : base.once;
+  const subInfo = sub && subItem ? { item: subItem, amount: cur === "EUR" ? sub.eur : sub.huf, after: cur === "EUR" ? sub.after_eur : sub.after_huf, months: SUB_MONTHS } : null;
+  return { once, monthly: base.monthly + (subInfo ? subInfo.amount : 0), sub: subInfo, nominalOnceHuf: priceOf(ids, "HUF").once };
+}
+
 /** Vázlatdíj: 200 000 Ft (≈ €520) alatt nincs, felette 19 900 Ft / €49 (Stripe: wb_sketch_l). */
 export function sketchFor(onceHuf: number) { return onceHuf >= 200000 ? "sketch_l" : null; }
 export function sketchAmount(onceHuf: number, cur: string) { return sketchFor(onceHuf) ? (cur === "EUR" ? 49 : 19900) : 0; }

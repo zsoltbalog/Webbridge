@@ -1,5 +1,5 @@
 // POST /api/intake – a weboldal űrlapjai (rendelés, visszahívás, chat-érdeklődő) ide küldenek.
-import { Env, json, bad, clean, isEmail, orderNo, nowIso, rid, esc, upsertCustomer, logEvent, priceOf, itemById, money, sketchAmount, cleanAttr, sourceLabel } from "../../lib/core";
+import { orderPrice, Env, json, bad, clean, isEmail, orderNo, nowIso, rid, esc, upsertCustomer, logEvent, priceOf, itemById, money, sketchAmount, cleanAttr, sourceLabel } from "../../lib/core";
 import { sendMail, layout, rows } from "../../lib/mail";
 import { normalizeUrl, reviewSite, SiteBrief } from "../../lib/site";
 
@@ -24,11 +24,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
 
   const cur = clean(b.currency, 3) === "EUR" ? "EUR" : "HUF";
   const items = (Array.isArray(b.items) ? b.items : []).map((x) => clean(x, 20)).filter((x) => itemById(x));
-  const pr = priceOf(items, cur);
   const firstClient = b.first_client === true;
-  // Első ügyfél program: −30% az egyszeri díjakból (a havidíjakra nem vonatkozik)
-  const once = firstClient ? Math.round(pr.once * 0.7) : pr.once;
-  const monthly = pr.monthly;
+  const payMode = clean(b.pay_mode, 4) === "sub" ? "sub" : "full";
+  // Első ügyfél program (−30% az egyszeri díjakból) és havidíjas weboldal (12 hónap) – lásd orderPrice
+  const op = orderPrice(items, cur, { first_client: firstClient, pay_mode: payMode });
+  const once = op.once, monthly = op.monthly, sub = op.sub;
   const buyerType = clean(b.buyer_type, 4) === "b2c" ? "b2c" : "b2b";
   const vatId = clean(b.vat_id, 40).toUpperCase().replace(/[\s.-]/g, "");
   // Számlatípus: fogyasztó | fordított adózás (közösségi adószámmal) | adószám nélküli vállalkozás (ÁFA nélkül, reverse charge szöveg nélkül)
@@ -45,7 +45,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   const brief = {
     what: clean(b.what, 600), who: clean(b.who, 600), tone: clean(b.tone, 100), industry: clean(b.industry, 60),
     extra: clean(b.extra, 3000), files: (Array.isArray(b.files) ? b.files : []).slice(0, 20).map((x) => clean(x, 200)),
-    start_now: b.start_now === true, invoice_lang: clean(b.invoice_lang, 2), invoice_type: invoiceType, first_client: firstClient,
+    start_now: b.start_now === true, invoice_lang: clean(b.invoice_lang, 2), invoice_type: invoiceType, first_client: firstClient, pay_mode: sub ? "sub" : "full", sub,
     site: siteFrom(b.site), upload_token: rid("up_", 24), uploads: [] as unknown[],
   };
   const id = orderNo();
@@ -63,7 +63,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
     customer_id: cust.id, project_id: id, kind: "lead", actor: "customer",
     title: hu ? `Új rendelés: ${business || email}` : `New order: ${business || email}`,
     body: `${itemNames}\n${money(once, cur, lang)}${monthly ? ` + ${money(monthly, cur, lang)}/hó` : ""}`,
-    meta: { items, once, monthly, currency: cur, source: src, invoice_type: invoiceType, first_client: firstClient },
+    meta: { items, once, monthly, currency: cur, source: src, invoice_type: invoiceType, first_client: firstClient, sub },
   });
 
   // Visszaigazolás az ügyfélnek
@@ -72,11 +72,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, waitUnti
   const body = hu
     ? `<p>Köszönjük! Megkaptuk a kérésedet, a rendelésszámod: <b>${id}</b>.</p>
 <p>Egy órán belül (munkaidőben) visszaküldjük írásban, amit megértettünk, és ha valami hiányzik, rákérdezünk. A 24 óra akkor indul, amikor ezt jóváhagyod.</p>
-${rows([["Vállalkozás", business], ["Tételek", itemNames], ["Egyszeri díj (nettó)", money(once, cur, "hu") + (firstClient ? " (Első ügyfél kedvezménnyel, −30%)" : "")], ["Havidíj (nettó)", monthly ? money(monthly, cur, "hu") + "/hó" : ""], ["Vázlatdíj", sketchFee ? money(sketchFee, cur, "hu") + " (beszámítjuk)" : "nincs"]])}
+${rows([["Vállalkozás", business], ["Tételek", itemNames], ["Egyszeri díj (nettó)", money(once, cur, "hu") + (firstClient ? " (Első ügyfél kedvezménnyel, −30%)" : "")], ["Weboldal havidíjjal", sub ? `${money(sub.amount, cur, "hu")}/hó, 12 hónapig (a 13. hónaptól ${money(sub.after, cur, "hu")}/hó)` : ""], ["Havidíj (nettó)", monthly ? money(monthly, cur, "hu") + "/hó" : ""], ["Vázlatdíj", sketchFee ? money(sketchFee, cur, "hu") + " (beszámítjuk)" : "nincs"]])}
 <p>Csatolnál még valamit (logó, étlap, fotók)? Válaszolj erre a levélre, és tedd mellé.</p>`
     : `<p>Thank you! We've received your request. Your order number is <b>${id}</b>.</p>
 <p>Within an hour (business hours) we'll send back in writing what we understood, and ask about anything missing. The 24 hours start when you approve it.</p>
-${rows([["Business", business], ["Items", itemNames], ["One-off (net)", money(once, cur, "en")], ["Monthly (net)", monthly ? money(monthly, cur, "en") + "/mo" : ""], ["Sketch fee", sketchFee ? money(sketchFee, cur, "en") + " (credited)" : "none"]])}
+${rows([["Business", business], ["Items", itemNames], ["One-off (net)", money(once, cur, "en") + (firstClient ? " (first-client discount, −30%)" : "")], ["Website on monthly plan", sub ? `${money(sub.amount, cur, "en")}/mo for 12 months (from month 13: ${money(sub.after, cur, "en")}/mo)` : ""], ["Monthly (net)", monthly ? money(monthly, cur, "en") + "/mo" : ""], ["Sketch fee", sketchFee ? money(sketchFee, cur, "en") + " (credited)" : "none"]])}
 <p>Anything to attach (logo, menu, photos)? Just reply to this email with it.</p>`;
   await sendMail(env, { to: email, subject: subj, html: layout(lang, hu ? "Megkaptuk, köszönjük!" : "Got it, thank you!", body), template: "order_received", customer_id: cust.id, project_id: id });
 

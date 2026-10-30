@@ -1,6 +1,7 @@
-// POST /api/admin/projects/:id/paylink  {kind: "sketch"|"deposit"|"final", send?: boolean}
+// POST /api/admin/projects/:id/paylink  {kind: "sketch"|"deposit"|"final"|"subscription", send?: boolean}
+// "subscription": havidíjas weboldal – 12 hónapos előfizetés (a 13. hónaptól a webhook az üzemeltetés díjára vált).
 // Stripe Checkout fizetési linket készít, és (alapból) e-mailben elküldi az ügyfélnek.
-import { Env, json, bad, clean, logEvent, touch, money, priceOf, sketchFor, sketchAmount } from "../../../../../lib/core";
+import { Env, json, bad, clean, logEvent, touch, money, priceOf, orderPrice, sketchFor, sketchAmount, SUB_MONTHS } from "../../../../../lib/core";
 import { stripe } from "../../../../../lib/stripe";
 import { sendMail, layout, rows } from "../../../../../lib/mail";
 
@@ -9,7 +10,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ params, request, env }
   const id = String(params.id);
   const b = (await request.json().catch(() => ({}))) as Record<string, unknown>;
   const kind = clean(b.kind, 10);
-  if (!["sketch", "deposit", "final"].includes(kind)) return bad("Ismeretlen fizetéstípus.");
+  if (!["sketch", "deposit", "final", "subscription"].includes(kind)) return bad("Ismeretlen fizetéstípus.");
 
   const p = await env.DB.prepare("SELECT p.*, c.email, c.name, c.business, c.lang, c.stripe_customer_id FROM projects p JOIN customers c ON c.id=p.customer_id WHERE p.id=?1").bind(id).first<any>();
   if (!p) return bad("Nincs ilyen projekt.", 404);
@@ -18,13 +19,49 @@ export const onRequestPost: PagesFunction<Env> = async ({ params, request, env }
   const lang = p.lang === "en" ? "en" : "hu";
   const hu = lang === "hu";
   const items: string[] = JSON.parse(p.items || "[]");
-  const { once } = priceOf(items, cur);
+  const brief = JSON.parse(p.brief || "{}");
+  const op = orderPrice(items, cur, { first_client: brief.first_client === true, pay_mode: brief.pay_mode });
+  const once = op.once;
   const sketch = sketchFor(priceOf(items, "HUF").once);
   const sketchAmt = sketchAmount(priceOf(items, "HUF").once, cur);
 
   let lineItems: Record<string, unknown>[];
   let amount: number;
   let label: string;
+  if (kind === "subscription") {
+    if (!op.sub) return bad(hu ? "Ez a rendelés nem havidíjas weboldal." : "This order is not on a monthly website plan.");
+    const prodId = `wb_sub_${op.sub.item}`;
+    try { await stripe(env, "GET", `/products/${prodId}`); }
+    catch { await stripe(env, "POST", "/products", { id: prodId, name: `Webbridge – ${{ landing: "Egyoldalas weboldal", site: "Céges weboldal", shop: "Webshop" }[op.sub.item]} havidíjjal`, tax_code: "txcd_10000000" }); }
+    amount = op.sub.amount;
+    label = hu ? `Weboldal havidíjjal (${SUB_MONTHS} hónap)` : `Website monthly plan (${SUB_MONTHS} months)`;
+    lineItems = [{ quantity: 1, price_data: { currency: cur.toLowerCase(), unit_amount: amount * 100, tax_behavior: "exclusive", product: prodId, recurring: { interval: "month" } } }];
+    const md = { project_id: id, customer_id: p.customer_id, kind: "subscription", sub_item: op.sub.item, months: String(SUB_MONTHS), after_amount: String(op.sub.after), currency: cur };
+    const session = await stripe(env, "POST", "/checkout/sessions", {
+      mode: "subscription",
+      line_items: lineItems,
+      customer: p.stripe_customer_id || undefined,
+      customer_email: p.stripe_customer_id ? undefined : p.email,
+      tax_id_collection: { enabled: true },
+      managed_payments: { enabled: false },
+      billing_address_collection: "required",
+      locale: hu ? "hu" : "en",
+      success_url: `${env.SITE_URL}/?paid=subscription&order=${id}`,
+      cancel_url: `${env.SITE_URL}/?order=${id}`,
+      metadata: md,
+      subscription_data: { metadata: md, description: `${label} – ${id}` },
+    });
+    await logEvent(env, { customer_id: p.customer_id, project_id: id, kind: "payment", actor: "zsolt", title: `Fizetési link: ${label} – ${money(amount, cur, lang)}/hó`, meta: { session: session.id, url: session.url } });
+    if (b.send !== false) {
+      const subj = hu ? `${label}: ${money(amount, cur, "hu")}/hó – ${id}` : `${label}: ${money(amount, cur, "en")}/mo – ${id}`;
+      const body = hu
+        ? `<p>Szia${p.name ? " " + p.name : ""}!</p><p>Itt a havidíjas weboldal fizetési linkje. Az első havidíjat most fizeted, utána havonta automatikusan terheljük a kártyádat, ${SUB_MONTHS} hónapig. A ${SUB_MONTHS + 1}. hónaptól a havidíj ${money(op.sub.after, cur, "hu")}/hó (üzemeltetés), és az oldal végleg a tiéd.</p>${rows([["Rendelés", id], ["Tétel", label], ["Havidíj (nettó)", money(amount, cur, "hu") + "/hó"]])}`
+        : `<p>Hi${p.name ? " " + p.name : ""},</p><p>Here's the payment link for your monthly website plan. You pay the first month now, then your card is charged monthly for ${SUB_MONTHS} months. From month ${SUB_MONTHS + 1} the fee drops to ${money(op.sub.after, cur, "en")}/mo (hosting and care), and the site is yours for good.</p>${rows([["Order", id], ["Item", label], ["Monthly fee (net)", money(amount, cur, "en") + "/mo"]])}`;
+      await sendMail(env, { to: p.email, subject: subj, html: layout(lang, label, body, { label: hu ? "Fizetés" : "Pay now", url: session.url }), template: "pay_subscription", customer_id: p.customer_id, project_id: id });
+    }
+    await touch(env, p.customer_id, id);
+    return json({ ok: true, url: session.url, amount, currency: cur });
+  }
   if (kind === "sketch") {
     if (!sketch) return bad(hu ? "Ennél a rendelésnél nincs vázlatdíj (200 000 Ft alatt)." : "No sketch fee for this order.");
     const prod = await stripe(env, "GET", `/products/wb_${sketch}`);

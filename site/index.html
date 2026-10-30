@@ -671,6 +671,12 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
 .bill-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:520px){.bill-row{grid-template-columns:1fr}}
 .bill.b2c .b2b-only{display:none}
+.f-sum{border:1.5px solid var(--ink);border-radius:12px;padding:14px 16px;display:grid;gap:6px;font-size:15px}
+.f-sum h4{margin:0 0 2px;font-size:15px}.f-sum .r{display:flex;justify-content:space-between;gap:12px}.f-sum .r b{white-space:nowrap}.f-sum .mut{color:var(--muted);font-size:13.5px}
+#next:disabled{opacity:.45;cursor:not-allowed}
+.cart-bar{position:fixed;left:12px;right:84px;bottom:12px;z-index:30;display:none;align-items:center;justify-content:space-between;gap:10px;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 14px;font-size:14px;box-shadow:0 6px 24px rgba(0,0,0,.25);text-decoration:none}
+.cart-bar b{font-size:16px}
+@media (max-width:900px){.cart-bar.on{display:flex}}
 .pbtn{justify-self:start;border:1px dashed var(--line);background:transparent;color:var(--cobalt);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer}
 .pbtn:hover{border-color:var(--cobalt)}
 .pm-text{width:100%;font-family:var(--mono);font-size:12.5px;line-height:1.5;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:12px;resize:vertical}
@@ -1246,7 +1252,7 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
     </div>
     <div class="menu-grid">
       <div id="groups"></div>
-      <aside class="ticket" aria-live="polite">
+      <aside class="ticket" id="ticket" aria-live="polite">
         <span class="eyebrow" data-t="ticket">Rendelési lap</span>
         <div class="who-tg" role="group" aria-label="Vevő típusa"><button type="button" id="vt-b2b" aria-pressed="true" data-t="vtB2b">Cég</button><button type="button" id="vt-b2c" aria-pressed="false" data-t="vtB2c">Magánszemély</button></div>
         <div class="ticket-lines" id="tlines"></div>
@@ -1461,7 +1467,7 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
 
         <div class="progress" id="prog" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
         <div id="p1" class="field-set" style="display:grid;gap:14px">
-          <div class="field"><label for="f-name" data-t="f-name">Vállalkozás neve</label><input id="f-name" type="text" value="Masala Kantin"></div>
+          <div class="field"><label for="f-name" data-t="f-name">Vállalkozás neve</label><input id="f-name" type="text" autocomplete="organization" required></div>
           <div class="field"><label for="f-what" data-t="f-what">Mivel foglalkozol, egy mondatban?</label><button type="button" class="pbtn" data-prompt="f-what" data-t="pBtn">✦ Prompt a saját AI-odnak</button><input id="f-what" type="text" data-tp="f-what-ph"></div>
           <div class="field"><label for="f-who" data-t="f-who">Kik a vevőid?</label><button type="button" class="pbtn" data-prompt="f-who" data-t="pBtn">✦ Prompt a saját AI-odnak</button><input id="f-who" type="text" data-tp="f-who-ph"></div>
         </div>
@@ -1498,8 +1504,9 @@ mark.todo{background:color-mix(in srgb,var(--hazard) 30%,transparent);color:var(
             <div class="field"><label for="f-cur" data-t="f_cur">Pénznem</label><select id="f-cur"><option value="HUF">HUF (Ft)</option><option value="EUR">EUR (€)</option></select></div></div>
           </fieldset>
           <div class="field"><label for="f-extra" data-t="f-extra">Bármi más, amit tudnunk kell</label><button type="button" class="pbtn" data-prompt="f-extra" data-t="pBtn">✦ Prompt a saját AI-odnak</button><textarea id="f-extra" data-tp="f-extra-ph"></textarea></div>
-          <label class="consent"><input type="checkbox" id="f-terms"><span data-t="cTerms"></span></label>
-          <label class="consent"><input type="checkbox" id="f-start"><span data-t="cStart"></span></label>
+          <div class="f-sum" id="f-sum" aria-live="polite"></div>
+          <label class="consent"><input type="checkbox" id="f-terms" required><span data-t="cTerms"></span></label>
+          <label class="consent b2c-only-c" id="f-start-wrap"><input type="checkbox" id="f-start"><span data-t="cStart"></span></label>
           <p class="c-err" id="f-err" hidden data-t="cErr"></p>
         </div>
         <div id="pdone" hidden class="done">
@@ -1576,7 +1583,7 @@ empty:"Még üres. Pipálj be egy tételt.",bundleApplied:"Csomagár: ",save:"Me
 "f-logo":"Logó és anyagok","f-drop":"Húzd ide a fájlokat, vagy kattints","f-extract":"Márkaszínek kiolvasva a logóból, és rákerültek a fenti előnézetre.",
 "f-site":"Van már weboldalad?","f-site-ph":"cegem.hu (ha nincs, hagyd üresen)","f-site-go":"Átnézem","f-site-n":"Mit tartsunk meg, mi ne kerüljön át, mi legyen más?","f-site-n-ph":"Pl. a Rólunk szöveg maradjon, az árlista elavult, a régi logót ne használjuk, a galéria képei jók…","site-busy":"Megnyitjuk az oldalad…","site-found":"Ezt találtuk. Oldalanként jelöld, mi legyen vele:","site-keep":"Marad","site-chg":"Más legyen","site-drop":"Nem kell","site-more":"A teljes oldalt a rendelés után részletesen is átnézzük.","f-drop-s":"Logó, fotók, étlap, árlista, szórólap, céges anyagok (PDF, Word, kép) – max. 15 fájl, egyenként 25 MB","f-big":"Túl nagy (max. 25 MB)","f-max":"Legfeljebb 15 fájlt csatolhatsz.","up-ing":"Fájlok feltöltése","up-fail":"Néhány fájl nem töltődött fel. Válaszolj a visszaigazoló levelünkre, és csatold őket.",
 "f-tone":"Milyen hangon szóljunk?","f-email":"E-mail cím a szállításhoz","f-extra":"Bármi más, amit tudnunk kell","f-extra-ph":"Nyitvatartás, akciók, amit a versenytársaknál utálsz…",
-back:"Vissza",next:"Tovább",submit:"Gyártás indítása","d-e":"Rendelésszám","d-proto":"Ez a weboldal prototípusa: a beküldés még nincs bekötve, adat nem került továbbításra.",
+back:"Vissza",next:"Tovább",submit:"Megrendelés elküldése",sum:{h:"Összesítő",once:"Egyszeri díj",mo:"Havi díj (élesítéstől)",free:"ingyenes",empty:"Még nem választottál tételt. Semmi gond: elküldheted így is, és a briefben javaslatot teszünk.",next:"Most nem fizetsz semmit. E-mailben elküldjük a briefet jóváhagyásra; a jóváhagyás után indul a 24 óra. Vázlatdíj: {fee} (beszámítjuk). A végösszeg felét az irány kiválasztásakor, a másik felét a végén, jóváhagyáskor fizeted."},"d-e":"Rendelésszám","d-proto":"Ez a weboldal prototípusa: a beküldés még nincs bekötve, adat nem került továbbításra.",
 n1h:"Ki dolgozik rajta?",n1p:"Mi, egy bejáratott folyamattal. A válaszaidból megírjuk a szövegeket, összerakjuk az arculatot és felépítjük az oldalt. Szállítás előtt minden anyag minőségellenőrzésen megy át: helyesírás, működő linkek, mobilnézet, betöltési sebesség, és hogy az árak és elérhetőségek egyeznek-e a briefeddel.",
 n2h:"Miért 24 óra?",n2p:"Mert nincs egyeztetési kör, nincs „holnapra megnézem”. A brief megvan, a többi a mi dolgunk.",
 n3h:"Mi van, ha nem tetszik?",n3p:"Az előnézetben rábökhetsz bármire, és a Pultban kéred a módosítást. Az apró változtatás az átadás után 14 napig korlátlan, és semmit nem élesítünk, amíg jóvá nem hagyod.",
@@ -1605,7 +1612,7 @@ empty:"Empty so far. Tick an item.",bundleApplied:"Bundle price: ",save:"You sav
 "f-logo":"Logo and files","f-drop":"Drop files here, or click","f-extract":"Brand colours read from your logo and applied to the preview above.",
 "f-site":"Do you already have a website?","f-site-ph":"mycompany.com (leave empty if none)","f-site-go":"Review it","f-site-n":"What should we keep, drop or change?","f-site-n-ph":"E.g. keep the About text, the price list is outdated, don't use the old logo, the gallery photos are good…","site-busy":"Opening your site…","site-found":"Here's what we found. Mark what to do with each page:","site-keep":"Keep","site-chg":"Change","site-drop":"Drop","site-more":"After you order, we'll review the whole site in detail.","f-drop-s":"Logo, photos, menu, price list, flyers, company documents (PDF, Word, images) – up to 15 files, 25 MB each","f-big":"Too large (max 25 MB)","f-max":"You can attach up to 15 files.","up-ing":"Uploading files","up-fail":"Some files didn't upload. Please reply to our confirmation email with them attached.",
 "f-tone":"What tone should we use?","f-email":"Email for delivery","f-extra":"Anything else we should know","f-extra-ph":"Opening hours, offers, what you dislike about competitors…",
-back:"Back",next:"Next",submit:"Start production","d-e":"Order number","d-proto":"This is a prototype of the site: submission isn't connected yet and no data was sent.",
+back:"Back",next:"Next",submit:"Send order",sum:{h:"Summary",once:"One-off",mo:"Monthly (from go-live)",free:"free",empty:"You haven't picked any items yet. That's fine: send it anyway and we'll suggest a package in the brief.",next:"You pay nothing now. We email you the brief to approve; the 24 hours start after your OK. Sketch fee: {fee} (credited). You pay half of the total when you choose a direction and the rest at the end, on approval."},"d-e":"Order number","d-proto":"This is a prototype of the site: submission isn't connected yet and no data was sent.",
 n1h:"Who works on it?",n1p:"We do, with a well-refined process. From your answers we write the copy, shape the brand and build the site. Before delivery, everything goes through quality checks: spelling, working links, mobile layout, loading speed, and whether prices and contact details match your brief.",
 n2h:"Why 24 hours?",n2p:"No meeting rounds, no “I'll look at it tomorrow”. The brief is set; the rest is on us.",
 n3h:"What if I don't like it?",n3p:"Pin anything on the preview and request the change in the Desk. Small changes are unlimited for 14 days after handover, and nothing goes live until you approve it.",
@@ -1723,7 +1730,7 @@ const STA={hu:[["Brief elemzés","Célcsoport, ajánlat, hangnem"],["Arculat","P
 en:[["Brief analysis","Audience, offer, tone"],["Brand","Palette, type pair, logo usage"],["Copywriting","Headlines, sections, SEO"],["Website","Layout, build, deploy"],["Marketing","First posts, 90-day calendar"]]};
 
 let lang=(()=>{try{const q=new URLSearchParams(location.search).get("lang");if(q==="hu"||q==="en")return q;const v=localStorage.getItem("wb-lang");return v==="en"?"en":"hu"}catch(e){return "hu"}})(), ind=IND[0], logoColors=null, logoURL=null, step=1;
-const sel=new Set(["site","brand","strategy","setup"]);
+const sel=new Set();
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let cur=(()=>{try{const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||"";const nl=(navigator.language||"").toLowerCase();return (tz==="Europe/Budapest"||nl.startsWith("hu"))?"HUF":"EUR"}catch(e){return "HUF"}})();
@@ -1778,6 +1785,9 @@ function renderTicket(){
   const o=fin?fin.o:raw.o,m=fin?fin.m:raw.m;
   countTo($("#ttotal"),o,false);countTo($("#tmonth"),m,true);$("#tmonthrow").hidden=!m;
   renderPay(o,m);
+  {let bar=$("#cart-bar");if(!bar){bar=document.createElement("a");bar.id="cart-bar";bar.className="cart-bar";bar.href="#ticket";document.body.appendChild(bar)}
+   bar.innerHTML=`<span>${ids.length} ${lang==="hu"?"tétel a kosárban":(ids.length===1?"item in cart":"items in cart")}</span><b class="tnum">${money(o)}${m?" + "+money(m,true):""}</b>`;bar.classList.toggle("on",ids.length>0)}
+  if(step===3)renderSum();
   $("#tsave").innerHTML=fin?`<div class="save">${T[lang].bundleApplied}${fin.b[lang][0]} · ${T[lang].save}: ${money(raw.o-fin.o+(raw.m-fin.m)*3)}${raw.m-fin.m?(lang==="hu"?" (3 hónapra)":" (over 3 months)"):""}</div>`:"";
 }
 function sketchFee(o){const base=vatMode==="b2c"?o/(1+VAT):o;return gross(cur==="HUF"?(base<200000?0:19900):(base<520?0:49))}
@@ -1894,14 +1904,17 @@ const drop=$("#drop"),fi=$("#f-files");
 drop.addEventListener("drop",e=>handleFiles(e.dataTransfer.files));
 fi.addEventListener("change",()=>{handleFiles(fi.files);fi.value=""});
 $("#f-name").addEventListener("input",()=>{$("#biz").value=$("#f-name").value;renderSite()});
-function showStep(){window.wbEv&&wbEv("order_step",{step});["p1","p2","p3"].forEach((id,i)=>{$("#"+id).hidden=i+1!==step});document.querySelectorAll("#prog i").forEach((el,i)=>el.classList.toggle("on",i<step));$("#back").style.visibility=step>1?"visible":"hidden";$("#next").textContent=step===3?T[lang].submit:T[lang].next}
+function showStep(){window.wbEv&&wbEv("order_step",{step});if(step===3){if(sel.has("move"))$("#f-dom").value="move";renderSum()}$("#f-start-wrap").hidden=vatMode!=="b2c";["p1","p2","p3"].forEach((id,i)=>{$("#"+id).hidden=i+1!==step});document.querySelectorAll("#prog i").forEach((el,i)=>el.classList.toggle("on",i<step));$("#back").style.visibility=step>1?"visible":"hidden";$("#next").textContent=step===3?T[lang].submit:T[lang].next;$("#next").disabled=step===3&&!$("#f-terms").checked}
+$("#f-terms").addEventListener("change",()=>{if(step===3)$("#next").disabled=!$("#f-terms").checked});
+function renderSum(){const box=$("#f-sum");if(!box)return;const L=T[lang].sum,ids=S.filter(s=>sel.has(s.id));const {raw,best}=compute();const fin=best&&(best.o+best.m*3<raw.o+raw.m*3)?best:null;const o=fin?fin.o:raw.o,m=fin?fin.m:raw.m;
+ box.innerHTML=`<h4>${L.h}</h4>`+(ids.length?ids.map(x=>`<div class="r"><span>${x[lang][0]}</span><b class="tnum">${money(P(x),x.m)}</b></div>`).join("")+(fin?`<div class="r mut"><span>${T[lang].bundleApplied}${fin.b[lang][0]}</span><span></span></div>`:"")+`<div class="r" style="border-top:1px solid var(--line);padding-top:6px"><span>${L.once}</span><b class="tnum">${money(o)}</b></div>`+(m?`<div class="r"><span>${L.mo}</span><b class="tnum">${money(m,true)}</b></div>`:""):`<p class="mut" style="margin:0">${L.empty}</p>`)+`<p class="mut" style="margin:4px 0 0">${L.next.replace("{fee}",o?(sketchFee(o)?money(sketchFee(o)):L.free):L.free)}</p>`}
 $("#back").onclick=()=>{if(step>1){step--;showStep()}};
 const LIVE=/(^|\.)webbridge\.(hu|studio)$|\.pages\.dev$/.test(location.hostname);
 /* lead-forrás: csak az aktuális látogatásból (URL-paraméterek + hivatkozó oldal), tárolás nélkül */
 const ATTR=(()=>{const q=new URLSearchParams(location.search),a={};["utm_source","utm_medium","utm_campaign","utm_term","utm_content","gclid","fbclid","ref"].forEach(k=>{const v=q.get(k);if(v)a[k]=v.slice(0,200)});
  try{if(document.referrer&&new URL(document.referrer).hostname!==location.hostname)a.referrer=document.referrer.slice(0,300)}catch(e){}a.landing=location.pathname+(location.hash||"");a.first_at=new Date().toISOString();return a})();
 async function postIntake(data){const r=await fetch("/api/intake",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...data,lang,website:"",attr:ATTR})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||(lang==="hu"?"Nem sikerült elküldeni. Próbáld újra, vagy írj a hello@webbridge.hu címre.":"Could not send. Please try again or email hello@webbridge.hu."));return j}
-$("#form").addEventListener("submit",async e=>{e.preventDefault();if(step<3){step++;showStep();return}
+$("#form").addEventListener("submit",async e=>{e.preventDefault();if(step===1&&!$("#f-name").value.trim()){$("#f-name").focus();$("#f-name").reportValidity&&$("#f-name").reportValidity();return}if(step<3){step++;showStep();return}
   if(!$("#f-terms").checked){$("#f-err").hidden=false;return}$("#f-err").hidden=true;
   let upFail=false;let code="WB-"+new Date().toISOString().slice(2,10).replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6).toUpperCase();
   if(LIVE){const em=$("#f-email").value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)){$("#f-err").hidden=false;$("#f-err").textContent=lang==="hu"?"Adj meg egy érvényes e-mail-címet.":"Please enter a valid email address.";$("#f-email").focus();return}
@@ -2682,16 +2695,16 @@ $("#mkt-add").onclick=()=>{mCalc();["mkt1","mkt2","mkt3","extra"].forEach(i=>sel
 $("#biz").addEventListener("input",()=>mRender());
 
 const K=s=>`<mark class="todo">[${s}]</mark>`;
-const CO_HU=`<dl class="lg-dl"><dt>Cégnév</dt><dd>Tactical Edge Systems OÜ</dd><dt>Márkanév</dt><dd>Webbridge</dd><dt>Székhely</dt><dd>Narva mnt 5, 10117 Tallinn, Észtország</dd><dt>Cégjegyzékszám (registrikood)</dt><dd>17541898</dd><dt>Nyilvántartó</dt><dd>Észt Kereskedelmi Nyilvántartás (Äriregister), Tartu Megyei Bíróság cégbírósági osztálya</dd><dt>Képviselő</dt><dd>Balog Zsolt, az igazgatóság tagja (juhatuse liige)</dd><dt>Közösségi adószám (KMKR)</dt><dd>EE103014676 (korlátozott ÁFA-alany, 2026.08.06-tól)</dd><dt>E-mail</dt><dd>hello@webbridge.hu</dd><dt>Telefon</dt><dd>${K("kitöltendő")}</dd><dt>Weboldalak</dt><dd>webbridge.hu, webbridge.studio</dd></dl>`;
+const CO_HU=`<dl class="lg-dl"><dt>Cégnév</dt><dd>Tactical Edge Systems OÜ</dd><dt>Márkanév</dt><dd>Webbridge</dd><dt>Székhely</dt><dd>Narva mnt 5, 10117 Tallinn, Észtország</dd><dt>Cégjegyzékszám (registrikood)</dt><dd>17541898</dd><dt>Nyilvántartó</dt><dd>Észt Kereskedelmi Nyilvántartás (Äriregister), Tartu Megyei Bíróság cégbírósági osztálya</dd><dt>Képviselő</dt><dd>Balog Zsolt, az igazgatóság tagja (juhatuse liige)</dd><dt>Közösségi adószám (KMKR)</dt><dd>EE103014676 (korlátozott ÁFA-alany, 2026.08.06-tól)</dd><dt>E-mail</dt><dd>hello@webbridge.hu</dd><dt>Telefon</dt><dd>hamarosan; addig e-mailben és a weboldal chatjén érhetsz el minket</dd><dt>Weboldalak</dt><dd>webbridge.hu, webbridge.studio</dd></dl>`;
 const LEGAL_HU={
 impresszum:{t:"Impresszum",h:`
 <p>A Webbridge a Tactical Edge Systems OÜ márkaneve. A webbridge.hu és a webbridge.studio weboldalakat, valamint a rajtuk elérhető szolgáltatásokat a Tactical Edge Systems OÜ üzemelteti és nyújtja.</p>
 ${CO_HU}
-<h4>Tárhelyszolgáltató</h4><p>${K("név, cím, e-mail – kitöltendő az élesítéskor")}</p>
+<h4>Tárhelyszolgáltató</h4><p>Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA · www.cloudflare.com/abuse</p>
 <h4>Felügyeleti szervek</h4><p>Fogyasztóvédelem: Fogyasztóvédelmi és Műszaki Felügyeleti Hatóság (Tarbijakaitse ja Tehnilise Järelevalve Amet, TTJA), ttja.ee.<br>Adatvédelem: Észt Adatvédelmi Felügyelet (Andmekaitse Inspektsioon), aki.ee.</p>
 <p>Szerződési feltételeinket az <a href="#aszf" data-lg="aszf">ÁSZF</a>, az adatkezelést az <a href="#adatvedelem" data-lg="adatvedelem">Adatkezelési tájékoztató</a> tartalmazza.</p>`},
 aszf:{t:"Általános Szerződési Feltételek",h:`
-<p class="lg-meta">Hatályos: ${K("élesítés dátuma")} · Verzió: 1.0</p>
+<p class="lg-meta">Hatályos: 2026. október 30. · Verzió: 1.0</p>
 <h4>1. A szolgáltató</h4>${CO_HU}
 <h4>2. Hatály és fogalmak</h4>
 <p>2.1. Jelen ÁSZF a Tactical Edge Systems OÜ (a továbbiakban: Szolgáltató) és az ügyfél (a továbbiakban: Ügyfél) között a Webbridge szolgáltatásaira létrejövő minden szerződésre vonatkozik.</p>
@@ -2706,7 +2719,7 @@ aszf:{t:"Általános Szerződési Feltételek",h:`
 <p>4.2. A határidő szünetel, amíg az Ügyféltől szükséges anyag, adat, hozzáférés vagy döntés hiányzik.</p>
 <p>4.3. Harmadik féltől függő lépések nem tartoznak a 24 órás határidő alá, így különösen: domain regisztrációja vagy átvitele, a Google Cégprofil ellenőrzése, fizetési szolgáltató aktiválása, hirdetési fiókok jóváhagyása.</p>
 <h4>5. Árak és fizetés</h4>
-<p>5.1. Az árakat a weboldal tartalmazza, forintban (HUF) vagy euróban (EUR), az Ügyfél választása szerint. Vállalkozásnak nettó árat mutatunk: EU-s közösségi adószámmal rendelkező vállalkozásnak fordított adózással (reverse charge) számlázunk. Fogyasztónak a feltüntetett ár a végső ár: a Szolgáltató korlátozott ÁFA-alany (észt ÁFA-törvény 21. §), ezért ÁFÁ-t nem számít fel. A számla nyelve az Ügyfél választása szerint magyar vagy angol; a számlát elektronikusan küldjük. A díjat a Szolgáltató online, kártyás fizetéssel vagy banki átutalással szedi be, fizetési szolgáltató közreműködésével. ${K("Illetőség és ÁFA-kezelés könyvelővel ellenőrizendő; teljes ÁFA-regisztráció vagy 10 000 €-s EU-s B2C küszöb felett módosul")}</p>
+<p>5.1. Az árakat a weboldal tartalmazza, forintban (HUF) vagy euróban (EUR), az Ügyfél választása szerint. Vállalkozásnak nettó árat mutatunk: EU-s közösségi adószámmal rendelkező vállalkozásnak fordított adózással (reverse charge) számlázunk. Fogyasztónak a feltüntetett ár a végső ár: a Szolgáltató korlátozott ÁFA-alany (észt ÁFA-törvény 21. §), ezért ÁFÁ-t nem számít fel. A számla nyelve az Ügyfél választása szerint magyar vagy angol; a számlát elektronikusan küldjük. A díjat a Szolgáltató online, kártyás fizetéssel vagy banki átutalással szedi be, fizetési szolgáltató közreműködésével.</p>
 <p>5.2. A fizetés három lépésben történik:</p>
 <p>a) <b>Vázlatdíj</b> a szerződés létrejöttekor: 200 000 Ft alatti egyszeri végösszegnél nincs vázlatdíj, felette 19 900 Ft. Az Ügyfél 3 vázlatirányt kap. A vázlatdíjat a végösszegbe beszámítjuk.</p>
 <p>b) <b>Választáskor</b> az egyszeri végösszeg 50%-a, csökkentve a vázlatdíjjal.</p>
@@ -2764,7 +2777,7 @@ aszf:{t:"Általános Szerződési Feltételek",h:`
 <h4>15. Módosítás</h4>
 <p>Az ÁSZF módosítását legalább 15 nappal a hatálybalépés előtt közzétesszük, és az előfizetőket e-mailben értesítjük. A már létrejött egyszeri megrendelésekre a megrendeléskor hatályos ÁSZF vonatkozik.</p>`},
 adatvedelem:{t:"Adatkezelési tájékoztató",h:`
-<p class="lg-meta">Hatályos: ${K("élesítés dátuma")} · Verzió: 1.0</p>
+<p class="lg-meta">Hatályos: 2026. október 30. · Verzió: 1.0</p>
 <p>Ez a tájékoztató elmondja, milyen személyes adatokat kezelünk, miért, mennyi ideig, és milyen jogaid vannak. A tájékoztató az EU általános adatvédelmi rendelete (GDPR) alapján készült.</p>
 <h4>1. Az adatkezelő</h4>${CO_HU}<p>Adatvédelmi kérdésekben: hello@webbridge.hu. Adatvédelmi tisztviselő kijelölésére nem vagyunk kötelesek.</p>
 <h4>2. Milyen adatokat, miért és meddig kezelünk</h4>
@@ -2778,20 +2791,20 @@ adatvedelem:{t:"Adatkezelési tájékoztató",h:`
 <tr><td>Fizetés</td><td>tranzakcióazonosító, összeg (kártyaadatot nem tárolunk)</td><td>szerződés teljesítése (6. cikk (1) b)</td><td>mint a számlázásnál</td></tr>
 <tr><td>Látogatottság mérése (Google Analytics 4)</td><td>süti-azonosító, a meglátogatott oldalak, kattintások, eszköz- és böngészőtípus, hozzávetőleges hely (ország/város); IP-címet a Google Analytics 4 nem tárol</td><td>hozzájárulás (6. cikk (1) a), a sütisávon; bármikor visszavonható a „Süti beállítások” linkkel</td><td>a sütik legfeljebb 13 hónapig, a mérési adatok 2 hónapig; csak összesítve nézzük</td></tr>
 <tr><td>Hirdetéseink mérése (Google Ads konverziómérés, bővített konverziók)</td><td>hirdetési kattintásazonosító, süti-azonosító, a rendelés értéke és azonosítója; rendeléskor az e-mail-címed, amelyet a böngésződ még elküldés előtt titkosít (SHA-256 kivonat)</td><td>hozzájárulás (6. cikk (1) a), a sütisávon; bármikor visszavonható a „Süti beállítások” linkkel</td><td>a sütik legfeljebb 90 napig; a Google a kivonatot csak a hirdetési kattintás és a rendelés összepárosítására használja</td></tr>
-<tr><td>Weboldal biztonságos működése</td><td>IP-cím, böngésző adatai, naplók</td><td>jogos érdek (6. cikk (1) f)</td><td>${K("legfeljebb 30 nap – ellenőrzendő")}</td></tr>
+<tr><td>Weboldal biztonságos működése</td><td>IP-cím, böngésző adatai, naplók</td><td>jogos érdek (6. cikk (1) f)</td><td>legfeljebb 30 nap</td></tr>
 </tbody></table></div>
 <h4>3. Automatizált feldolgozás</h4>
 <p>A briefek, megjegyzések és teljesítményadatok feldolgozásához, valamint a tartalmak elkészítéséhez automatizált eszközöket használunk. Ezek nem hoznak rólad joghatással járó vagy rád nézve hasonlóan jelentős döntést (GDPR 22. cikk).</p>
 <h4>4. Kik férnek hozzá az adatokhoz (adatfeldolgozók)</h4>
 <p>Az adatokat csak a szolgáltatáshoz szükséges mértékben, szerződés alapján adjuk át az alábbi adatfeldolgozóknak:</p>
-<p>· tárhely és weboldal-üzemeltetés: ${K("szolgáltató neve, ország")}<br>
-· e-mail és ügyfélkommunikáció (Google Workspace, Google Ireland Ltd.); ${K("szolgáltató neve, ország")}<br>
+<p>· tárhely és weboldal-üzemeltetés, fájltárolás: Cloudflare, Inc. (USA; a feltöltött fájlokat EU-s adatközpontban tároljuk)<br>
+· e-mail és ügyfélkommunikáció: Google Workspace (Google Ireland Ltd., Írország)<br>
 · fizetés: Stripe Payments Europe Ltd. (Írország)<br>
 · tranzakciós e-mailek: Sendinblue SAS / Brevo (Franciaország)<br>
 · hirdetés- és látogatottságmérés (csak hozzájárulással): Google Ireland Ltd. (Írország), Google Ads konverziómérés, bővített konverziók és Google Analytics 4; az adatokat a Google Ads adatfeldolgozási feltételei szerint kezeli<br>
-· számlázás: ${K("pl. Számlázz.hu / Merit")}<br>
-· telefonos asszisztens, hívásrögzítés és -átírás: ${K("szolgáltató neve, ország")}<br>
-· szöveg-, kép- és adatfeldolgozó automatizálási szolgáltatók: ${K("szolgáltatók neve, ország")}<br>
+· számlázás: Stripe Payments Europe Ltd. (Írország)<br>
+· telefonos asszisztens, hívásrögzítés és -átírás: Telnyx LLC (USA)<br>
+· szöveg- és adatfeldolgozó automatizálási szolgáltató (a briefek, a chat és a vázlatok elkészítéséhez): Anthropic, PBC (USA)<br>
 · hirdetési és közösségi platformok, a te összekötésed alapján (Meta, Google stb.). Ezek saját adatkezelési szabályaik szerint járnak el.</p>
 <p>Ha adat az Európai Gazdasági Térségen kívülre kerül (pl. USA), azt az Európai Bizottság megfelelőségi határozata (pl. EU–USA adatvédelmi keret) vagy általános szerződési feltételek alapján tesszük.</p>
 <h4>5. Jogaid</h4>
@@ -2811,14 +2824,14 @@ adatvedelem:{t:"Adatkezelési tájékoztató",h:`
 <h4>8. Az ügyfeleid adatai</h4>
 <p>Ha a szolgáltatás során a te ügyfeleid adatait kezeljük (pl. hírlevél-feliratkozók, értékelők), abban adatfeldolgozóként járunk el, a te utasításaid szerint. Erről az <a href="#adatfeldolgozas" data-lg="adatfeldolgozas">Adatfeldolgozási feltételek</a> szólnak.</p>`},
 sutik:{t:"Süti tájékoztató",h:`
-<p class="lg-meta">Hatályos: ${K("élesítés dátuma")}</p>
+<p class="lg-meta">Hatályos: 2026. október 30.</p>
 <p><b>Feltétlenül szükséges:</b> a weboldal működéséhez szükséges technikai megoldások (pl. a választott nyelv és a süti-döntésed tárolása a böngésződben). Ezekhez nem kell hozzájárulás.</p>
 <p><b>Hirdetésmérés (csak hozzájárulással):</b> ha a sütisávon az „Elfogadom” gombot választod, betöltjük a Google Ads címkéjét (Google Ireland Ltd.). Ez sütiket helyez el (pl. _gcl_au), hogy mérjük, melyik hirdetésből érkezett megrendelés, és a hirdetéseket ennek alapján optimalizáljuk. Rendeléskor az e-mail-címed titkosított kivonatát (SHA-256) is átadjuk a Google-nek a pontosabb mérés érdekében (bővített konverziók). Megőrzés: legfeljebb 90 nap. Ha elutasítod, semmilyen hirdetési vagy mérő kódot nem töltünk be.</p>
 <p><b>Látogatottság mérése (csak hozzájárulással):</b> ugyanezzel az „Elfogadom” gombbal a Google Analytics 4-et (Google Ireland Ltd.) is betöltjük. Ez sütiket helyez el (_ga, _ga_*), hogy összesítve lássuk, hányan és honnan jönnek, mely oldalakat nézik, és hol akadnak el a rendelésben. Megőrzés: a sütik legfeljebb 13 hónapig, a mérési adatok 2 hónapig. Hirdetési személyre szabásra nem használjuk.</p>
 <p>A döntésedet bármikor megváltoztathatod az oldal alján a „Süti beállítások” linkkel.</p>
-<p>A betűtípusokat és minden más erőforrást saját szerverünkről szolgáljuk ki, így a látogatásod adatai nem kerülnek külső szolgáltatóhoz. ${K("élesítéskor ellenőrzendő")}</p>`},
+<p>A betűtípusokat a Google Fonts szolgáltatásból töltjük be (Google), ehhez a böngésződ IP-címe a Google-hoz kerül. A weboldalt a Cloudflare szolgálja ki; a Cloudflare süti nélküli, anonim forgalommérést (Web Analytics) is végez, ami személyhez nem köthető.</p>`},
 adatfeldolgozas:{t:"Adatfeldolgozási feltételek",h:`
-<p class="lg-meta">Az ÁSZF melléklete (GDPR 28. cikk) · Hatályos: ${K("élesítés dátuma")}</p>
+<p class="lg-meta">Az ÁSZF melléklete (GDPR 28. cikk) · Hatályos: 2026. október 30.</p>
 <p>1. <b>Szerepek.</b> Az Ügyfél adatkezelő, a Tactical Edge Systems OÜ adatfeldolgozó az Ügyfél ügyfeleinek, feliratkozóinak és követőinek azon személyes adatai tekintetében, amelyekhez az Ügyfél fiókösszekötése révén hozzáfér.</p>
 <p>2. <b>Tárgy és időtartam.</b> Tartalom közzététele, hírlevélküldés, értékelésekre adott válaszok, hirdetési célzás és teljesítményelemzés, az előfizetés időtartama alatt.</p>
 <p>3. <b>Érintettek és adatok.</b> Feliratkozók, vásárlók, értékelők, követők. Név, e-mail-cím, nyilvános profiladatok, értékelések szövege, összesített teljesítményadatok.</p>
@@ -2830,16 +2843,16 @@ adatfeldolgozas:{t:"Adatfeldolgozási feltételek",h:`
 };
 
 const KE=s=>`<mark class="todo">[${s}]</mark>`;
-const CO_EN=`<dl class="lg-dl"><dt>Company</dt><dd>Tactical Edge Systems OÜ</dd><dt>Brand</dt><dd>Webbridge</dd><dt>Registered office</dt><dd>Narva mnt 5, 10117 Tallinn, Estonia</dd><dt>Registry code</dt><dd>17541898</dd><dt>Register</dt><dd>Estonian Commercial Register (Äriregister), registration department of Tartu County Court</dd><dt>Represented by</dt><dd>Zsolt Balog, member of the management board (juhatuse liige)</dd><dt>VAT number (KMKR)</dt><dd>EE103014676 (limited VAT liable person since 06.08.2026)</dd><dt>Email</dt><dd>hello@webbridge.studio</dd><dt>Phone</dt><dd>${KE("to be completed")}</dd><dt>Websites</dt><dd>webbridge.hu, webbridge.studio</dd></dl>`;
+const CO_EN=`<dl class="lg-dl"><dt>Company</dt><dd>Tactical Edge Systems OÜ</dd><dt>Brand</dt><dd>Webbridge</dd><dt>Registered office</dt><dd>Narva mnt 5, 10117 Tallinn, Estonia</dd><dt>Registry code</dt><dd>17541898</dd><dt>Register</dt><dd>Estonian Commercial Register (Äriregister), registration department of Tartu County Court</dd><dt>Represented by</dt><dd>Zsolt Balog, member of the management board (juhatuse liige)</dd><dt>VAT number (KMKR)</dt><dd>EE103014676 (limited VAT liable person since 06.08.2026)</dd><dt>Email</dt><dd>hello@webbridge.hu</dd><dt>Phone</dt><dd>coming soon; until then reach us by email or the website chat</dd><dt>Websites</dt><dd>webbridge.hu, webbridge.studio</dd></dl>`;
 const LEGAL_EN={
 impresszum:{t:"Imprint",h:`
 <p>Webbridge is a brand of Tactical Edge Systems OÜ. The websites webbridge.hu and webbridge.studio and the services offered on them are operated and provided by Tactical Edge Systems OÜ.</p>
 ${CO_EN}
-<h4>Hosting provider</h4><p>${KE("name, address, email – complete at launch")}</p>
+<h4>Hosting provider</h4><p>Cloudflare, Inc., 101 Townsend St, San Francisco, CA 94107, USA · www.cloudflare.com/abuse</p>
 <h4>Supervisory authorities</h4><p>Consumer protection: Consumer Protection and Technical Regulatory Authority (Tarbijakaitse ja Tehnilise Järelevalve Amet, TTJA), ttja.ee.<br>Data protection: Estonian Data Protection Inspectorate (Andmekaitse Inspektsioon), aki.ee.</p>
 <p>Our contract terms are in the <a href="#aszf" data-lg="aszf">Terms of Service</a>; data processing is described in the <a href="#adatvedelem" data-lg="adatvedelem">Privacy Policy</a>.</p>`},
 aszf:{t:"Terms of Service",h:`
-<p class="lg-meta">Effective: ${KE("launch date")} · Version 1.0</p>
+<p class="lg-meta">Effective: 30 October 2026 · Version 1.0</p>
 <h4>1. The provider</h4>${CO_EN}
 <h4>2. Scope and definitions</h4>
 <p>2.1. These Terms apply to every contract for Webbridge services between Tactical Edge Systems OÜ (the "Provider") and the customer (the "Customer").</p>
@@ -2854,7 +2867,7 @@ aszf:{t:"Terms of Service",h:`
 <p>4.2. The deadline is paused while materials, data, access or decisions needed from the Customer are missing.</p>
 <p>4.3. Steps that depend on third parties are outside the 24-hour deadline, in particular: domain registration or transfer, Google Business Profile verification, payment provider activation, and ad account approval.</p>
 <h4>5. Prices and payment</h4>
-<p>5.1. Prices are listed on the website in Hungarian forints (HUF) or euros (EUR), at the Customer’s choice. Businesses see net prices; EU businesses with a valid VAT number are invoiced under reverse charge. For consumers the listed price is final: the Provider is a limited VAT liable person (Estonian VAT Act § 21) and charges no VAT. Invoices are issued electronically in Hungarian or English, at the Customer’s choice. The Provider collects payment online by card or bank transfer through a payment service provider. ${KE("Tax residency and VAT treatment to be confirmed with the accountant; changes on full VAT registration or above the €10,000 EU B2C threshold")}</p>
+<p>5.1. Prices are listed on the website in Hungarian forints (HUF) or euros (EUR), at the Customer’s choice. Businesses see net prices; EU businesses with a valid VAT number are invoiced under reverse charge. For consumers the listed price is final: the Provider is a limited VAT liable person (Estonian VAT Act § 21) and charges no VAT. Invoices are issued electronically in Hungarian or English, at the Customer’s choice. The Provider collects payment online by card or bank transfer through a payment service provider.</p>
 <p>5.2. Payment is made in three steps:</p>
 <p>a) <b>Sketch fee</b> on formation of the contract: none for one-off totals under €520, otherwise €49. The Customer receives 3 sketch directions. The sketch fee is credited to the total.</p>
 <p>b) <b>On choice</b>: 50% of the one-off total, less the sketch fee.</p>
@@ -2912,7 +2925,7 @@ aszf:{t:"Terms of Service",h:`
 <h4>15. Changes</h4>
 <p>We publish changes to these Terms at least 15 days before they take effect and notify subscribers by email. One-off orders already placed remain under the Terms in force when they were placed.</p>`},
 adatvedelem:{t:"Privacy Policy",h:`
-<p class="lg-meta">Effective: ${KE("launch date")} · Version 1.0</p>
+<p class="lg-meta">Effective: 30 October 2026 · Version 1.0</p>
 <p>This policy explains what personal data we process, why, for how long, and what rights you have. It is based on the EU General Data Protection Regulation (GDPR).</p>
 <h4>1. Controller</h4>${CO_EN}<p>For privacy questions: hello@webbridge.studio. We are not required to appoint a data protection officer.</p>
 <h4>2. What we process, why and for how long</h4>
@@ -2926,20 +2939,20 @@ adatvedelem:{t:"Privacy Policy",h:`
 <tr><td>Payments</td><td>transaction ID, amount (we do not store card data)</td><td>contract (Art. 6(1)(b))</td><td>as for invoicing</td></tr>
 <tr><td>Measuring site traffic (Google Analytics 4)</td><td>cookie ID, pages visited, clicks, device and browser type, approximate location (country/city); Google Analytics 4 does not store IP addresses</td><td>consent (Art. 6(1)(a)) via the cookie banner; withdraw any time with the “Cookie settings” link</td><td>cookies up to 13 months, measurement data 2 months; we only look at aggregates</td></tr>
 <tr><td>Measuring our ads (Google Ads conversion tracking, enhanced conversions)</td><td>ad click ID, cookie ID, order value and ID; when you order, your email address, which your browser hashes before sending (SHA-256)</td><td>consent (Art. 6(1)(a)) via the cookie banner; withdraw any time with the “Cookie settings” link</td><td>cookies up to 90 days; Google uses the hash only to match an ad click to an order</td></tr>
-<tr><td>Secure operation of the website</td><td>IP address, browser data, logs</td><td>legitimate interest (Art. 6(1)(f))</td><td>${KE("max. 30 days – to be confirmed")}</td></tr>
+<tr><td>Secure operation of the website</td><td>IP address, browser data, logs</td><td>legitimate interest (Art. 6(1)(f))</td><td>max. 30 days</td></tr>
 </tbody></table></div>
 <h4>3. Automated processing</h4>
 <p>We use automated tools to process briefs, comments and performance data and to create content. They do not make decisions about you that have legal or similarly significant effects (GDPR Art. 22).</p>
 <h4>4. Who has access (processors)</h4>
 <p>We share data only as far as needed for the service, under contract, with these processors:</p>
-<p>· hosting and website operation: ${KE("provider, country")}<br>
-· email and customer communication (Google Workspace, Google Ireland Ltd.); ${KE("provider, country")}<br>
+<p>· hosting, website operation and file storage: Cloudflare, Inc. (USA; uploaded files are stored in EU data centres)<br>
+· email and customer communication: Google Workspace (Google Ireland Ltd., Ireland)<br>
 · payments: Stripe Payments Europe Ltd. (Ireland)<br>
 · transactional email: Sendinblue SAS / Brevo (France)<br>
 · ad and traffic measurement (only with consent): Google Ireland Ltd. (Ireland), Google Ads conversion tracking, enhanced conversions and Google Analytics 4, under the Google Ads Data Processing Terms<br>
-· invoicing: ${KE("e.g. Számlázz.hu / Merit")}<br>
-· phone assistant, call recording and transcription: ${KE("provider, country")}<br>
-· text, image and data processing automation providers: ${KE("providers, countries")}<br>
+· invoicing: Stripe Payments Europe Ltd. (Ireland)<br>
+· phone assistant, call recording and transcription: Telnyx LLC (USA)<br>
+· text and data processing automation provider (for briefs, chat and drafts): Anthropic, PBC (USA)<br>
 · ad and social platforms, based on your connections (Meta, Google, etc.), which act under their own policies.</p>
 <p>Where data leaves the European Economic Area (e.g. the USA), we rely on an adequacy decision (e.g. the EU–US Data Privacy Framework) or standard contractual clauses.</p>
 <h4>5. Your rights</h4>
@@ -2959,14 +2972,14 @@ adatvedelem:{t:"Privacy Policy",h:`
 <h4>8. Your customers' data</h4>
 <p>Where we process your customers' data during the service (e.g. newsletter subscribers, reviewers), we act as your processor, on your instructions. See the <a href="#adatfeldolgozas" data-lg="adatfeldolgozas">Data Processing Terms</a>.</p>`},
 sutik:{t:"Cookie Policy",h:`
-<p class="lg-meta">Effective: ${KE("launch date")}</p>
+<p class="lg-meta">Effective: 30 October 2026</p>
 <p><b>Strictly necessary:</b> technical means the site needs to work (e.g. storing your language and your cookie choice in your browser). No consent is needed for these.</p>
 <p><b>Ad measurement (only with consent):</b> if you choose "Accept" in the cookie banner, we load the Google Ads tag (Google Ireland Ltd.). It sets cookies (e.g. _gcl_au) so we can measure which ad led to an order and optimise our ads accordingly. When you order, we also pass a hashed (SHA-256) version of your email address to Google for more accurate measurement (enhanced conversions). Retention: up to 90 days. If you decline, no advertising or measurement code is loaded.</p>
 <p><b>Traffic measurement (only with consent):</b> the same "Accept" button also loads Google Analytics 4 (Google Ireland Ltd.). It sets cookies (_ga, _ga_*) so we can see, in aggregate, how many people visit, where they come from, which pages they read and where they get stuck in the order form. Retention: cookies up to 13 months, measurement data 2 months. Not used for ad personalisation.</p>
 <p>You can change your choice at any time with the "Cookie settings" link at the bottom of the page.</p>
-<p>Fonts and all other resources are served from our own server, so your visit is not shared with external providers. ${KE("verify at launch")}</p>`},
+<p>Fonts are loaded from Google Fonts (Google), which means your browser's IP address is sent to Google. The site is served by Cloudflare, which also runs cookieless, anonymous traffic measurement (Web Analytics) that cannot identify you.</p>`},
 adatfeldolgozas:{t:"Data Processing Terms",h:`
-<p class="lg-meta">Annex to the Terms of Service (GDPR Art. 28) · Effective: ${KE("launch date")}</p>
+<p class="lg-meta">Annex to the Terms of Service (GDPR Art. 28) · Effective: 30 October 2026</p>
 <p>1. <b>Roles.</b> The Customer is the controller and Tactical Edge Systems OÜ is the processor of personal data of the Customer's customers, subscribers and followers accessed through the Customer's account connections.</p>
 <p>2. <b>Subject and duration.</b> Publishing content, sending newsletters, replying to reviews, ad targeting and performance analysis, for the duration of the subscription.</p>
 <p>3. <b>Data subjects and data.</b> Subscribers, buyers, reviewers, followers. Name, email address, public profile data, review texts, aggregated performance data.</p>
@@ -3120,7 +3133,7 @@ function syncCommerce(){
 }
 function repaint(){renderMenu();renderBundles();renderTicket();if(typeof mRender==="function")mRender();if(typeof gRender==="function")gRender();syncCommerce()}
 function setCur(c){cur=c;applyStatic()}
-function setVat(v){vatMode=v;applyStatic()}
+function setVat(v){vatMode=v;applyStatic();const w=$("#f-start-wrap");if(w)w.hidden=v!=="b2c"}
 $("#cur-huf").onclick=()=>setCur("HUF");$("#cur-eur").onclick=()=>setCur("EUR");
 $("#vt-b2b").onclick=$("#fb-b2b").onclick=()=>setVat("b2b");$("#vt-b2c").onclick=$("#fb-b2c").onclick=()=>setVat("b2c");
 $("#f-cur").addEventListener("change",e=>setCur(e.target.value));

@@ -257,3 +257,5 @@ CREATE TABLE IF NOT EXISTS instructions (
   updated_at  TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS instructions_status ON instructions(status, at);
+-- Egyszerű óránkénti korlát (pl. chat: IP-címenként)
+CREATE TABLE IF NOT EXISTS rate_limit (key TEXT PRIMARY KEY, n INTEGER NOT NULL, at TEXT NOT NULL);

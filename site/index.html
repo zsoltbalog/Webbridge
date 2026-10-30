@@ -3019,7 +3019,7 @@ en:{fab:"Ask us anything",title:"Webbridge assistant",sub:"Virtual assistant · 
  off:"I'm in simple question mode right now.",filled:"Filled in the questionnaire",cart:"Added to cart",err:"Something went wrong. Try again, or use the questionnaire below.",rl:"Too many requests right now, please try again in a few minutes.",
  s:[["name","What's your business called?"],["what","What do you do, in one sentence?"],["who","Who are your customers, and where do you operate?"],["email","Which email should we send the summary to?"]],
  sDone:"Thanks! I've filled in the first part of the questionnaire. The 9 questions in “Help me choose” can build your cart, or continue the questionnaire below.",sGo:"Go to the advisor",sForm:"Go to the questionnaire"}};
-let cbSample=null,cbMode="script",cbTurns=[],cbBusy=false,cbCtl=null,cbStep=0;
+let cbSample=null,cbMode="server",cbTurns=[],cbBusy=false,cbCtl=null,cbStep=0,cbMsgs=[];
 (async()=>{try{if(window.claude&&window.claude.use){cbSample=await window.claude.use("sample");if(cbSample){let lim=null;try{lim=await cbSample.limits()}catch(e){}cbMode=lim&&lim.tools?"live":"script"}}}catch(e){cbSample=null}})();
 function cbRules(){const L=lang==="hu";
  const items=S.filter(s=>s.g!==9).map(s=>`${s.id}: ${s[lang][0]} – ${money(P(s),s.m)}`).join("\n");
@@ -3059,9 +3059,10 @@ function cbAdd(role,text){const d=document.createElement("div");d.className="cb-
 function cbSys(text){const d=cbAdd("sys",text);return d}
 function cbRender(){const L=CB[lang];$("#cb-fab-t").textContent=L.fab;$("#cb-title").textContent=L.title;$("#cb-sub").textContent=L.sub;$("#cb-in").placeholder=L.ph;$("#cb-send").textContent=cbBusy?L.stop:L.send;$("#cb-note").textContent=L.note;
  $("#cb-chips").innerHTML=L.chips.map(c=>`<button type="button" class="cb-chip">${esc(c)}</button>`).join("");$("#cb-chips").hidden=cbTurns.length>0||cbStep>0}
-function cbOpen(){window.wbEv&&wbEv("chat_open");const p=$("#cb-panel");p.hidden=false;$("#cb-fab").setAttribute("aria-expanded","true");if(!cbEl().children.length){cbAdd("bot",CB[lang].hello);if(cbMode!=="live"){cbAdd("bot",CB[lang].s[0][1])}}cbRender();setTimeout(()=>$("#cb-in").focus(),50)}
+function cbOpen(){window.wbEv&&wbEv("chat_open");const p=$("#cb-panel");p.hidden=false;$("#cb-fab").setAttribute("aria-expanded","true");if(!cbEl().children.length){cbAdd("bot",CB[lang].hello);if(cbMode==="script"){cbAdd("bot",CB[lang].s[0][1])}}cbRender();setTimeout(()=>$("#cb-in").focus(),50)}
 function cbClose(){$("#cb-panel").hidden=true;$("#cb-fab").setAttribute("aria-expanded","false");$("#cb-fab").focus()}
 async function cbSend(text){text=String(text||"").trim();if(!text||cbBusy)return;$("#cb-in").value="";cbAdd("user",text);$("#cb-chips").hidden=true;
+ if(cbMode==="server"){cbServer(text);return}
  if(cbMode!=="live"){cbScript(text);return}
  cbTurns.push({role:"user",content:text});if(cbTurns.length>24)cbTurns=cbTurns.slice(-24);while(cbTurns[0]&&cbTurns[0].role!=="user")cbTurns.shift();
  const bubble=cbAdd("bot",CB[lang].thinking);bubble.classList.add("wait");cbBusy=true;cbCtl=new AbortController();cbRender();
@@ -3074,6 +3075,29 @@ async function cbSend(text){text=String(text||"").trim();if(!text||cbBusy)return
   else if(c==="refused"){bubble.textContent=CB[lang].err}
   else{bubble.textContent=(e&&e.text?e.text+"\n\n":"")+CB[lang].err}
   cbTurns.pop()}
+ finally{cbBusy=false;cbCtl=null;cbRender()}}
+function cbCtx(){const items=S.filter(s=>s.g!==9).map(s=>`${s.id}: ${s[lang][0]} – ${money(P(s),s.m)} (${s[lang][1]})`).join("\n");
+ const bundles=B.map(b=>`${b[lang][0]}: ${b.items.join(", ")} – ${money(bundlePrice(b))}${bundleMonthly(b)?" + "+money(bundleMonthly(b),true):""}`).join("\n");
+ return `ITEMS (id: name – price (summary)):\n${items}\nBUNDLES:\n${bundles}\nCurrency shown: ${cur}. Current cart: ${[...sel].join(", ")||"empty"}. Questionnaire business name: ${$("#f-name").value||"-"}.`}
+async function cbServer(text){cbMsgs.push({role:"user",content:text});if(cbMsgs.length>30)cbMsgs=cbMsgs.slice(-30);while(cbMsgs.length&&(cbMsgs[0].role!=="user"||typeof cbMsgs[0].content!=="string"))cbMsgs.shift();
+ const bubble=cbAdd("bot",CB[lang].thinking);bubble.classList.add("wait");cbBusy=true;cbCtl=new AbortController();cbRender();let shown=false;
+ try{for(let i=0;i<4;i++){
+   const r=await fetch("/api/chat",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({lang,messages:cbMsgs,ctx:cbCtx()}),signal:cbCtl.signal});
+   const j=await r.json().catch(()=>({}));
+   if(r.status===429||j.code==="rate_limited"){bubble.classList.remove("wait");bubble.textContent=CB[lang].rl;cbMsgs.pop();return}
+   if(!r.ok||!j.ok){throw new Error("chat "+r.status)}
+   cbMsgs.push({role:"assistant",content:j.content});
+   const txt=(j.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("\n").trim();
+   if(txt){if(!shown){bubble.classList.remove("wait");bubble.textContent=txt;shown=true}else cbAdd("bot",txt)}
+   if(!j.tool_calls||!j.tool_calls.length){if(!shown){bubble.classList.remove("wait");bubble.textContent="…"}return}
+   const tools=Object.fromEntries(cbTools().map(t=>[t.name,t]));const results=[];
+   for(const c of j.tool_calls){let out;try{out=tools[c.name]?tools[c.name].execute(c.input||{}):{error:"unknown tool"}}catch(e){out={error:String(e&&e.message||e)}}results.push({type:"tool_result",tool_use_id:c.id,content:JSON.stringify(out)})}
+   Object.entries(j.server_results||{}).forEach(([id,v])=>results.push({type:"tool_result",tool_use_id:id,content:JSON.stringify(v)}));
+   cbMsgs.push({role:"user",content:results});
+   if(!shown){bubble.classList.remove("wait");bubble.remove();shown=true}
+ }}
+ catch(e){if(e&&e.name==="AbortError"){bubble.classList.remove("wait");bubble.textContent="…";return}
+  bubble.classList.remove("wait");cbMsgs=[];cbMode="script";cbStep=0;bubble.textContent=CB[lang].off;cbAdd("bot",CB[lang].s[0][1])}
  finally{cbBusy=false;cbCtl=null;cbRender()}}
 function cbScript(text){const L=CB[lang];const step=L.s[cbStep];if(!step)return;
  const k=step[0];if(k==="name"){$("#f-name").value=text.slice(0,60);$("#biz").value=text.slice(0,32);renderSite();renderLoop();if(typeof mRender==="function")mRender()}

@@ -1161,6 +1161,11 @@ body.in-order .cart-bar{display:none!important}
 .first-box .btn{justify-self:start}
 .first-cb{display:flex;gap:8px;align-items:flex-start;font-size:13px;cursor:pointer}
 .first-cb input{margin-top:2px;accent-color:var(--hazard)}
+
+.likes{display:grid;gap:8px}
+.like-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:8px}
+@media (max-width:560px){.likes{gap:16px}.like-row{grid-template-columns:1fr;gap:6px}}
+.mut-s{color:var(--muted);font-size:13px;line-height:1.4}
 </style>
 
 <div class="scrollbar" id="scrollbar" aria-hidden="true"></div>
@@ -1567,6 +1572,13 @@ body.in-order .cart-bar{display:none!important}
         <div id="p3" hidden style="display:grid;gap:14px">
           <div class="field"><label for="f-tone" data-t="f-tone">Milyen hangon szóljunk?</label>
             <select id="f-tone"></select></div>
+          <div class="field"><label data-t="f-likes">Weboldalak, amik tetszenek (nem kötelező)</label>
+            <div class="likes" id="f-likes">
+              <div class="like-row"><input type="text" inputmode="url" class="like-u" placeholder="pl. pelda.hu" data-tp="likePh" aria-label="Példa weboldal 1"><input type="text" class="like-n" placeholder="Mi tetszik benne?" data-tp="likeNPh" aria-label="Mi tetszik benne?"></div>
+              <div class="like-row"><input type="text" inputmode="url" class="like-u" placeholder="pl. pelda.hu" data-tp="likePh" aria-label="Példa weboldal 2"><input type="text" class="like-n" placeholder="Mi tetszik benne?" data-tp="likeNPh" aria-label="Mi tetszik benne?"></div>
+              <div class="like-row"><input type="text" inputmode="url" class="like-u" placeholder="pl. pelda.hu" data-tp="likePh" aria-label="Példa weboldal 3"><input type="text" class="like-n" placeholder="Mi tetszik benne?" data-tp="likeNPh" aria-label="Mi tetszik benne?"></div>
+            </div>
+            <small class="mut-s" data-t="f-likes-h">Bármilyen oldal lehet, akár más szakmából vagy versenytárstól. Ebből látjuk, milyen stílus, elrendezés vagy hangulat áll közel hozzád.</small></div>
           <div class="field"><label for="f-email" data-t="f-email">E-mail cím a szállításhoz</label><input id="f-email" type="email" placeholder="nev@cegem.hu" data-tp="f-email-ph"></div>
           <div class="field"><label for="f-dom" data-t="f_dom">Domain</label><select id="f-dom"><option value="new" data-t="dmNew">Még nincs, regisztráljátok a nevemre</option><option value="keep" data-t="dmKeep">Van, maradjon, ahol van (csak átirányítás)</option><option value="move" data-t="dmMove">Van, költöztessétek át hozzátok</option></select><input id="f-domname" type="text" autocomplete="url" placeholder="cegem.hu" data-tp="f-dom-ph" aria-label="Domain" hidden></div>
           <fieldset class="bill"><legend data-t="f_bill">Számlázás</legend>
@@ -1657,7 +1669,7 @@ empty:"Még üres. Pipálj be egy tételt.",bundleApplied:"Csomagár: ",save:"Me
 "f-name":"Vállalkozás neve","f-what":"Mivel foglalkozol, egy mondatban?","f-what-ph":"Pl. villanyszerelés és hibaelhárítás Budapesten és környékén","f-who":"Kik a vevőid?","f-who-ph":"Pl. családi házak tulajdonosai és kisirodák a XIII. kerületben",
 "f-logo":"Logó és anyagok","f-drop":"Húzd ide a fájlokat, vagy kattints","f-extract":"Márkaszínek kiolvasva a logóból, és rákerültek a fenti előnézetre.",
 "f-site":"Van már weboldalad?","f-site-ph":"cegem.hu (ha nincs, hagyd üresen)","f-site-go":"Átnézem","f-site-n":"Mit tartsunk meg, mi ne kerüljön át, mi legyen más?","f-site-n-ph":"Pl. a Rólunk szöveg maradjon, az árlista elavult, a régi logót ne használjuk, a galéria képei jók…","site-busy":"Megnyitjuk az oldalad…","site-found":"Ezt találtuk. Oldalanként jelöld, mi legyen vele:","site-keep":"Marad","site-chg":"Más legyen","site-drop":"Nem kell","site-more":"A teljes oldalt a rendelés után részletesen is átnézzük.","f-drop-s":"Logó, fotók, étlap, árlista, szórólap, céges anyagok (PDF, Word, kép) – max. 15 fájl, egyenként 25 MB","f-big":"Túl nagy (max. 25 MB)","f-max":"Legfeljebb 15 fájlt csatolhatsz.","up-ing":"Fájlok feltöltése","up-fail":"Néhány fájl nem töltődött fel. Válaszolj a visszaigazoló levelünkre, és csatold őket.",
-"f-tone":"Milyen hangon szóljunk?","f-email":"E-mail cím a szállításhoz","f-extra":"Bármi más, amit tudnunk kell","f-extra-ph":"Nyitvatartás, akciók, amit a versenytársaknál utálsz…",
+"f-tone":"Milyen hangon szóljunk?","f-likes":"Weboldalak, amik tetszenek (nem kötelező)","f-likes-h":"Bármilyen oldal lehet, akár más szakmából vagy versenytárstól. Ebből látjuk, milyen stílus, elrendezés vagy hangulat áll közel hozzád.",likePh:"pl. pelda.hu",likeNPh:"Mi tetszik benne? (színek, elrendezés, hangulat…)","f-email":"E-mail cím a szállításhoz","f-extra":"Bármi más, amit tudnunk kell","f-extra-ph":"Nyitvatartás, akciók, amit a versenytársaknál utálsz…",
 back:"Vissza",next:"Tovább",submit:"Megrendelés elküldése",sum:{h:"Összesítő",once:"Egyszeri díj",mo:"Havi díj (az oldal indulásától)",free:"ingyenes",empty:"Még nem választottál tételt. Semmi gond: elküldheted így is, és az összefoglalóban javaslatot teszünk.",next:"Most nem fizetsz semmit. E-mailben elküldjük az összefoglalót a kéréseidről jóváhagyásra; a jóváhagyás után indul a 24 óra. Vázlatdíj (csak a jóváhagyáskor esedékes): {fee} (beszámítjuk). A végösszeg felét az irány kiválasztásakor, a másik felét a végén, jóváhagyáskor fizeted."},"d-e":"Rendelésszám","d-proto":"Ez a weboldal prototípusa: a beküldés még nincs bekötve, adat nem került továbbításra.",
 n1h:"Ki dolgozik rajta?",n1p:"Mi, egy bejáratott folyamattal. A válaszaidból megírjuk a szövegeket, összerakjuk az arculatot és felépítjük az oldalt. Szállítás előtt minden anyag minőségellenőrzésen megy át: helyesírás, működő linkek, mobilnézet, betöltési sebesség, és hogy az árak és elérhetőségek egyeznek-e a kéréseiddel.",
 n2h:"Miért 24 óra?",n2p:"Mert nincs egyeztetési kör, nincs „holnapra megnézem”. Az összefoglaló a kéréseidről megvan, a többi a mi dolgunk.",
@@ -1686,7 +1698,7 @@ empty:"Empty so far. Tick an item.",bundleApplied:"Bundle price: ",save:"You sav
 "f-name":"Business name","f-what":"What do you do, in one sentence?","f-what-ph":"E.g. electrical repairs and installations in and around Budapest","f-who":"Who are your customers?","f-who-ph":"E.g. homeowners and small offices in District XIII",
 "f-logo":"Logo and files","f-drop":"Drop files here, or click","f-extract":"Brand colours read from your logo and applied to the preview above.",
 "f-site":"Do you already have a website?","f-site-ph":"mycompany.com (leave empty if none)","f-site-go":"Review it","f-site-n":"What should we keep, drop or change?","f-site-n-ph":"E.g. keep the About text, the price list is outdated, don't use the old logo, the gallery photos are good…","site-busy":"Opening your site…","site-found":"Here's what we found. Mark what to do with each page:","site-keep":"Keep","site-chg":"Change","site-drop":"Drop","site-more":"After you order, we'll review the whole site in detail.","f-drop-s":"Logo, photos, menu, price list, flyers, company documents (PDF, Word, images) – up to 15 files, 25 MB each","f-big":"Too large (max 25 MB)","f-max":"You can attach up to 15 files.","up-ing":"Uploading files","up-fail":"Some files didn't upload. Please reply to our confirmation email with them attached.",
-"f-tone":"What tone should we use?","f-email":"Email for delivery","f-extra":"Anything else we should know","f-extra-ph":"Opening hours, offers, what you dislike about competitors…",
+"f-tone":"What tone should we use?","f-likes":"Websites you like (optional)","f-likes-h":"Any site works, even from another field or a competitor. It shows us which style, layout or mood feels right to you.",likePh:"e.g. example.com",likeNPh:"What do you like about it? (colours, layout, mood…)","f-email":"Email for delivery","f-extra":"Anything else we should know","f-extra-ph":"Opening hours, offers, what you dislike about competitors…",
 back:"Back",next:"Next",submit:"Send order",sum:{h:"Summary",once:"One-off",mo:"Monthly (from launch)",free:"free",empty:"You haven't picked any items yet. That's fine: send it anyway and we'll suggest a package in the summary.",next:"You pay nothing now. We email you a summary of your requests to approve; the 24 hours start after your OK. Sketch fee (due only when you approve): {fee} (credited). You pay half of the total when you choose a direction and the rest at the end, on approval."},"d-e":"Order number","d-proto":"This is a prototype of the site: submission isn't connected yet and no data was sent.",
 n1h:"Who works on it?",n1p:"We do, with a well-refined process. From your answers we write the copy, shape the brand and build the site. Before delivery, everything goes through quality checks: spelling, working links, mobile layout, loading speed, and whether prices and contact details match your requests.",
 n2h:"Why 24 hours?",n2p:"No meeting rounds, no “I'll look at it tomorrow”. Your request summary is set; the rest is on us.",
@@ -2013,7 +2025,7 @@ $("#form").addEventListener("submit",async e=>{e.preventDefault();if(step===1&&!
     const btn=$("#next");btn.disabled=true;
     try{const r=await postIntake({kind:"order",business:$("#f-name").value,what:$("#f-what").value,who:$("#f-who").value,tone:$("#f-tone").selectedOptions[0]?.textContent||"",industry:ind.id,email:em,
       domain_mode:$("#f-dom").value,domain_name:$("#f-domname").value,first_client:firstDisc,pay_mode:subNow()?"sub":"full",buyer_type:$("#fb-b2c").getAttribute("aria-pressed")==="true"?"b2c":"b2b",company:$("#f-co").value,vat_id:$("#f-vat").value,
-      billing_addr:$("#f-addr").value,invoice_lang:$("#f-ilang").value,currency:$("#f-cur").value,extra:$("#f-extra").value,terms:true,start_now:$("#f-start").checked,
+      billing_addr:$("#f-addr").value,invoice_lang:$("#f-ilang").value,currency:$("#f-cur").value,extra:$("#f-extra").value,likes:[...document.querySelectorAll("#f-likes .like-row")].map(r=>({url:r.querySelector(".like-u").value.trim(),note:r.querySelector(".like-n").value.trim()})).filter(x=>x.url),terms:true,start_now:$("#f-start").checked,
       items:[...sel],files:upFiles.map(f=>f.name),site:($("#f-site").value.trim()||$("#f-site-notes").value.trim())?{url:$("#f-site").value.trim(),notes:$("#f-site-notes").value,pages:sitePages}:null});code=r.order;
       if(upFiles.length){const fail=r.upload?await uploadAll(r.order,r.upload):upFiles.length;if(fail)upFail=true}
       try{const c_=compute(),v_=c_.best&&c_.best.o<c_.raw.o?c_.best.o:c_.raw.o;window.wbConv&&window.wbConv(v_,cur,code,em)}catch(e){}}
@@ -3148,10 +3160,11 @@ ${bundles}
 Current cart: ${[...sel].join(", ")||"empty"}. Current questionnaire business name: ${$("#f-name").value||"-"}.`}
 const cbTools=()=>[
  {name:"fill_questionnaire",description:"Fill fields of the order questionnaire on the page. Pass only the fields you learned. Returns the fields set.",
-  inputSchema:{type:"object",properties:{business_name:{type:"string"},what:{type:"string",description:"What the business does, one sentence"},customers:{type:"string",description:"Customers and location"},tone:{type:"string",enum:["friendly","premium","expert","playful"]},email:{type:"string"},notes:{type:"string",description:"Anything else: goals, references, opening hours"}}},
+  inputSchema:{type:"object",properties:{business_name:{type:"string"},what:{type:"string",description:"What the business does, one sentence"},customers:{type:"string",description:"Customers and location"},tone:{type:"string",enum:["friendly","premium","expert","playful"]},email:{type:"string"},notes:{type:"string",description:"Anything else: goals, references, opening hours"},liked_sites:{type:"array",items:{type:"string"},description:"Up to 3 website addresses the visitor likes as examples"}}},
   execute:(i)=>{const set=[];const put=(id,v)=>{if(v){$(id).value=String(v).slice(0,300);set.push(id)}};
    if(i.business_name){put("#f-name",i.business_name);$("#biz").value=String(i.business_name).slice(0,32);renderSite();renderLoop();if(typeof mRender==="function")mRender()}
    put("#f-what",i.what);put("#f-who",i.customers);put("#f-email",i.email);if(i.notes){$("#f-extra").value=($("#f-extra").value?$("#f-extra").value+"\n":"")+String(i.notes).slice(0,500);set.push("#f-extra")}
+   if(Array.isArray(i.liked_sites)){const ins=[...document.querySelectorAll("#f-likes .like-u")].filter(x=>!x.value.trim());i.liked_sites.slice(0,3).forEach((u,k)=>{if(ins[k]){ins[k].value=String(u).slice(0,200);set.push("likes")}})}
    if(i.tone){const k=["friendly","premium","expert","playful"].indexOf(String(i.tone));if(k>=0){$("#f-tone").selectedIndex=k;set.push("#f-tone")}}
    cbSys(CB[lang].filled+" ✓");return{ok:true,set}}},
  {name:"set_cart",description:"Replace the cart with these item ids (from the ITEMS list). Returns the cart lines and totals.",

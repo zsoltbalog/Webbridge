@@ -9,7 +9,7 @@ const MAX_PER_HOUR = 40;
 
 const CLIENT_TOOLS = [
   { name: "fill_questionnaire", description: "Fill fields of the order questionnaire on the page. Only use business_name when the visitor explicitly told you the name of their business; never put a question or a sentence there. Pass only fields you learned.",
-    input_schema: { type: "object", properties: { business_name: { type: "string" }, what: { type: "string", description: "What the business does, one sentence" }, customers: { type: "string", description: "Customers and location" }, tone: { type: "string", enum: ["friendly", "premium", "expert", "playful"] }, email: { type: "string" }, notes: { type: "string", description: "Anything else: goals, references, opening hours" } } } },
+    input_schema: { type: "object", properties: { business_name: { type: "string" }, what: { type: "string", description: "What the business does, one sentence" }, customers: { type: "string", description: "Customers and location" }, tone: { type: "string", enum: ["friendly", "premium", "expert", "playful"] }, email: { type: "string" }, notes: { type: "string", description: "Anything else: goals, references, opening hours" }, liked_sites: { type: "array", items: { type: "string" }, description: "Up to 3 website addresses the visitor likes as examples" } } } },
   { name: "set_cart", description: "Replace the cart with these item ids (from the ITEMS list). Only after the visitor agreed to your recommendation. Returns cart lines and totals.",
     input_schema: { type: "object", properties: { item_ids: { type: "array", items: { type: "string" } } }, required: ["item_ids"] } },
   { name: "set_industry", description: "Set the visitor's industry label (e.g. 'Fodrászat', 'Bakery') so the live preview matches.",

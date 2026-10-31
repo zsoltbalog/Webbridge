@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS events (
   at            TEXT NOT NULL,
   customer_id   TEXT,
   project_id    TEXT,
-  kind          TEXT NOT NULL,                 -- lead | email_out | email_in | payment | stage | note | call | change_request | system
+  kind          TEXT NOT NULL,                 -- lead | email_out | email_in | payment | stage | note | call | change_request | system | signup | identity | deletion_request
   title         TEXT NOT NULL,
   body          TEXT,
   meta          TEXT DEFAULT '{}',             -- JSON
@@ -132,7 +132,7 @@ CREATE INDEX IF NOT EXISTS sessions_user ON sessions(user_id);
 -- Egyszer használatos tokenek: belépőlink (login), jóváhagyó link (approve), meghívó (invite).
 CREATE TABLE IF NOT EXISTS action_tokens (
   hash        TEXT PRIMARY KEY,
-  kind        TEXT NOT NULL,                  -- login | approve | invite
+  kind        TEXT NOT NULL,                  -- login | signup (ref_id: nyelv) | approve | invite
   user_id     TEXT,
   email       TEXT,
   ref_id      TEXT,                           -- approve: ver_…

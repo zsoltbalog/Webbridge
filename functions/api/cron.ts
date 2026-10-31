@@ -35,6 +35,18 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const out = { nudges: 0, reviews: 0, digest: 0, instr: 0, vat: 0 };
   out.instr = await instrNotify(env);
   out.vat = await vatAlert(env).catch(() => 0);
+  // Adatmegőrzés: rendelés nélküli regisztrációk, 6 hónapja nem léptek be → havonta egyszer lista Zsoltnak törlésre
+  try {
+    const ym = new Date().toISOString().slice(0, 7);
+    if (await once(env, `retention-${ym}`, "retention")) {
+      const cut = new Date(Date.now() - 183 * 864e5).toISOString();
+      const old = (await env.DB.prepare(
+        "SELECT c.id, c.email, c.created_at, (SELECT MAX(s.created_at) FROM sessions s JOIN portal_users u ON u.id=s.user_id WHERE u.customer_id=c.id) last FROM customers c WHERE c.source LIKE 'signup:%' AND NOT EXISTS (SELECT 1 FROM projects p WHERE p.customer_id=c.id)"
+      ).all<{ id: string; email: string; created_at: string; last: string | null }>()).results.filter((r) => (r.last || r.created_at) < cut);
+      if (old.length) await sendMail(env, { to: env.NOTIFY_TO, subject: `[Webbridge] ${old.length} rendelés nélküli fiók 6 hónapja inaktív – törlendő`, template: "internal_retention",
+        html: layout("hu", "Törlendő inaktív fiókok", `<p>Az adatkezelési tájékoztató szerint a rendelés nélküli fiókokat az utolsó belépéstől számított 6 hónap után töröljük. Ezek esedékesek:</p><ul>${old.map((r) => `<li>${esc(r.email || r.id)} – utolsó belépés: ${esc((r.last || r.created_at).slice(0, 10))} (<a href="${env.SITE_URL}/admin/#c/${r.id}">CRM</a>)</li>`).join("")}</ul>`, { label: "CRM", url: `${env.SITE_URL}/admin/` }) });
+    }
+  } catch { /* nem kritikus */ }
   // Régi rate-limit sorok törlése (chat, MCP)
   await env.DB.prepare("DELETE FROM rate_limit WHERE at < ?1").bind(new Date(Date.now() - 3 * H).toISOString()).run().catch(() => null);
 

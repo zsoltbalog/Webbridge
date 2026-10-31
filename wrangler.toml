@@ -15,6 +15,8 @@ REPLY_DOMAIN = "reply.webbridge.hu"
 OWNER_EMAILS = "z.balog@gmail.com,zbalog@gmail.com,zsolt.balog@amemesh.net,hello@webbridge.hu"
 # Pult Google-belépés: OAuth-kliens a TES "webbridge-tes" Google Cloud projektjében (nyilvános azonosító; a titok: GOOGLE_CLIENT_SECRET)
 GOOGLE_CLIENT_ID = "207155811762-00k17ir827op41veah28o179jlvn3lbb.apps.googleusercontent.com"
+# Pult Facebook-belépés: a Meta app azonosítója (nyilvános; a titok: FACEBOOK_APP_SECRET). Ha üres, a gomb rejtve marad.
+# FACEBOOK_APP_ID = "…"
 # REVIEW_URL = "https://g.page/r/…/review"   # Google-értékelés link: ha megvan a Cégprofil, ide kerül
 
 [[d1_databases]]
@@ -23,7 +25,7 @@ database_name = "webbridge-crm"
 database_id = "5f8fbcc0-ba37-40de-a7c3-ce935d577582"
 
 # Titkok (Cloudflare dashboard → Pages → webbridge → Settings → Variables and Secrets, típus: Secret):
-#   ADMIN_PASSWORD, BREVO_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ANTHROPIC_API_KEY, CRON_SECRET, GOOGLE_CLIENT_SECRET
+#   ADMIN_PASSWORD, BREVO_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, ANTHROPIC_API_KEY, CRON_SECRET, GOOGLE_CLIENT_SECRET, FACEBOOK_APP_SECRET
 
 # Ügyfél-feltöltések és Pult-fájlok (R2, EU-joghatóság).
 [[r2_buckets]]

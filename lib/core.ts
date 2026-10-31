@@ -15,6 +15,8 @@ export interface Env {
   REVIEW_URL?: string;              // Google-értékelés link (értékeléskérő levélhez)
   GOOGLE_CLIENT_ID?: string;        // Pult Google-belépés (OAuth-kliens, TES Google Cloud projekt)
   GOOGLE_CLIENT_SECRET?: string;    // titok
+  FACEBOOK_APP_ID?: string;         // Pult Facebook-belépés (Meta app azonosító, nyilvános)
+  FACEBOOK_APP_SECRET?: string;     // titok (Meta app secret: token-csere, appsecret_proof, adattörlési signed_request)
   REPLY_DOMAIN?: string;            // bejövő válaszlevelek aldomainje (pl. reply.webbridge.hu)
   OWNER_EMAILS?: string;            // utasítás-csatorna: engedélyezett feladók (vesszővel)
   UPLOADS?: R2Bucket;               // R2: az ügyfelek feltöltött fájljai (projects/<rendelés>/…)

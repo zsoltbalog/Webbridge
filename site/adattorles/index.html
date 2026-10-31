@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Adattörlés – Webbridge</title>
+<meta name="description" content="Hogyan kérheted a Webbridge-nél tárolt adataid törlését.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,600..900&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#EDEFF2;--surface:#FFFFFF;--sunk:#E3E6EB;--ink:#10141B;--muted:#58616F;--line:#D2D7DE;--hazard:#FF6B2C;--on-hazard:#10141B;--cobalt:#2B47F5;--ok:#1E8A55;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0D1015;--surface:#151A22;--sunk:#10141A;--ink:#ECEFF4;--muted:#8E97A6;--line:#262D38;--cobalt:#7187FF;--ok:#4CC488;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D1015;--surface:#151A22;--sunk:#10141A;--ink:#ECEFF4;--muted:#8E97A6;--line:#262D38;--cobalt:#7187FF;--ok:#4CC488;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--cobalt)}
+h1,h2{font-family:var(--display);font-stretch:112%;line-height:1.1;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+header{border-bottom:1px solid var(--line)}header .wrap{display:flex;align-items:center;gap:12px;min-height:58px}
+.brand{font-family:var(--display);font-weight:900;font-stretch:118%;font-size:19px;text-decoration:none;color:var(--ink)}.brand i{color:var(--hazard);font-style:normal}
+.sp{flex:1}
+.lang{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 12px;font:inherit;font-weight:600;font-size:14px;cursor:pointer}
+main{padding:28px 0 60px}
+h1{font-size:34px;margin-bottom:10px}h2{font-size:20px;margin:28px 0 8px}
+.lead{color:var(--muted);margin:0 0 8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-top:18px}
+.code{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}
+.code b{font-family:ui-monospace,Menlo,monospace;font-size:18px;letter-spacing:.04em;overflow-wrap:anywhere}
+ol,ul{padding-left:1.3em;margin:8px 0}li{margin:4px 0}
+.mut{color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="brand" href="/">Webbridge<i>.</i></a><span class="sp"></span><button class="lang" id="lb" type="button">EN</button></div></header>
+<main class="wrap">
+  <section data-l="hu">
+    <h1>Adataid törlése</h1>
+    <p class="lead">Bármikor kérheted, hogy töröljük a Webbridge-nél tárolt adataidat: a Pult-fiókodat, a nevedet, az e-mail-címedet, a belépési adataidat és a feltöltött anyagaidat.</p>
+    <div class="card code" data-code hidden><p style="margin:0 0 6px">Megkaptuk a törlési kérésedet. A megerősítő kódod:</p><b data-codeval></b><p class="mut" style="margin:8px 0 0">Ha kérdésed van a kérés állapotáról, írj a hello@webbridge.hu címre, és add meg ezt a kódot.</p></div>
+    <h2>1. E-mailben</h2>
+    <p>Írj a <a href="mailto:hello@webbridge.hu?subject=Adatt%C3%B6rl%C3%A9si%20k%C3%A9r%C3%A9s">hello@webbridge.hu</a> címre arról az e-mail-címről, amellyel regisztráltál vagy rendeltél, és írd meg, hogy kéred az adataid törlését.</p>
+    <h2>2. Ha Facebookkal léptél be</h2>
+    <ol>
+      <li>Nyisd meg a Facebookon: <b>Beállítások és adatvédelem → Beállítások → Alkalmazások és webhelyek</b>.</li>
+      <li>Keresd meg a <b>Webbridge</b> alkalmazást, és válaszd az <b>Eltávolítás</b> lehetőséget.</li>
+      <li>Jelöld be, hogy az alkalmazás törölje az adataidat. A kérés automatikusan eljut hozzánk, és egy megerősítő kódot kapsz.</li>
+    </ol>
+    <h2>Mi történik ezután?</h2>
+    <ul>
+      <li>30 napon belül töröljük a fiókodat és a hozzá tartozó adatokat, és e-mailben visszaigazoljuk.</li>
+      <li>A számlákat és a könyveléshez szükséges adatokat a törvény szerint meg kell őriznünk (az észt számviteli törvény alapján 7 évig); ezeket mással nem használjuk.</li>
+      <li>Ha folyamatban lévő rendelésed van, előbb egyeztetünk veled.</li>
+    </ul>
+    <p class="mut" style="margin-top:24px">Részletek az <a href="/#adatvedelem">Adatkezelési tájékoztatóban</a>. Adatkezelő: Tactical Edge Systems OÜ, Narva mnt 5, 10117 Tallinn, Észtország.</p>
+  </section>
+  <section data-l="en" hidden>
+    <h1>Deleting your data</h1>
+    <p class="lead">You can ask us at any time to delete the data Webbridge holds about you: your Desk account, name, email address, sign-in details and uploaded materials.</p>
+    <div class="card code" data-code hidden><p style="margin:0 0 6px">We've received your deletion request. Your confirmation code:</p><b data-codeval></b><p class="mut" style="margin:8px 0 0">If you have a question about the status of your request, write to hello@webbridge.hu and include this code.</p></div>
+    <h2>1. By email</h2>
+    <p>Write to <a href="mailto:hello@webbridge.hu?subject=Data%20deletion%20request">hello@webbridge.hu</a> from the address you registered or ordered with, and tell us you want your data deleted.</p>
+    <h2>2. If you signed in with Facebook</h2>
+    <ol>
+      <li>On Facebook, open <b>Settings &amp; privacy → Settings → Apps and websites</b>.</li>
+      <li>Find the <b>Webbridge</b> app and choose <b>Remove</b>.</li>
+      <li>Tick the option to have the app delete your data. The request reaches us automatically and you get a confirmation code.</li>
+    </ol>
+    <h2>What happens next?</h2>
+    <ul>
+      <li>Within 30 days we delete your account and the related data and confirm it by email.</li>
+      <li>Invoices and accounting records must be kept by law (7 years under the Estonian Accounting Act); we use them for nothing else.</li>
+      <li>If you have an order in progress, we'll check with you first.</li>
+    </ul>
+    <p class="mut" style="margin-top:24px">Details in the <a href="/?lang=en#adatvedelem">Privacy Policy</a>. Controller: Tactical Edge Systems OÜ, Narva mnt 5, 10117 Tallinn, Estonia.</p>
+  </section>
+</main>
+<script>
+"use strict";
+(function(){
+  var q=new URLSearchParams(location.search),lang=q.get("lang");
+  if(lang!=="hu"&&lang!=="en"){try{lang=localStorage.getItem("wb-lang")}catch(e){lang=null}}
+  if(lang!=="hu"&&lang!=="en")lang=/^hu/i.test(navigator.language||"")?"hu":"en";
+  var code=(q.get("code")||"").replace(/[^A-Za-z0-9-]/g,"").slice(0,40);
+  document.querySelectorAll("[data-codeval]").forEach(function(e){e.textContent=code});
+  document.querySelectorAll("[data-code]").forEach(function(e){e.hidden=!code});
+  function apply(){document.documentElement.lang=lang;document.title=lang==="hu"?"Adattörlés – Webbridge":"Data deletion – Webbridge";
+    document.querySelectorAll("[data-l]").forEach(function(s){s.hidden=s.getAttribute("data-l")!==lang});
+    document.getElementById("lb").textContent=lang==="hu"?"EN":"HU"}
+  document.getElementById("lb").onclick=function(){lang=lang==="hu"?"en":"hu";try{localStorage.setItem("wb-lang",lang)}catch(e){}apply()};
+  apply();
+})();
+</script>
+</body>
+</html>

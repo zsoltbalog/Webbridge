@@ -40,7 +40,10 @@ textarea{min-height:84px;resize:vertical}
 .login{min-height:calc(100vh - 60px);display:grid;place-items:center;padding:24px 0}
 .login .card{max-width:420px;width:100%;padding:28px 24px}.login h1{font-size:30px;margin-bottom:8px}
 .or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin:16px 0}.or:before,.or:after{content:"";flex:1;height:1px;background:var(--line)}
-.gbtn{width:100%;background:var(--surface)}
+.gbtn{width:100%;background:var(--surface);padding:11px 14px;font-size:15px;gap:10px}.gbtn svg{flex:none}
+.sso{display:grid;gap:10px;margin-top:18px}.newacct{margin:14px 0 0;font-weight:600;font-size:14px}
+.welcome{margin-top:18px;display:grid;gap:14px}.welcome ol{margin:0;padding-left:1.3em;display:grid;gap:6px;color:var(--muted)}
+.welcome .row .btn{padding:11px 16px}
 /* list */
 .page{padding:22px 0 60px}.page>h1{font-size:34px;margin:6px 0 4px}
 .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:18px}
@@ -132,8 +135,12 @@ const $=s=>document.querySelector(s),app=$("#app");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let lang=(()=>{try{const q=new URLSearchParams(location.search).get("lang");if(q==="hu"||q==="en"){localStorage.setItem("wb-lang",q);return q}return localStorage.getItem("wb-lang")==="en"?"en":"hu"}catch(e){return "hu"}})();
 const T={hu:{desk:"Pult",team:"Csapat",logout:"Kilépés",
-  loginT:"Belépés a Pultba",loginP:"Itt látod és véleményezed az anyagaidat: logó, arculat, szórólap, weboldal.",email:"E-mail-cím",sendLink:"Belépőlink küldése",or:"vagy",google:"Belépés Google-lel",
-  sent:"Ha ehhez a címhez tartozik fiók, pár percen belül megérkezik a belépőlink. Nézd meg a promóciók és a spam mappát is.",useOrder:"Azzal a címmel lépj be, amellyel rendeltél, vagy amelyre meghívást kaptál.",
+  loginT:"Belépés a Pultba",loginP:"Itt indítod a rendelést, követed a munkát, és véleményezed az anyagaidat: logó, arculat, szórólap, weboldal.",email:"E-mail-cím",sendLink:"Folytatás e-mailben",or:"vagy e-mailes linkkel",google:"Folytatás Google-lel",facebook:"Folytatás Facebookkal",
+  sent:"Elküldtük a linket. Pár percen belül megérkezik; nézd meg a promóciók és a spam mappát is. Jelszó nem kell.",useOrder:"Ha már rendeltél, vagy meghívást kaptál, azzal a címmel lépj be.",
+  newAcct:"Nincs még fiókod? Ugyanígy regisztrálsz – egy kattintás.",legal:'A folytatással elfogadod az <a href="/#aszf">ÁSZF-et</a>, és tudomásul veszed az <a href="/#adatvedelem">Adatkezelési tájékoztatót</a>.',
+  welT:"Üdv a Pultban!",welP:"Itt fogod látni és véleményezni mindent, amit neked készítünk: logót, arculatot, weboldalt, posztokat. Egy kattintással jelölsz meg bármit, amin változtatnál, és itt hagyod jóvá a kész anyagot.",
+  welS1:"Válaszd ki, mire van szükséged, és indítsd el a rendelést. Miután jóváhagytad a briefet, 24 órán belül itt látod az első vázlatot.",welS2:"Ha még kérdésed van az árakról vagy a menetről, kérdezz a chatben.",
+  welOrder:"Rendelés indítása",welChat:"Kérdezz a chatben",
   works:"Anyagaid",worksP:"Bökj rá bármelyik részre, és írd meg, mit változtatnál, adnál hozzá vagy hagynál el.",noWorks:"Még nincs véleményezni való anyag. Ha elkészül az első, e-mailt küldünk.",
   st_review:"Rád vár",st_changes:"Dolgozunk rajta",st_approved:"Jóváhagyva",open:"nyitott megjegyzés",back:"← Anyagaid",version:"Verzió",
   tip:"Kattints a képre vagy az oldalra oda, amihez megjegyzést írnál.",tipRo:"Ez egy korábbi verzió, csak megtekinthető.",tipAp:"Ezt a verziót jóváhagytad. Ha mégis változtatnál, írj nekünk.",a_note:"Megjegyzés",general:"Általános megjegyzés",
@@ -166,8 +173,12 @@ const T={hu:{desk:"Pult",team:"Csapat",logout:"Kilépés",
   aiList:"Aktív linkjeid",aiNone:"Még nincs connector-linked.",aiCreated:"létrehozva",aiUsed:"utoljára használva",aiNever:"még nem használt",aiRevoke:"Visszavonás",aiRevokeQ:"Visszavonod ezt a linket? Az asszisztens utána nem éri el a fiókodat.",aiRevoked:"Visszavonva.",
   aiGuide:"Útmutató: így kötöd be",aiLink:"Link"},
  en:{desk:"Desk",team:"Team",logout:"Sign out",
-  loginT:"Sign in to the Desk",loginP:"See and review your materials here: logo, brand, flyer, website.",email:"Email address",sendLink:"Send sign-in link",or:"or",google:"Sign in with Google",
-  sent:"If there's an account for this address, the sign-in link arrives in a few minutes. Check promotions and spam too.",useOrder:"Use the address you ordered with or were invited to.",
+  loginT:"Sign in to the Desk",loginP:"Start an order, follow the work and review your materials here: logo, brand, flyer, website.",email:"Email address",sendLink:"Continue with email",or:"or with an email link",google:"Continue with Google",facebook:"Continue with Facebook",
+  sent:"We've sent the link. It arrives in a few minutes; check promotions and spam too. No password needed.",useOrder:"If you've already ordered or were invited, use that address.",
+  newAcct:"No account yet? You register the same way – one click.",legal:'By continuing you accept the <a href="/?lang=en#aszf">Terms of Service</a> and acknowledge the <a href="/?lang=en#adatvedelem">Privacy Policy</a>.',
+  welT:"Welcome to the Desk!",welP:"This is where you'll see and review everything we make for you: logo, brand, website, posts. Mark anything you'd change with one click, and approve the finished work here.",
+  welS1:"Pick what you need and start the order. Once you approve the brief, the first draft is here within 24 hours.",welS2:"Still have a question about prices or how it works? Ask in the chat.",
+  welOrder:"Start an order",welChat:"Ask in the chat",
   works:"Your materials",worksP:"Tap any part and tell us what to change, add or remove.",noWorks:"Nothing to review yet. We'll email you when the first one is ready.",
   st_review:"Waiting for you",st_changes:"We're on it",st_approved:"Approved",open:"open comments",back:"← Your materials",version:"Version",
   tip:"Click on the image or page where you want to comment.",tipRo:"This is an earlier version, view only.",tipAp:"You approved this version. If you still want a change, write to us.",a_note:"Comment",general:"General comment",
@@ -206,7 +217,7 @@ async function api(path,body,method){const r=await fetch("/api/pult/"+path,body!
   const j=await r.json().catch(()=>({}));if(r.status===401){ME=null;return {__login:true}}if(!r.ok||j.ok===false)throw new Error(j.error||t("err"));return j}
 const fileUrl=k=>"/api/pult/file?key="+encodeURIComponent(k);
 const dt=s=>s?new Date(s).toLocaleString(lang==="hu"?"hu-HU":"en-GB",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"";
-let ME=null,CFG={google:false,upload:false};
+let ME=null,CFG={google:false,facebook:false,upload:false};
 
 function applyStatic(){document.documentElement.lang=lang;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));$("#langbtn").textContent=lang==="hu"?"EN":"HU"}
 $("#langbtn").onclick=()=>{lang=lang==="hu"?"en":"hu";try{localStorage.setItem("wb-lang",lang)}catch(e){}applyStatic();route()};
@@ -223,13 +234,18 @@ async function route(){
 window.addEventListener("hashchange",()=>{closePop();hideSel();route()});
 
 /* ---------- belépés ---------- */
+const G_SVG=`<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`;
+const F_SVG=`<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1877F2"/><path fill="#fff" d="M13.4 19.5v-6.2h2.1l.3-2.5h-2.4V9.3c0-.7.2-1.2 1.2-1.2h1.3V5.9c-.2 0-1-.1-1.9-.1-1.9 0-3.2 1.2-3.2 3.3v1.8H8.7v2.5h2.1v6.2h2.6z"/></svg>`;
 function loginView(){
   $("#who").hidden=true;$("#outbtn").hidden=true;$("#teambtn").hidden=true;
+  const sso=CFG.google||CFG.facebook;
   app.innerHTML=`<div class="login"><div class="card"><h1>${t("loginT")}</h1><p class="mut">${t("loginP")}</p>
-   <form id="lf" style="display:grid;gap:10px;margin-top:14px"><label for="le" class="sm mut">${t("email")}</label><input id="le" type="email" required autocomplete="email" placeholder="nev@ceg.hu"><button class="btn pri" id="lb">${t("sendLink")}</button></form>
+   ${sso?`<div class="sso">${CFG.google?`<a class="btn gbtn" href="/api/pult/auth/google?lang=${lang}">${G_SVG}${t("google")}</a>`:""}${CFG.facebook?`<a class="btn gbtn" href="/api/pult/auth/facebook?lang=${lang}">${F_SVG}${t("facebook")}</a>`:""}</div><div class="or">${t("or")}</div>`:""}
+   <form id="lf" style="display:grid;gap:10px;margin-top:${sso?0:14}px"><label for="le" class="sm mut">${t("email")}</label><input id="le" type="email" required autocomplete="email" placeholder="nev@ceg.hu"><button class="btn pri" id="lb">${t("sendLink")}</button></form>
    <p id="lsent" class="note" hidden>${t("sent")}</p>
-   ${CFG.google?`<div class="or">${t("or")}</div><a class="btn gbtn" href="/api/pult/auth/google"><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>${t("google")}</a>`:""}
-   <p class="help" style="margin-top:14px">${t("useOrder")}</p></div></div>`;
+   <p class="newacct">${t("newAcct")}</p>
+   <p class="help" style="margin-top:6px">${t("useOrder")}</p>
+   <p class="help" style="margin-top:10px">${t("legal")}</p></div></div>`;
   $("#lf").onsubmit=async e=>{e.preventDefault();const b=$("#lb");b.disabled=true;try{await api("auth/request",{email:$("#le").value,lang});$("#lsent").hidden=false}catch(err){toast(err.message)}b.disabled=false};
 }
 
@@ -237,12 +253,18 @@ function loginView(){
 const stTag=s=>`<span class="tag ${s}">${t("st_"+s)}</span>`;
 async function listView(){
   const d=await api("works");if(d.__login)return loginView();
-  app.innerHTML=`<div class="page"><h1>${t("works")}</h1><p class="mut">${t("worksP")}</p>
+  const fresh=!d.works.length&&ME&&!ME.projects;
+  app.innerHTML=`<div class="page"><h1>${t(fresh?"welT":"works")}</h1>${fresh?"":`<p class="mut">${t("worksP")}</p>`}
   ${d.works.length?`<div class="grid">${d.works.map(w=>{const f=(JSON.parse(w.last_files||"[]")||[]).find(x=>/^image\//.test(x.type));
-    return `<a class="card wcard" href="#w/${w.id}"><div class="th">${f?`<img src="${fileUrl(f.key)}" alt="" loading="lazy">`:`<span class="mut">${esc(t("k_"+w.kind))}</span>`}</div><div class="bd"><div class="row" style="justify-content:space-between"><h3>${esc(w.title)}</h3>${stTag(w.status)}</div><div class="sm mut">${t("version")} ${w.last_n||1}${w.open_comments?` · ${w.open_comments} ${t("open")}`:""}</div></div></a>`}).join("")}</div>`:`<div class="card empty" style="margin-top:18px"><p class="mut">${t("noWorks")}</p></div>`}
+    return `<a class="card wcard" href="#w/${w.id}"><div class="th">${f?`<img src="${fileUrl(f.key)}" alt="" loading="lazy">`:`<span class="mut">${esc(t("k_"+w.kind))}</span>`}</div><div class="bd"><div class="row" style="justify-content:space-between"><h3>${esc(w.title)}</h3>${stTag(w.status)}</div><div class="sm mut">${t("version")} ${w.last_n||1}${w.open_comments?` · ${w.open_comments} ${t("open")}`:""}</div></div></a>`}).join("")}</div>`:fresh?welcomeHtml():`<div class="card empty" style="margin-top:18px"><p class="mut">${t("noWorks")}</p></div>`}
   <section class="card aic" id="aicard" aria-labelledby="aih"></section></div>`;
   aiCard();
 }
+
+/** Üres állapot frissen regisztrált (még nem rendelt) fióknak. */
+function welcomeHtml(){return `<section class="card welcome" aria-label="${esc(t("welT"))}"><p style="margin:0;max-width:70ch">${t("welP")}</p>
+  <ol><li>${t("welS1")}</li><li>${t("welS2")}</li></ol>
+  <div class="row"><a class="btn pri" href="/?lang=${lang}#order">${t("welOrder")}</a><a class="btn" href="/?chat=1&amp;lang=${lang}">${t("welChat")}</a></div></section>`}
 
 /* ---------- saját AI-asszisztens (MCP connector-link) ---------- */
 let AINEW=null;
